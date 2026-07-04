@@ -1,0 +1,123 @@
+name: Cargoaim Frontend - QA Deploy
+
+on:
+  push:
+    branches:
+      - develop
+
+concurrency:
+  group: qa-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: QA (cargoaim.net)
+      
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.QA_SSH_PRIVATE_KEY }}" > ~/.ssh/cargoaim_frontend_qa
+          chmod 600 ~/.ssh/cargoaim_frontend_qa
+          ssh-keyscan -p ${{ secrets.QA_SSH_PORT }} -H ${{ secrets.QA_SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: |
+          ssh \
+            -i ~/.ssh/cargoaim_frontend_qa \
+            -p ${{ secrets.QA_SSH_PORT }} \
+            -o StrictHostKeyChecking=yes \
+            ${{ secrets.QA_SSH_USER }}@${{ secrets.QA_SSH_HOST }} \
+            "echo '✅ QA SSH Connected'"
+
+      - name: Check tenant.runtime.js on Server
+        id: check_tenant
+        run: |
+          EXISTS=$(ssh \
+            -i ~/.ssh/cargoaim_frontend_qa \
+            -p ${{ secrets.QA_SSH_PORT }} \
+            ${{ secrets.QA_SSH_USER }}@${{ secrets.QA_SSH_HOST }} \
+            "[ -f '${{ secrets.QA_DEPLOY_PATH }}/tenant.runtime.js' ] && echo 'yes' || echo 'no'")
+          echo "exists=$EXISTS" >> "$GITHUB_OUTPUT"
+          echo "ℹ️ tenant.runtime.js exists on server: $EXISTS"
+
+      - name: Build Vue Application
+        run: npm run build
+
+      - name: Create .htaccess
+        run: |
+          cat > dist/.htaccess << 'EOF'
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteBase /
+            RewriteRule ^index\.html$ - [L]
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteCond %{REQUEST_FILENAME} !-d
+            RewriteRule . /index.html [L]
+          </IfModule>
+          EOF
+
+      - name: Deploy QA (excluding tenant runtime files)
+        run: |
+          rsync -az --delete \
+            --exclude="tenant.runtime.js" \
+            --exclude="tenant.runtime.example.js" \
+            -e "ssh -i ~/.ssh/cargoaim_frontend_qa -p ${{ secrets.QA_SSH_PORT }}" \
+            dist/ \
+            ${{ secrets.QA_SSH_USER }}@${{ secrets.QA_SSH_HOST }}:${{ secrets.QA_DEPLOY_PATH }}/
+      
+      - name: Create tenant.runtime.js if missing
+        if: steps.check_tenant.outputs.exists == 'no'
+        run: |
+          ssh \
+            -i ~/.ssh/cargoaim_frontend_qa \
+            -p ${{ secrets.QA_SSH_PORT }} \
+            ${{ secrets.QA_SSH_USER }}@${{ secrets.QA_SSH_HOST }} << 'EOF'
+
+          cd "${{ secrets.QA_DEPLOY_PATH }}"
+
+          cat > tenant.runtime.js << 'CONFIG'
+          Object.defineProperty(window, "APP_CONFIG", {
+              value: Object.freeze({
+                  soft_cust_id: "API",
+                  partition_id: 69,
+                  baseURL: "https://api.example.com",
+              }),
+              writable: false,
+              configurable: false,
+          });
+          CONFIG
+
+          echo "✅ tenant.runtime.js created with default config."
+          EOF
+
+      - name: Skip tenant.runtime.js creation
+        if: steps.check_tenant.outputs.exists == 'yes'
+        run: echo "ℹ️ tenant.runtime.js already exists on server, skipping creation."
+
+      - name: Deployment Completed
+        run: |
+          echo "=================================="
+          echo "✅ QA Deployment Successful"
+          echo "Branch : develop"
+          echo "Environment : QA"
+          echo "=================================="
+...

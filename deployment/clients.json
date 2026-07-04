@@ -1,0 +1,20 @@
+{
+  "lpb": {
+    "name": "LPB",
+    "deploy_path": "/home/cargoaim/public_html/lpb",
+    "domain": "lpb.cargoaim.ltd",
+    "active": true
+  },
+  "tsl": {
+    "name": "TSL",
+    "deploy_path": "/home/cargoaim/public_html/tsl",
+    "domain": "tsl.cargoaim.ltd",
+    "active": true
+  },
+  "arm": {
+    "name": "ARM",
+    "deploy_path": "/home/cargoaim/public_html/arm",
+    "domain": "arm.cargoaim.ltd",
+    "active": true
+  }
+}
