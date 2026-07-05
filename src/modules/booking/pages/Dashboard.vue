@@ -124,198 +124,196 @@
   <!-- ============================================================== -->
   <!-- Start Page Content here -->
   <!-- ============================================================== -->
-  <div class="page-container" data-module="">
-    <div class="filing_content">
-      <div class="card filing-content-wrapper">
-        <div class="card-header bg-gradient d-flex justify-content-between align-items-center">
-          <h4 class="card-title m-0"><i class="fa-solid fa-bars"></i>&nbsp;All Bookings</h4>
+  <div class="filing_content">
+    <div class="card filing-content-wrapper">
+      <div class="card-header bg-gradient d-flex justify-content-between align-items-center">
+        <h4 class="card-title m-0"><i class="fa-solid fa-bars"></i>&nbsp;All Bookings</h4>
 
-          <button type="button" class="btn btn-primary bg-gradient new_booking_file_btn dropdown-toggle" id="newBookingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            New Booking
-          </button>
+        <button type="button" class="btn btn-primary bg-gradient new_booking_file_btn dropdown-toggle" id="newBookingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          New Booking
+        </button>
 
-          <ul class="dropdown-menu new_booking_dropdown_menu" aria-labelledby="newBookingDropdown">
-            <li>
-              <router-link class="dropdown-item new_booking_dropdown_item" :to="{ name: 'courier.booking' }">
-                <i class="fa-solid fa-plus me-2"></i>
-                Courier Booking
-              </router-link>
-            </li>
+        <ul class="dropdown-menu new_booking_dropdown_menu" aria-labelledby="newBookingDropdown">
+          <li>
+            <router-link class="dropdown-item new_booking_dropdown_item" :to="{ name: 'courier.booking' }">
+              <i class="fa-solid fa-plus me-2"></i>
+              Courier Booking
+            </router-link>
+          </li>
 
-            <li>
-              <router-link class="dropdown-item new_booking_dropdown_item" :to="{ name: 'freight.forwarding' }">
-                <i class="fa-solid fa-plus me-2"></i>
-                Freight Forwarding
-              </router-link>
-            </li>
-          </ul>
-          
-        </div>
-        <div class="filing-content-body">
-          <form id="loadform" name="form" class="form-horizontal" method="POST" action="#" enctype="multipart/form-data" >
-            <input type="hidden" name="_token" value="cSBX5Uj4lrE3emrO7loWLSSziypI4veDRBkRQ2Ou" autocomplete="off" />
-            <div class="table-responsive filing_search_responsive_table_wrapper filing_search_bg_color bg-gradient" >
-              <table class="table table-borderless filing_search_table">
-                <tr class="filing_search_table_row text-center">
-                  <th class="" style="width: 100px">Type</th>
-                  <th class="" style="width: 115px">From</th>
-                  <th class="" style="width: 115px">To</th>
-                  <th class="" style="width: 100px">Booked by</th>
-                  <th class="" style="width: 250px">Keyword</th>
-                  <th class="" style="width: 100px">Company</th>
-                  <th class="" style="width: 100px">Status</th>
-                  <th class="" style="width: auto"></th>
-                  <th class="" style="width: 40px"></th>
-                  <th class="" style="width: 40px"></th>
-                  <th class="" style="width: 100px"></th>
-                </tr>
-                <tr class="filing_search_table_row">
-                  <td>
-                    <select name="date_type" id="date_type" class="form-select">
-                      <option value="entry_date" selected>Entry Date</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="date" name="date_from" id="date_from" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
-                  </td>
-                  <td>
-                    <input type="date" name="date_to" id="date_to" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
-                  </td>
-                  <td class="text-center">
-                    <select class="form-select" name="stock_filter_carrier_name" id="stock_filter_carrier_name" autocomplete="off" >
-                      <option value=""></option>
-                    </select>
-                  </td>
-                  <td>
-                    <input type="text" name="hbl_mbl" id="hbl_mbl" class="form-control uppercase-only" placeholder="🔍 HBL/MBL/PORT/VSL/VOY" autocomplete="off" />
-                  </td>
-                  <td>
-                    <select class="form-select" name="stock_filter_b_unit" id="stock_filter_b_unit" >
-                      <option value=""></option>
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select" name="stock_status" id="stock_status" >
-                      <option value="A">Active</option>
-                      <option value="D">Deleted</option>
-                      <option value="N">Canceled</option>
-                      <option value="ALL" selected="selected">ALL</option>
-                    </select>
-                  </td>
-                  
-                  <td></td>
-                  <td class="text-center">
-                    <button type="button" id="cm_vol_report_exl_btn" class="btn btn-sm border p-0" >
-                      <i class="fa-solid fa-file-excel" style="font-size: 20px; color: #1d6f42"></i>
-                    </button>
-                  </td>
-                  <td class="text-center">
-                    <button type="button" id="cm_vol_report_pdf_btn" class="btn btn-sm border p-0">
-                      <i class="fa-solid fa-file-pdf" style="font-size: 20px; color: red"></i>
-                    </button>
-                  </td>
-                  <!-- Load Button -->
-                  <td class="text-center">
-                    <button type="" class="btn btn-primary bg-gradient btn-cargoaim w-100 px-1 flex-fill" id="filing_load_data_btn" @click.prevent="filingLoadData" :disabled="is_loading">
-                      <span v-if="!is_loading">
-                        <!-- <i class="fa-regular fa-circle" style="font-size: 14px;"></i> -->
-                        <i class="fa-solid fa-arrows-rotate" style="font-size: 14px;"></i>
-                        LOAD
-                      </span>
-                      <span v-else>
-                        <span class="spinner-border spinner-border-sm" role="status"></span> LOAD
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </form>
-
-          
-
-
-          <div class="cargoaim_custom_form_wrapper mt-2 position-relative" id="filing_dataLoad_customize">
-            <CircleDivisionLoader loader-key="cargoaim_custom_form_wrapper" />
-
-            <table v-show="isTableVisible" id="filing_cargoaim_table" class="table table-bordered table-striped nowrap table-hover mb-0">
-              <thead :style="{ display: isTableVisible ? 'table-header-group' : 'none' }" id="filing_cargoaim_table_thead">
-                <tr class="text-center">
-                  <th>
-                    <input type="checkbox" class="all_check_box" v-model="selectAll">
-                  </th>
-                  <th>SN</th>
-                  <th>FLAGS</th>
-                  <th>MBL</th>
-                  <th>HBL/ENS BL</th>
-                  <th>-</th>
-                  <th>-</th>
-                  <th title="MRN / REF NO.">MRN / REF NO.</th>
-                  <th>Status</th>
-                  <th>DISPOSE</th>
-                  <th>EQ</th>
-                  <th>TYPE</th>
-                  <th>KG</th>
-                  <th>CBM</th>
-                  <th>To</th>
-                  <th>SHIPPER</th>
-                  <th>CONSIGNEE</th>
-                  <th>-</th>
-                  <th>-</th>
-                </tr>
-              </thead>
-              <tbody id="filing_cargoaim_table_tbody">
-                <!-- initially empty -->
-                <tr v-for="(item, index) in tableData" :key="index">
-                  <td>
-                      <input type="checkbox" :name="'check_name[]'" :value="item.id" v-model="selectedIds" class="ens_dt_check_box">
-                  </td>
-                  <td>{{ index + 1 }}</td>
-                  <td><img :src="item.flag" alt="" class="filing_flags_icon"></td>
-                  <td>{{ item.mbl }}</td>
-                  <td>{{ item.hbl }}</td>
-                  <td>
-                      <button type="button" :data-id="item.id" class="btn btn-sm btn-outline-info editBtn ens_ld_dt_btn">
-                          <i class="fas fa-pen"></i>
-                      </button>
-                  </td>
-                  <td>
-                      <button type="button" class="btn btn-sm btn-outline-secondary bg-gradient copyBtn ens_ld_dt_btn" :data-id="item.id">
-                          <i class="fas fa-copy" title="Copy"></i>
-                      </button>
-                  </td>
-                  <td>{{ item.mrn }}</td>
-                  <td>{{ item.status }}</td>
-                  <td>{{ item.dispose }}</td>
-                  <td>{{ item.eq }}</td>
-                  <td>{{ item.type }}</td>
-                  <td>{{ item.kg }}</td>
-                  <td>{{ item.cbm }}</td>
-                  <td class="text-center">{{ item.to }}</td>
-                  <td class="text-start">{{ item.shipper }}</td>
-                  <td class="text-start">{{ item.consignee }}</td>
-                  <td class="text-center">
-                      <button type="button" class="btn btn-sm btn-outline-primary bg-gradient actionBtn ens_ld_dt_btn" :data-id="item.id">
-                          <i class="fas fa-bolt"></i>
-                      </button>
-                  </td>
-                  <td class="text-center">
-                      <button type="button" class="btn btn-sm bg-gradient btn-outline-danger deleteBtn ens_ld_dt_btn" :data-id="item.id">
-                          <i class="fas fa-trash" title="Delete"></i>
-                      </button>
-                  </td>
-                </tr>
-              </tbody>
+          <li>
+            <router-link class="dropdown-item new_booking_dropdown_item" :to="{ name: 'freight.forwarding' }">
+              <i class="fa-solid fa-plus me-2"></i>
+              Freight Forwarding
+            </router-link>
+          </li>
+        </ul>
+        
+      </div>
+      <div class="filing-content-body">
+        <form id="loadform" name="form" class="form-horizontal" method="POST" action="#" enctype="multipart/form-data" >
+          <input type="hidden" name="_token" value="cSBX5Uj4lrE3emrO7loWLSSziypI4veDRBkRQ2Ou" autocomplete="off" />
+          <div class="table-responsive filing_search_responsive_table_wrapper filing_search_bg_color bg-gradient" >
+            <table class="table table-borderless filing_search_table">
+              <tr class="filing_search_table_row text-center">
+                <th class="" style="width: 100px">Type</th>
+                <th class="" style="width: 115px">From</th>
+                <th class="" style="width: 115px">To</th>
+                <th class="" style="width: 100px">Booked by</th>
+                <th class="" style="width: 250px">Keyword</th>
+                <th class="" style="width: 100px">Company</th>
+                <th class="" style="width: 100px">Status</th>
+                <th class="" style="width: auto"></th>
+                <th class="" style="width: 40px"></th>
+                <th class="" style="width: 40px"></th>
+                <th class="" style="width: 100px"></th>
+              </tr>
+              <tr class="filing_search_table_row">
+                <td>
+                  <select name="date_type" id="date_type" class="form-select">
+                    <option value="entry_date" selected>Entry Date</option>
+                  </select>
+                </td>
+                <td>
+                  <input type="date" name="date_from" id="date_from" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
+                </td>
+                <td>
+                  <input type="date" name="date_to" id="date_to" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
+                </td>
+                <td class="text-center">
+                  <select class="form-select" name="stock_filter_carrier_name" id="stock_filter_carrier_name" autocomplete="off" >
+                    <option value=""></option>
+                  </select>
+                </td>
+                <td>
+                  <input type="text" name="hbl_mbl" id="hbl_mbl" class="form-control uppercase-only" placeholder="🔍 HBL/MBL/PORT/VSL/VOY" autocomplete="off" />
+                </td>
+                <td>
+                  <select class="form-select" name="stock_filter_b_unit" id="stock_filter_b_unit" >
+                    <option value=""></option>
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select" name="stock_status" id="stock_status" >
+                    <option value="A">Active</option>
+                    <option value="D">Deleted</option>
+                    <option value="N">Canceled</option>
+                    <option value="ALL" selected="selected">ALL</option>
+                  </select>
+                </td>
+                
+                <td></td>
+                <td class="text-center">
+                  <button type="button" id="cm_vol_report_exl_btn" class="btn btn-sm border p-0" >
+                    <i class="fa-solid fa-file-excel" style="font-size: 20px; color: #1d6f42"></i>
+                  </button>
+                </td>
+                <td class="text-center">
+                  <button type="button" id="cm_vol_report_pdf_btn" class="btn btn-sm border p-0">
+                    <i class="fa-solid fa-file-pdf" style="font-size: 20px; color: red"></i>
+                  </button>
+                </td>
+                <!-- Load Button -->
+                <td class="text-center">
+                  <button type="" class="btn btn-primary bg-gradient btn-cargoaim w-100 px-1 flex-fill" id="filing_load_data_btn" @click.prevent="filingLoadData" :disabled="is_loading">
+                    <span v-if="!is_loading">
+                      <!-- <i class="fa-regular fa-circle" style="font-size: 14px;"></i> -->
+                      <i class="fa-solid fa-arrows-rotate" style="font-size: 14px;"></i>
+                      LOAD
+                    </span>
+                    <span v-else>
+                      <span class="spinner-border spinner-border-sm" role="status"></span> LOAD
+                    </span>
+                  </button>
+                </td>
+              </tr>
             </table>
-
-            <!-- Initial message outside tbody -->
-            <div v-if="!isTableVisible" id="filing_cargoaim_table_message" class="text-start text-muted p-4">
-              <p>📄 List will be loaded here...!</p>
-            </div>
-            
           </div>
+        </form>
 
+        
+
+
+        <div class="cargoaim_custom_form_wrapper mt-2 position-relative" id="filing_dataLoad_customize">
+          <CircleDivisionLoader loader-key="cargoaim_custom_form_wrapper" />
+
+          <table v-show="isTableVisible" id="filing_cargoaim_table" class="table table-bordered table-striped nowrap table-hover mb-0">
+            <thead :style="{ display: isTableVisible ? 'table-header-group' : 'none' }" id="filing_cargoaim_table_thead">
+              <tr class="text-center">
+                <th>
+                  <input type="checkbox" class="all_check_box" v-model="selectAll">
+                </th>
+                <th>SN</th>
+                <th>FLAGS</th>
+                <th>MBL</th>
+                <th>HBL/ENS BL</th>
+                <th>-</th>
+                <th>-</th>
+                <th title="MRN / REF NO.">MRN / REF NO.</th>
+                <th>Status</th>
+                <th>DISPOSE</th>
+                <th>EQ</th>
+                <th>TYPE</th>
+                <th>KG</th>
+                <th>CBM</th>
+                <th>To</th>
+                <th>SHIPPER</th>
+                <th>CONSIGNEE</th>
+                <th>-</th>
+                <th>-</th>
+              </tr>
+            </thead>
+            <tbody id="filing_cargoaim_table_tbody">
+              <!-- initially empty -->
+              <tr v-for="(item, index) in tableData" :key="index">
+                <td>
+                    <input type="checkbox" :name="'check_name[]'" :value="item.id" v-model="selectedIds" class="ens_dt_check_box">
+                </td>
+                <td>{{ index + 1 }}</td>
+                <td><img :src="item.flag" alt="" class="filing_flags_icon"></td>
+                <td>{{ item.mbl }}</td>
+                <td>{{ item.hbl }}</td>
+                <td>
+                    <button type="button" :data-id="item.id" class="btn btn-sm btn-outline-info editBtn ens_ld_dt_btn">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-secondary bg-gradient copyBtn ens_ld_dt_btn" :data-id="item.id">
+                        <i class="fas fa-copy" title="Copy"></i>
+                    </button>
+                </td>
+                <td>{{ item.mrn }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.dispose }}</td>
+                <td>{{ item.eq }}</td>
+                <td>{{ item.type }}</td>
+                <td>{{ item.kg }}</td>
+                <td>{{ item.cbm }}</td>
+                <td class="text-center">{{ item.to }}</td>
+                <td class="text-start">{{ item.shipper }}</td>
+                <td class="text-start">{{ item.consignee }}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-outline-primary bg-gradient actionBtn ens_ld_dt_btn" :data-id="item.id">
+                        <i class="fas fa-bolt"></i>
+                    </button>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm bg-gradient btn-outline-danger deleteBtn ens_ld_dt_btn" :data-id="item.id">
+                        <i class="fas fa-trash" title="Delete"></i>
+                    </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Initial message outside tbody -->
+          <div v-if="!isTableVisible" id="filing_cargoaim_table_message" class="text-start text-muted p-4">
+            <p>📄 List will be loaded here...!</p>
+          </div>
+          
         </div>
+
       </div>
     </div>
   </div>
@@ -436,6 +434,7 @@
   padding: 6px;
   box-sizing: border-box;
   overflow: auto;
+  border-radius: 10px;
 }
 .filing_search_bg_color {
   background-color: #a3c8e8;
