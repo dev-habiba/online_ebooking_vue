@@ -8,33 +8,34 @@
             <h2 class="header-title"><i class="fa-regular fa-truck"></i> FREIGHT FORWARDING</h2>
         </div>
 
-        
         <div class="card-body px-3">
             <form id="freight_forwarding_form" method="POST" action="http://cargoaimonline.test/my_bookings/freight_forwarding" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="kuH21cVpWbukw6QsAKgnELktNasP9gTsgtgfzotL" autocomplete="off">                        <div class="table-responsive box-border couriar_table">
                     <table class="table table-borderless">
                         <tbody>
-
                             <tr class="border-bootom-dotted">
                                 <td colspan="3" class="">
-                                    <div class="card shadow-sm shipment-profile-card mb-2">
+                                    <div class="card card_children shadow-sm shipment-profile-card mb-2">
                                         <div class="card-header bg-light bg-gradient py-1 d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0"><i class="fa-solid fa-house"></i></h5>
+                                            <h5 class="header-title mb-0"><i class="fa-solid fa-house"></i></h5>
                                             <h5 class="hbl_show mb-0"> </h5>
                                         </div>
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr><td style="width: 35%">
-                                                    
-                                                    <label class="form-label"> Load Form Booking Template : </label>
-                                                    <select name="ff_shipment_profile" id="ff_shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
-                    <option value="TEST FF">
-                        TEST FF
-                    </option>
-                </select>
-                                                </td>
-                                                <td></td>
-                                            </tr></tbody></table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 35%">
+                                                            <label class="form-label"> Load Form Booking Template : </label>
+                                                            <select name="ff_shipment_profile" id="ff_shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
+                                                                <option value="TEST FF">
+                                                                    TEST FF
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </td>
@@ -42,522 +43,521 @@
 
                             <tr class="border-bootom-dotted">
                                 <td style="width: 60%">
-
-                                    
                                     <div class="card shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
                                                 <i class="fa-solid fa-receipt"></i>
-                                                
                                                 Booking Type
                                             </h5>
                                         </div>
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Sea/ Air/ Land<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input type="hidden" name="row_id" id="row_id">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Sea/ Air/ Land<span style="color: red;">*</span></span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="hidden" name="row_id" id="row_id">
 
-                                                        <select name="sea_air_land" id="sea_air_land" class="form-select form-select-sm" autocomplete="off">
-                                                            <option value=""></option>
-                                                            <option value="1">Sea</option>
-                                                            <option value="2">Air</option>
-                                                            <option value="3">Land</option>
-                                                            <option value="4">Sea-Air</option>
-                                                            <option value="5">Air-Sea</option>
-                                                            <option value="6">Land-Air</option>
-                                                        </select>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Import/Export<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <select name="imp_exp" id="imp_exp" class="form-select form-select-sm" autocomplete="off">
-                                                            <option value=""></option>
-                                                            <option value="1"> Import </option>
-                                                            <option value="2"> Export </option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>FCL/LCL<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <select name="fcl_lcl" id="fcl_lcl" class="form-select form-select-sm" autocomplete="off">
-                                                            <option value=""></option>
-                                                            <option value="FCL"> FCL </option>
-                                                            <option value="LCL"> LCL </option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>CHA</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <select name="cha" id="cha" class="form-select form-select-sm" autocomplete="off">
-                                                            <option value=""></option>
-                                                            <option value="BD035"> Smart Shipping Ltd </option>
-                                                            <option value="BD057"> LIZ FASHION INDUSTRY LTD </option>
-                                                            <option value="BD059"> sahara logistic ltd </option>
-                                                            <option value="BD065"> BD company </option>
-                                                            <option value="BD067"> enamul shipping </option>
-                                                            <option value="BDV0005"> Ishakha Corporation </option>
-                                                            <option value="BDV0006"> Subastu Aparel </option>
-                                                            <option value="BDV0007"> BD Export Import Ltd </option>
-                                                            <option value="BDV0028"> Custom Identity  </option>
-                                                            <option value="BDV0030"> IS Logistic Ltd </option>
-                                                            <option value="BDV0036"> Moiful Enterprise </option>
-                                                            <option value="BDV0048"> sm sea company </option>
-                                                            <option value="BDV0049"> Morium </option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Incoterm<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    
-                                                    <td>
-                                                        <select name="incoterm" id="incoterm" class="form-select form-select-sm" autocomplete="off">
-                                                            <option value=""></option>
-                                                            <option value="CFR"> CFR - Cost and Freight </option>
-                                                            <option value="CIF"> CIF - Cost Insurance and Freig </option>
-                                                            <option value="CIP"> CIP - Carriage And Insurance P </option>
-                                                            <option value="CNF"> CNF - Cost and Freight </option>
-                                                            <option value="CPT"> CPT - Carriage Paid To </option>
-                                                            <option value="DAP"> DAP- Delivery at Place </option>
-                                                            <option value="DAT"> DAT - Delivery At Terminal </option>
-                                                            <option value="EXW"> EXW - Ex Works </option>
-                                                            <option value="FAS"> FAS - Free Alongside Ship </option>
-                                                            <option value="FCA"> FCA - Free Carrier </option>
-                                                            <option value="FOB"> FOB- Free On Board </option>
-                                                        </select>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                            <select name="sea_air_land" id="sea_air_land" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="1">Sea</option>
+                                                                <option value="2">Air</option>
+                                                                <option value="3">Land</option>
+                                                                <option value="4">Sea-Air</option>
+                                                                <option value="5">Air-Sea</option>
+                                                                <option value="6">Land-Air</option>
+                                                            </select>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Import/Export<span style="color: red;">*</span></span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <select name="imp_exp" id="imp_exp" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="1"> Import </option>
+                                                                <option value="2"> Export </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>FCL/LCL<span style="color: red;">*</span></span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <select name="fcl_lcl" id="fcl_lcl" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="FCL"> FCL </option>
+                                                                <option value="LCL"> LCL </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>CHA</span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <select name="cha" id="cha" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="BD035"> Smart Shipping Ltd </option>
+                                                                <option value="BD057"> LIZ FASHION INDUSTRY LTD </option>
+                                                                <option value="BD059"> sahara logistic ltd </option>
+                                                                <option value="BD065"> BD company </option>
+                                                                <option value="BD067"> enamul shipping </option>
+                                                                <option value="BDV0005"> Ishakha Corporation </option>
+                                                                <option value="BDV0006"> Subastu Aparel </option>
+                                                                <option value="BDV0007"> BD Export Import Ltd </option>
+                                                                <option value="BDV0028"> Custom Identity  </option>
+                                                                <option value="BDV0030"> IS Logistic Ltd </option>
+                                                                <option value="BDV0036"> Moiful Enterprise </option>
+                                                                <option value="BDV0048"> sm sea company </option>
+                                                                <option value="BDV0049"> Morium </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Incoterm<span style="color: red;">*</span></span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        <td>
+                                                            <select name="incoterm" id="incoterm" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="CFR"> CFR - Cost and Freight </option>
+                                                                <option value="CIF"> CIF - Cost Insurance and Freig </option>
+                                                                <option value="CIP"> CIP - Carriage And Insurance P </option>
+                                                                <option value="CNF"> CNF - Cost and Freight </option>
+                                                                <option value="CPT"> CPT - Carriage Paid To </option>
+                                                                <option value="DAP"> DAP- Delivery at Place </option>
+                                                                <option value="DAT"> DAT - Delivery At Terminal </option>
+                                                                <option value="EXW"> EXW - Ex Works </option>
+                                                                <option value="FAS"> FAS - Free Alongside Ship </option>
+                                                                <option value="FCA"> FCA - Free Carrier </option>
+                                                                <option value="FOB"> FOB- Free On Board </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
-                                    
                                     <div class="card shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
                                                 <i class="fa-solid fa-ship"></i>
-                                                
                                                 Port Pairs
                                             </h5>
                                         </div>
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td style="width: 150px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Place of Receipt</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="position-relative">
-                                                            <input type="hidden" name="por_code" id="por_code" class="uppercase-only">
-
-                                                            <div class="input-group online_bkg_search_inp">
-                                                                <input type="text" name="por" id="por" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PLACE OF RECEIPT" autocomplete="off">
-
-                                                                <span class="input-group-text search_keyword search_keyword_enty_form">
-                                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                                </span>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 150px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Place of Receipt</span>
+                                                                <span>:</span>
                                                             </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="position-relative">
+                                                                <input type="hidden" name="por_code" id="por_code" class="uppercase-only">
 
-                                                            
-                                                            <div id="por_loader" class="por_loader circle-dot-loader" style="display:none;">
-                                                                <div></div><div></div><div></div><div></div>
-                                                                <div></div><div></div><div></div><div></div>
-                                                            </div>
+                                                                <div class="input-group online_bkg_search_inp">
+                                                                    <input type="text" name="por" id="por" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PLACE OF RECEIPT" autocomplete="off">
+
+                                                                    <span class="input-group-text search_keyword search_keyword_enty_form">
+                                                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                                                    </span>
+                                                                </div>
 
                                                                 
-                                                            <!-- <div id="por_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
-                                                        </div>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Port of Loading<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="position-relative">
-                                                            <input type="hidden" name="pol_code" id="pol_code" class="uppercase-only">
+                                                                <div id="por_loader" class="por_loader circle-dot-loader" style="display:none;">
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                </div>
 
-                                                            <div class="input-group online_bkg_search_inp">
-                                                                <input type="text" name="pol" id="pol" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN  PORT OF LODING" autocomplete="off">
-
-                                                                <span class="input-group-text search_keyword search_keyword_enty_form">
-                                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                                </span>
+                                                                    
+                                                                <!-- <div id="por_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
                                                             </div>
-
-                                                            
-                                                            <div id="pol_loader" class="pol_loader circle-dot-loader" style="display:none;">
-                                                                <div></div><div></div><div></div><div></div>
-                                                                <div></div><div></div><div></div><div></div>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Port of Loading<span style="color: red;">*</span></span>
+                                                                <span>:</span>
                                                             </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="position-relative">
+                                                                <input type="hidden" name="pol_code" id="pol_code" class="uppercase-only">
+
+                                                                <div class="input-group online_bkg_search_inp">
+                                                                    <input type="text" name="pol" id="pol" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN  PORT OF LODING" autocomplete="off">
+
+                                                                    <span class="input-group-text search_keyword search_keyword_enty_form">
+                                                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                                                    </span>
+                                                                </div>
 
                                                                 
-                                                            <!-- <div id="pol_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Port of Discharge<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="position-relative">
-                                                            <input type="hidden" name="pod_code" id="pod_code" class="uppercase-only">
+                                                                <div id="pol_loader" class="pol_loader circle-dot-loader" style="display:none;">
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                </div>
 
-                                                            <div class="input-group online_bkg_search_inp">
-                                                                <input type="text" name="pod" id="pod" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PORT OF DISCHARGE" autocomplete="off">
-
-                                                                <span class="input-group-text search_keyword search_keyword_enty_form">
-                                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                                </span>
+                                                                    
+                                                                <!-- <div id="pol_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
                                                             </div>
-
-                                                            
-                                                            <div id="pod_loader" class="pod_loader circle-dot-loader" style="display:none;">
-                                                                <div></div><div></div><div></div><div></div>
-                                                                <div></div><div></div><div></div><div></div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Port of Discharge<span style="color: red;">*</span></span>
+                                                                <span>:</span>
                                                             </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="position-relative">
+                                                                <input type="hidden" name="pod_code" id="pod_code" class="uppercase-only">
+
+                                                                <div class="input-group online_bkg_search_inp">
+                                                                    <input type="text" name="pod" id="pod" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PORT OF DISCHARGE" autocomplete="off">
+
+                                                                    <span class="input-group-text search_keyword search_keyword_enty_form">
+                                                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                                                    </span>
+                                                                </div>
 
                                                                 
-                                                            <!-- <div id="pod_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Place of Delivery</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="position-relative">
-                                                            <input type="hidden" name="del_code" id="del_code" class="uppercase-only">
+                                                                <div id="pod_loader" class="pod_loader circle-dot-loader" style="display:none;">
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                </div>
 
-                                                            <div class="input-group online_bkg_search_inp">
-                                                                <input type="text" name="del" id="del" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PLACE OF DELIVERY" autocomplete="off">
-
-                                                                <span class="input-group-text search_keyword search_keyword_enty_form">
-                                                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                                                </span>
+                                                                    
+                                                                <!-- <div id="pod_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
                                                             </div>
-
-                                                            
-                                                            <div id="del_loader" class="del_loader circle-dot-loader" style="display:none;">
-                                                                <div></div><div></div><div></div><div></div>
-                                                                <div></div><div></div><div></div><div></div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Place of Delivery</span>
+                                                                <span>:</span>
                                                             </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="position-relative">
+                                                                <input type="hidden" name="del_code" id="del_code" class="uppercase-only">
+
+                                                                <div class="input-group online_bkg_search_inp">
+                                                                    <input type="text" name="del" id="del" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH IN PLACE OF DELIVERY" autocomplete="off">
+
+                                                                    <span class="input-group-text search_keyword search_keyword_enty_form">
+                                                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                                                    </span>
+                                                                </div>
 
                                                                 
-                                                            <!-- <div id="del_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="width: 140px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Delivery Address</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    
-                                                    <td>
-                                                        <input type="text" name="del_address" id="del_address" class="form-control form-control-sm uppercase-only" placeholder="Delivery Address" autocomplete="off">
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <div id="del_loader" class="del_loader circle-dot-loader" style="display:none;">
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                    <div></div><div></div><div></div><div></div>
+                                                                </div>
+
+                                                                    
+                                                                <!-- <div id="del_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 140px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Delivery Address</span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        
+                                                        <td>
+                                                            <input type="text" name="del_address" id="del_address" class="form-control form-control-sm uppercase-only" placeholder="Delivery Address" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
-                                    
                                     <div class="card shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
                                                 <i class="fa-brands fa-bandcamp"></i>
-                                                
                                                 Commodity and References
                                             </h5>
                                         </div>
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td style="width: 152px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Commodity/Item<span style="color: red;">*</span></span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="commodity_item" id="commodity_item" class="form-control form-control-sm uppercase-only mt2_mb1" autocomplete="off">
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="width: 150px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Cargo Handover Date</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" name="cargo_handover_date" id="cargo_handover_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 20px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>FOC</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 35px;">
-                                                                        <input type="checkbox" name="foc" id="foc" class="form-check-input form-control-sm uppercase-only" placeholder="" autocomplete="off" style="width: 26px; height: 26px;">
-                                                                    </td>
-                                                                    <td style="width: 20px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>DG</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 35px;">
-                                                                        <input type="checkbox" name="dg" id="dg" class="form-check-input uppercase-only" placeholder="" autocomplete="off" style="width: 26px; height: 26px;">
-                                                                    </td>
-                                                                    <td style="width: 70px;">
-                                                                        <input type="text" name="cargo_un_class" id="cargo_un_class" class="form-control form-control-sm uppercase-only" placeholder="Class" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 70px;">
-                                                                        <input type="text" name="un_no" id="un_no" class="form-control form-control-sm uppercase-only" placeholder="UN" autocomplete="off">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="width: 150px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Invoice</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" name="invoice_no" id="invoice_no" class="form-control form-control-sm uppercase-only" placeholder="Invoice" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 50px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Date</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 110px;">
-                                                                        <input type="text" name="invoice_date" id="invoice_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="width: 150px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>EXP</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" name="exp_no" id="exp_no" class="form-control form-control-sm uppercase-only" placeholder="EXP" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 50px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Date</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 110px;">
-                                                                        <input type="text" name="exp_date" id="exp_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="width: 150px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Others</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 100px;">
-                                                                        <select name="other_no_type" id="other_no_type" class="form-select form-select-sm" autocomplete="off">
-                                                                            <option value=""></option>
-                                                                                                                                                                    <option value="CON"> 
-                                                                                    CONT. NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="LC"> 
-                                                                                    L/C NO  
-                                                                                </option>
-                                                                                                                                                                    <option value="PC"> 
-                                                                                    P/C NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="PD"> 
-                                                                                    Product 
-                                                                                </option>
-                                                                                                                                                                    <option value="PI"> 
-                                                                                    P/I NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="PO"> 
-                                                                                    P/O NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="SBILL"> 
-                                                                                    S/BILL NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="SC"> 
-                                                                                    S/C NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="TT"> 
-                                                                                    T/T NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="VPS"> 
-                                                                                    Virtual Payment 
-                                                                                </option>
-                                                                                                                                                            </select>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" name="other_no" id="other_no" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 50px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Date</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 110px;">
-                                                                        <input type="text" name="other_no_date" id="other_no_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2">
-                                                        <table class="table table-borderless">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="width: 150px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Others-2</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 100px;">
-                                                                        <select name="other_no_type_two" id="other_no_type_two" class="form-select form-select-sm" autocomplete="off">
-                                                                            <option value=""></option>
-                                                                                                                                                                    <option value="CON"> 
-                                                                                    CONT. NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="LC"> 
-                                                                                    L/C NO  
-                                                                                </option>
-                                                                                                                                                                    <option value="PC"> 
-                                                                                    P/C NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="PD"> 
-                                                                                    Product 
-                                                                                </option>
-                                                                                                                                                                    <option value="PI"> 
-                                                                                    P/I NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="PO"> 
-                                                                                    P/O NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="SBILL"> 
-                                                                                    S/BILL NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="SC"> 
-                                                                                    S/C NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="TT"> 
-                                                                                    T/T NO 
-                                                                                </option>
-                                                                                                                                                                    <option value="VPS"> 
-                                                                                    Virtual Payment 
-                                                                                </option>
-                                                                                                                                                            </select>
-                                                                    </td>
-                                                                    <td>
-                                                                        <input type="text" name="other_no_two" id="other_no_two" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
-                                                                    </td>
-                                                                    <td style="width: 50px;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                            <span>Date</span>
-                                                                            <span>:</span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td style="width: 110px;">
-                                                                        <input type="text" name="other_no_date_two" id="other_no_date_two" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 152px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Commodity/Item<span style="color: red;">*</span></span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="commodity_item" id="commodity_item" class="form-control form-control-sm uppercase-only mt2_mb1" autocomplete="off">
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <table class="table table-borderless">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="width: 150px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Cargo Handover Date</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" name="cargo_handover_date" id="cargo_handover_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 20px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>FOC</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 35px;">
+                                                                            <input type="checkbox" name="foc" id="foc" class="form-check-input form-control-sm uppercase-only" placeholder="" autocomplete="off" style="width: 26px; height: 26px;">
+                                                                        </td>
+                                                                        <td style="width: 20px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>DG</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 35px;">
+                                                                            <input type="checkbox" name="dg" id="dg" class="form-check-input uppercase-only" placeholder="" autocomplete="off" style="width: 26px; height: 26px;">
+                                                                        </td>
+                                                                        <td style="width: 70px;">
+                                                                            <input type="text" name="cargo_un_class" id="cargo_un_class" class="form-control form-control-sm uppercase-only" placeholder="Class" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 70px;">
+                                                                            <input type="text" name="un_no" id="un_no" class="form-control form-control-sm uppercase-only" placeholder="UN" autocomplete="off">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <table class="table table-borderless">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="width: 150px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Invoice</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" name="invoice_no" id="invoice_no" class="form-control form-control-sm uppercase-only" placeholder="Invoice" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 50px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Date</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 110px;">
+                                                                            <input type="text" name="invoice_date" id="invoice_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <table class="table table-borderless">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="width: 150px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>EXP</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" name="exp_no" id="exp_no" class="form-control form-control-sm uppercase-only" placeholder="EXP" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 50px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Date</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 110px;">
+                                                                            <input type="text" name="exp_date" id="exp_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <table class="table table-borderless">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="width: 150px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Others</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 100px;">
+                                                                            <select name="other_no_type" id="other_no_type" class="form-select form-select-sm" autocomplete="off">
+                                                                                <option value=""></option>
+                                                                                                                                                                        <option value="CON"> 
+                                                                                        CONT. NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="LC"> 
+                                                                                        L/C NO  
+                                                                                    </option>
+                                                                                                                                                                        <option value="PC"> 
+                                                                                        P/C NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PD"> 
+                                                                                        Product 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PI"> 
+                                                                                        P/I NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PO"> 
+                                                                                        P/O NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="SBILL"> 
+                                                                                        S/BILL NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="SC"> 
+                                                                                        S/C NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="TT"> 
+                                                                                        T/T NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="VPS"> 
+                                                                                        Virtual Payment 
+                                                                                    </option>
+                                                                                                                                                                </select>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" name="other_no" id="other_no" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 50px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Date</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 110px;">
+                                                                            <input type="text" name="other_no_date" id="other_no_date" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <table class="table table-borderless">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="width: 150px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Others-2</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 100px;">
+                                                                            <select name="other_no_type_two" id="other_no_type_two" class="form-select form-select-sm" autocomplete="off">
+                                                                                <option value=""></option>
+                                                                                                                                                                        <option value="CON"> 
+                                                                                        CONT. NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="LC"> 
+                                                                                        L/C NO  
+                                                                                    </option>
+                                                                                                                                                                        <option value="PC"> 
+                                                                                        P/C NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PD"> 
+                                                                                        Product 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PI"> 
+                                                                                        P/I NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="PO"> 
+                                                                                        P/O NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="SBILL"> 
+                                                                                        S/BILL NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="SC"> 
+                                                                                        S/C NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="TT"> 
+                                                                                        T/T NO 
+                                                                                    </option>
+                                                                                                                                                                        <option value="VPS"> 
+                                                                                        Virtual Payment 
+                                                                                    </option>
+                                                                                                                                                                </select>
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="text" name="other_no_two" id="other_no_two" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                                        </td>
+                                                                        <td style="width: 50px;">
+                                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                <span>Date</span>
+                                                                                <span>:</span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td style="width: 110px;">
+                                                                            <input type="text" name="other_no_date_two" id="other_no_date_two" class="form-control form-control-sm flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-06 11:08:37" autocomplete="off">
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -566,12 +566,10 @@
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
                                                 <i class="fa-solid fa-envelope"></i>
-                                                
                                                 Add CC Email Addresses
                                             </h5>
                                         </div>
                                         
-
                                         <div class="card-body p-2">
                                             <!-- Email CC -->
                                             <div class="ff_email_textarea_box">
@@ -592,7 +590,6 @@
                                 <td style="width: 1%;"></td>
 
                                 <td style="width: 39%">
-                                    
                                     <div class="card shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="mb-0">
@@ -608,25 +605,27 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <div class="d-flex gap-1 align-items-center">
-                                                            <input type="hidden" name="shipper_code" id="shipper_code" autocomplete="off" value="NMS20260706170837">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                <input type="hidden" name="shipper_code" id="shipper_code" autocomplete="off" value="NMS20260706170837">
 
-                                                            <input type="text" name="shipper_name" id="shipper_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                                <input type="text" name="shipper_name" id="shipper_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_btn_ff">
-                                                                <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>                                                       
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="shipper_address" id="shipper_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_btn_ff">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>                                                       
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="shipper_address" id="shipper_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -646,23 +645,25 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <div class="d-flex gap-1 align-items-center">
-                                                            <input type="text" name="shipper_bank_name" id="shipper_bank_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                <input type="text" name="shipper_bank_name" id="shipper_bank_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_bank_list_btn_ff">
-                                                                <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="shipper_bank_address" id="shipper_bank_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_bank_list_btn_ff">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="shipper_bank_address" id="shipper_bank_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -682,25 +683,27 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <div class="d-flex gap-1 align-items-center">
-                                                                <input type="hidden" name="buyer_code" id="buyer_code" autocomplete="off" value="NMS20260706170837">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                    <input type="hidden" name="buyer_code" id="buyer_code" autocomplete="off" value="NMS20260706170837">
 
-                                                            <input type="text" name="buyer_name" id="buyer_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                                <input type="text" name="buyer_name" id="buyer_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="buyer_list_btn_ff">
-                                                                <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="buyer_address" id="buyer_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="buyer_list_btn_ff">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="buyer_address" id="buyer_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -720,23 +723,25 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <div class="d-flex gap-1 align-items-center">
-                                                            <input type="text" name="buyer_bank_name" id="buyer_bank_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                <input type="text" name="buyer_bank_name" id="buyer_bank_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="buyer_bank_list_btn_ff">
-                                                                <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="buyer_bank_address" id="buyer_bank_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="buyer_bank_list_btn_ff">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="buyer_bank_address" id="buyer_bank_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -756,28 +761,29 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <div class="d-flex gap-1 align-items-center">
-                                                            <input type="hidden" name="notify_code" id="notify_code" autocomplete="off" value="NMS20260706170837">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                <input type="hidden" name="notify_code" id="notify_code" autocomplete="off" value="NMS20260706170837">
 
-                                                            <input type="text" name="notify_name" id="notify_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
+                                                                <input type="text" name="notify_name" id="notify_name" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="notify_list_btn_ff">
-                                                                <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>                                                            
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <textarea name="notify_address" id="notify_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="notify_list_btn_ff">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="notify_address" id="notify_address" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 86px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-
                                 </td>
                             </tr>
 
@@ -788,24 +794,24 @@
                                         <tbody>
                                             <tr>
                                                 <td style="width: 40%">
-                                                    
                                                     <div class="card shadow-sm shipper-card mb-2">
                                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                                             <h5 class="mb-0">
                                                                 <i class="fa-solid fa-circle-stop"></i>
-                                                                
                                                                 Shipping Marks
                                                             </h5>
                                                         </div>
 
                                                         <div class="card-body p-2">
                                                             <table class="table table-borderless align-middle m-0">
-                                                                <tbody><tr>
-                                                                    <td>
-                                                                        <textarea name="marks" id="marks" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody></table>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <textarea name="marks" id="marks" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -813,24 +819,24 @@
                                                 <td style="width: 1%;"></td>
 
                                                 <td style="width: 59%">
-                                                    
                                                     <div class="card shadow-sm consinee-card mb-2">
                                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                                             <h5 class="mb-0">
                                                                 <i class="fa-solid fa-circle-stop"></i>
-                                                                
                                                                 Cargo Description
                                                             </h5>
                                                         </div>
 
                                                         <div class="card-body p-2">
                                                             <table class="table table-borderless align-middle m-0">
-                                                                <tbody><tr>
-                                                                    <td>
-                                                                        <textarea name="description" id="description" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
-                                                                    </td>         
-                                                                </tr>
-                                                            </tbody></table>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <textarea name="description" id="description" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
+                                                                        </td>         
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -881,71 +887,90 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody id="ff_cargo_details_table_body">
-                                                        
-                                                    
-    <tr data-index="0">
-        <td class="text-center row-sl">1</td>
-        <td>
-            <input type="hidden" name="pkg_row_id[0]" id="pkg_row_id0">
+                                                        <tr data-index="0">
+                                                            <td class="text-center row-sl">1</td>
+                                                            <td>
+                                                                <input type="hidden" name="pkg_row_id[0]" id="pkg_row_id0">
 
-            <input type="text" name="gtn_inttra[0]" id="gtn_inttra0" class="form-control uppercase-only form-control-sm" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="buyer_po[0]" id="buyer_po0" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="shipper_po[0]" id="shipper_po0" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input name="article_style[0]" id="article_style0" type="text" class="form-control form-control-sm uppercase-only">
-        </td>
-        <td>
-            <input type="text" name="hs_code[0]" id="hs_code0" class="form-control form-control-sm hs_code" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="po_commodity[0]" id="po_commodity0" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input name="ff_color[0]" id="ff_color0" type="text" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="item_name[0]" id="item_name0" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="lot[0]" id="lot0" class="form-control form-control-sm uppercase-only" placeholder="">
-        </td>
-        <td>
-            <input type="text" name="pieces[0]" id="pieces0" class="form-control form-control-sm pkg" placeholder="">
-        </td>
-        <td>
-            <select name="pkg_type[0]" id="pkg_type0" class="form-select form-select-sm">
-                <option value=""></option><option value="AM">AM-Ampoule, non-protect</option><option value="AP">AP-Ampoule, protected</option><option value="BG">BG-Bag</option><option value="5L">5L-Bag, textile</option><option value="BL">BL-Bale</option><option value="BF">BF-Balloon, non-protect</option><option value="BX">BX-Box</option><option value="4A">4A-Box, steel</option><option value="BE">BE-Bundle</option><option value="CI">CI-Canister</option><option value="CO">CO-Carboy, non-protecte</option><option value="CT">CT-CARTON</option><option value="CQ">CQ-Cartridge</option><option value="CS">CS-Case</option><option value="EF">EF-Case, with pallet ba</option><option value="ED">ED-Case, with pallet ba</option><option value="CR">CR-Crate</option><option value="DR">DR-Drum</option><option value="LV">LV-Liftvan </option><option value="PK">PK-Package</option><option value="IF">IF-Package</option><option value="LS">LS-PACKAGE</option><option value="IE">IE-Package, show</option><option value="PA">PA-Packet</option><option value="PX">PX-Pallet</option><option value="PB">PB-Pallet, box</option><option value="PE">PE-Pallet, modular, col</option><option value="AG">AG-Pallet, shrinkwrappe</option><option value="PS">PS-Pieces</option><option value="PG">PG-Plate</option><option value="RO">RO-Roll</option><option value="SE">SE-SET</option><option value="SI">SI-Skid</option><option value="DW">DW-Tray, two layers no </option><option value="UN">UN-UNIT</option><option value="QH">QH-wooden BOX</option><option value="YF">YF-wooden box</option><option value="YS">YS-wooden box</option>
-            </select>
-        </td>
-        <td>
-            <input name="qty[0]" id="qty0" type="text" class="form-control form-control-sm qty">
-        </td>
-        <td>
-            <input name="weight_kg[0]" id="weight_kg0" type="text" class="form-control form-control-sm weight" placeholder="">
-        </td>
-        <td>
-            <input name="length[0]" id="length0" type="text" class="form-control form-control-sm length" placeholder="000.000">
-        </td>
-        <td>
-            <input name="width[0]" id="width0" type="text" class="form-control form-control-sm width" placeholder="000.000">
-        </td>
-        <td>
-            <input name="height[0]" id="height0" type="text" class="form-control form-control-sm height" placeholder="000.000">
-        </td>
-        <td>
-            <input type="text" name="cbm[0]" id="cbm0" class="form-control form-control-sm cbm" placeholder="">
-        </td>
-        <td class="text-center">
-            <button type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </td>
-    </tr></tbody>
+                                                                <input type="text" name="gtn_inttra[0]" id="gtn_inttra0" class="form-control uppercase-only form-control-sm" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="buyer_po[0]" id="buyer_po0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="shipper_po[0]" id="shipper_po0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input name="article_style[0]" id="article_style0" type="text" class="form-control form-control-sm uppercase-only">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="hs_code[0]" id="hs_code0" class="form-control form-control-sm hs_code" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="po_commodity[0]" id="po_commodity0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input name="ff_color[0]" id="ff_color0" type="text" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="item_name[0]" id="item_name0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="lot[0]" id="lot0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="pieces[0]" id="pieces0" class="form-control form-control-sm pkg" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <select name="pkg_type[0]" id="pkg_type0" class="form-select form-select-sm">
+                                                                    <option value=""></option>
+                                                                    <option value="AM">AM-Ampoule, non-protect</option>
+                                                                    <option value="AP">AP-Ampoule, protected</option>
+                                                                    <option value="BG">BG-Bag</option>
+                                                                    <option value="5L">5L-Bag, textile</option>
+                                                                    <option value="BL">BL-Bale</option>
+                                                                    <option value="BF">BF-Balloon, non-protect</option>
+                                                                    <option value="BX">BX-Box</option>
+                                                                    <option value="4A">4A-Box, steel</option>
+                                                                    <option value="BE">BE-Bundle</option>
+                                                                    <option value="CI">CI-Canister</option>
+                                                                    <option value="CO">CO-Carboy, non-protecte</option>
+                                                                    <option value="CT">CT-CARTON</option>
+                                                                    <option value="CQ">CQ-Cartridge</option>
+                                                                    <option value="CS">CS-Case</option>
+                                                                    <option value="EF">EF-Case, with pallet ba</option>
+                                                                    <option value="ED">ED-Case, with pallet ba</option>
+                                                                    <option value="CR">CR-Crate</option>
+                                                                    <option value="DR">DR-Drum</option>
+                                                                    <option value="LV">LV-Liftvan</option>
+                                                                    <option value="PK">PK-Package</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input name="qty[0]" id="qty0" type="text" class="form-control form-control-sm qty">
+                                                            </td>
+                                                            <td>
+                                                                <input name="weight_kg[0]" id="weight_kg0" type="text" class="form-control form-control-sm weight" placeholder="">
+                                                            </td>
+                                                            <td>
+                                                                <input name="length[0]" id="length0" type="text" class="form-control form-control-sm length" placeholder="000.000">
+                                                            </td>
+                                                            <td>
+                                                                <input name="width[0]" id="width0" type="text" class="form-control form-control-sm width" placeholder="000.000">
+                                                            </td>
+                                                            <td>
+                                                                <input name="height[0]" id="height0" type="text" class="form-control form-control-sm height" placeholder="000.000">
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" name="cbm[0]" id="cbm0" class="form-control form-control-sm cbm" placeholder="">
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <button type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
+                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
                                                     <tfoot>
                                                         <tr style="height: 27px; background: #eee; background-image: var(--osen-gradient) !important;">
                                                             <td></td>
@@ -986,50 +1011,50 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td style="width: 5%;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span>Name</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td style="width: 30%">
-                                                        <input type="text" name="file_name_by_user" id="file_name_by_user" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
-
-                                                    </td>
-                                                    <td>
-                                                        <div class="btcd-f-input">
-                                                            <div class="btcd-f-wrp">
-                                                                <button type="button" class="btcd_inp_btn">
-                                                                    <i class="fas fa-paperclip"></i> Attach Files
-                                                                </button>
-
-                                                                <span class="btcd-f-title">No File Chosen</span>
-                                                                <small class="f-max">(Max 2 MB)</small>
-
-                                                                <!-- visible input -->
-                                                                <input type="file" name="files[]" id="filePicker" class="ff_file_upload" multiple="" accept="image/*,application/pdf">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 5%;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span>Name</span>
+                                                                <span>:</span>
                                                             </div>
+                                                        </td>
+                                                        <td style="width: 30%">
+                                                            <input type="text" name="file_name_by_user" id="file_name_by_user" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
 
-                                                            <!-- hidden cloned inputs -->
-                                                            <div id="hidden_files"></div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="3">
-                                                        <!-- preview -->
-                                                        <div class="btcd-files"></div>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btcd-f-input">
+                                                                <div class="btcd-f-wrp">
+                                                                    <button type="button" class="btcd_inp_btn">
+                                                                        <i class="fas fa-paperclip"></i> Attach Files
+                                                                    </button>
+
+                                                                    <span class="btcd-f-title">No File Chosen</span>
+                                                                    <small class="f-max">(Max 2 MB)</small>
+
+                                                                    <!-- visible input -->
+                                                                    <input type="file" name="files[]" id="filePicker" class="ff_file_upload" multiple="" accept="image/*,application/pdf">
+                                                                </div>
+
+                                                                <!-- hidden cloned inputs -->
+                                                                <div id="hidden_files"></div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="3">
+                                                            <!-- preview -->
+                                                            <div class="btcd-files"></div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-
                                 </td>
                             </tr>
 
-                            
                             <tr class="border-bootom-dotted">
                                 <td colspan="3">
                                     <div class="card shadow-sm shipper-card mb-2">
@@ -1039,15 +1064,16 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td>
-                                                        <textarea name="comment" id="comment" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 100px;"></textarea>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea name="comment" id="comment" cols="30" rows="1" class="form-control uppercase-only mt2_mb1" placeholder="" autocomplete="off" style="height: 100px;"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-
                                 </td>
                             </tr>
 
@@ -1060,23 +1086,25 @@
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
-                                                <tbody><tr>
-                                                    <td style="width: 210px;">
-                                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                            <span> Save as Booking Template Name</span>
-                                                            <span>:</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" name="save_shipment_rofile" id="save_shipment_rofile" class="form-control form-control-sm uppercase-only" placeholder="Save as Booking Template Name" autocomplete="off">
-                                                    </td>
-                                                    <td style="width: 20px;">
-                                                        <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="ff_save_btn" style="height: 28px;">
-                                                            <i class="far fa-save" style="font-size: 16px;"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody></table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 210px;">
+                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                <span> Save as Booking Template Name</span>
+                                                                <span>:</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="save_shipment_rofile" id="save_shipment_rofile" class="form-control form-control-sm uppercase-only" placeholder="Save as Booking Template Name" autocomplete="off">
+                                                        </td>
+                                                        <td style="width: 20px;">
+                                                            <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="ff_save_btn" style="height: 28px;">
+                                                                <i class="far fa-save" style="font-size: 16px;"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>                                            
                                 </td>
@@ -1091,7 +1119,8 @@
                     </button>
                 </div>
             </form>
-        </div> <!-- end card-body -->
+        </div> 
+        <!-- end card body -->
     </div>
 </template>
 
@@ -1139,5 +1168,68 @@
     .table tbody tr td {
         padding: 2px;
     }
+    .package_table,
+    .items_table { 
+        border-radius: 0px;
+        margin: 0px 4px;
+    }
+    .package_table thead tr th,
+    .items_table thead tr th { 
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        padding: 1px 4px;
+    }
+    .package_table tbody tr td,
+    .items_table tbody tr td { 
+        padding: 1px;
+    }
+    .package_table tfoot tr td,
+    .items_table tfoot tr td { 
+        background: #eee;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    }
+
+
+
+
+
+.file-upload-container{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    border: 1px dashed #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f8f9fa;
+}
+.file-upload-container:hover {
+    border-color: #0d6efd;
+    background-color: #e9ecef;
+}
+
+.file-input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+}
+
+.file-upload-icon{
+    font-size:24px;
+    color:#6c757d;
+}
+.file-upload-container:hover .file-upload-icon{
+    color: #0d6efd;
+}
+
+.file-count-text{
+    font-size:14px;
+    color:#555;
+    font-weight:500;
+}
     
 </style>
+

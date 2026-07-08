@@ -1,5 +1,17 @@
 <script setup>
-    
+    import { ref } from "vue";
+
+    const fileCount = ref(0);
+    const invoiceFileCount = ref(0);
+
+    const handleFileChange = (e) => {
+        fileCount.value = e.target.files.length;
+    };
+
+    const handleInvoiceFileChange = (event) => {
+        invoiceFileCount.value = event.target.files.length;
+    };
+
 </script>
 
 <template>
@@ -15,6 +27,7 @@
                 <div class="table-responsive box-border couriar_table">
                     <table class="table table-borderless">
                         <tbody>
+                            <!--- Others Table--->
                             <tr class="border-bootom-dotted">
                                 <td colspan="3" class="">
                                     <div class="card card_children shadow-sm shipment-profile-card mb-3">
@@ -96,6 +109,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Shipper Contact Details Table--->
                             <tr class="border-bootom-dotted">
                                 <td style="width: 49.5%">
                                     <div class="card card_children shadow-sm shipper-card mb-3">
@@ -404,6 +418,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Container Packages Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm mb-3">
@@ -437,14 +452,14 @@
                                                         <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
                                                             <th style="width: 20px;">SN</th>
                                                             <th style="width: 40px;">PKG</th>
+                                                            <th style="width: 90px;">Type</th>
+                                                            <th style="width: 80px;">G.WT</th>
+                                                            <th style="width: 40px;">Type</th>
+                                                            <th style="width: 80px;">Length</th>
+                                                            <th style="width: 80px;">Width</th>
+                                                            <th style="width: 80px;">Height</th>
+                                                            <th style="width: 80px;">C.WT</th>
                                                             <th style="width: 50px;">Type</th>
-                                                            <th style="width: 63px;">G.WT</th>
-                                                            <th style="width: 40px;">Type</th>
-                                                            <th style="width: 65px;">Length</th>
-                                                            <th style="width: 65px;">Width</th>
-                                                            <th style="width: 65px;">Height</th>
-                                                            <th style="width: 65px;">C.WT</th>
-                                                            <th style="width: 40px;">Type</th>
                                                             <th>REMARK</th>
                                                             <th class="text-center" style="width: 35px;">
                                                                 <button type="button" id="pkg_add_row_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn ml4" data-bs-target="#customerModal"> 
@@ -551,6 +566,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Container Items Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm mb-3">
@@ -559,20 +575,20 @@
                                         </div>
 
                                         <div class="card-body px-1 py-2">
-                                            <div class="table-responsive package_table">
+                                            <div class="table-responsive items_table">
                                                 <table class="table table-bordered table-striped align-middle m-0">
                                                     <thead>
                                                         <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
                                                             <th style="width: 20px;">SN</th>
                                                             <th style="width: 40px;">PKG</th>
+                                                            <th style="width: 90px;">Type</th>
+                                                            <th style="width: 80px;">G.WT</th>
+                                                            <th style="width: 40px;">Type</th>
+                                                            <th style="width: 80px;">Length</th>
+                                                            <th style="width: 80px;">Width</th>
+                                                            <th style="width: 80px;">Height</th>
+                                                            <th style="width: 80px;">C.WT</th>
                                                             <th style="width: 50px;">Type</th>
-                                                            <th style="width: 63px;">G.WT</th>
-                                                            <th style="width: 40px;">Type</th>
-                                                            <th style="width: 65px;">Length</th>
-                                                            <th style="width: 65px;">Width</th>
-                                                            <th style="width: 65px;">Height</th>
-                                                            <th style="width: 65px;">C.WT</th>
-                                                            <th style="width: 40px;">Type</th>
                                                             <th>REMARK</th>
                                                             <th class="text-center" style="width: 35px;">
                                                                 <button type="button" id="pkg_add_row_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn ml4" data-bs-target="#customerModal"> 
@@ -679,6 +695,7 @@
                                 </td>
                             </tr>
 
+                             <!--- Dangerous Goods Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm dangerous-good-card mb-3">
@@ -710,15 +727,26 @@
                                                             <input type="text" name="dg_flash_point" id="dg_flash_point" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="" autocomplete="off" readonly="">
                                                         </td>
                                                         <td style="width: 20%">
-                                                            <label class="form-label">Upload File : </label>
+                                                            <label class="form-label">Upload File :</label>
                                                             <label class="file-upload-container">
-                                                                <input type="file" name="dg_file_upload[]" id="dg_file_upload" class="file-input" multiple="" readonly="" autocomplete="off">
-                                                                <span class="file-upload-icon"><i class="fas fa-cloud-upload-alt dg_file_upload_icon"></i></span>
-                                                                <span class="file-count-text file-count-dg"></span>
-                                                                <div class="drag-overlay">
-                                                                    <i class="fas fa-upload"></i>
-                                                                    <span>Drop files here</span>
-                                                                </div>
+                                                                <input
+                                                                    type="file"
+                                                                    class="file-input"
+                                                                    multiple
+                                                                    @change="handleFileChange"
+                                                                >
+
+                                                                <i
+                                                                    v-if="fileCount === 0"
+                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
+                                                                ></i>
+
+                                                                <span
+                                                                    v-else
+                                                                    class="file-count-text"
+                                                                >
+                                                                    {{ fileCount }} file(s) selected
+                                                                </span>
                                                             </label>
                                                         </td>
                                                     </tr>
@@ -729,6 +757,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Service Details Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm service-card mb-3">
@@ -742,7 +771,7 @@
                                                     <tr>
                                                         <td style="width: 34%">
                                                             <label class="form-label">Date : </label>
-                                                            <input type="text" name="service_date" id="service_date" class="form-control form-control-sm border-0 shadow flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-05 07:18:18" autocomplete="off">
+                                                            <input type="date" name="service_date" id="service_date" class="form-control form-control-sm" autocomplete="off">
                                                         </td>
                                                         <td style="width: 33%">
                                                             <label class="form-label">Services : </label>
@@ -779,6 +808,7 @@
                                 </td>
                             </tr>
 
+                             <!--- Additional Options Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm additional-card mb-3">
@@ -831,13 +861,25 @@
                                                                         </td>
                                                                         <td style="width: 28%;">
                                                                             <label class="file-upload-container">
-                                                                                <input type="file" name="invoice_upload_file[]" id="invoice_upload_file" class="file-input" multiple="" autocomplete="off">
-                                                                                <span class="file-upload-icon"><i class="fas fa-cloud-upload-alt invo_file_upload_icon"></i></span>
-                                                                                <span class="file-count-text file-count-invo"></span>
-                                                                                <div class="drag-overlay">
-                                                                                    <i class="fas fa-upload"></i>
-                                                                                    <span>Drop files here</span>
-                                                                                </div>
+                                                                                <input
+                                                                                    type="file"
+                                                                                    name="invoice_upload_file[]"
+                                                                                    class="file-input"
+                                                                                    multiple
+                                                                                    @change="handleInvoiceFileChange"
+                                                                                >
+
+                                                                                <i
+                                                                                    v-if="invoiceFileCount === 0"
+                                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
+                                                                                ></i>
+
+                                                                                <span
+                                                                                    v-else
+                                                                                    class="file-count-text"
+                                                                                >
+                                                                                    {{ invoiceFileCount }} file(s) selected
+                                                                                </span>
                                                                             </label>
                                                                         </td>
                                                                     </tr>
@@ -878,6 +920,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Pickup/Drop-off Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm pickup-drop-off-card mb-3">
@@ -910,7 +953,7 @@
                                                         </td>
                                                         <td style="width: 35%;">
                                                             <div class="input-group">
-                                                                <input type="text" name="picup_drop_off_date" id="picup_drop_off_date" class="form-control form-control-sm border-0 shadow flatpickr-input" data-provider="flatpickr" data-date-format="d-M-Y" value="2026-07-05 07:18:18" autocomplete="off">
+                                                                <input type="date" name="picup_drop_off_date" id="picup_drop_off_date" class="form-control form-control-sm" data-date-format="d-M-Y" autocomplete="off">
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -1008,6 +1051,7 @@
                                 </td>
                             </tr>
 
+                            <!--- Billing Details Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm billing-card mb-3">
@@ -1050,7 +1094,7 @@
                                 </td>
                             </tr>
 
-
+                            <!--- Save Shipment Profile Name Table--->
                             <tr id="saveShipmentRow">
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm billing-card mb-3">
@@ -1083,6 +1127,7 @@
                                     </div>                                            
                                 </td>
                             </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -1142,5 +1187,67 @@
     .table tbody tr td {
         padding: 2px;
     }
+    .package_table,
+    .items_table { 
+        border-radius: 0px;
+        margin: 0px 4px;
+    }
+    .package_table thead tr th,
+    .items_table thead tr th { 
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        padding: 1px 4px;
+    }
+    .package_table tbody tr td,
+    .items_table tbody tr td { 
+        padding: 1px;
+    }
+    .package_table tfoot tr td,
+    .items_table tfoot tr td { 
+        background: #eee;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+    }
+
+
+
+
+
+.file-upload-container{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 30px;
+    border: 1px dashed #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f8f9fa;
+}
+.file-upload-container:hover {
+    border-color: #0d6efd;
+    background-color: #e9ecef;
+}
+
+.file-input{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor:pointer;
+}
+
+.file-upload-icon{
+    font-size:24px;
+    color:#6c757d;
+}
+.file-upload-container:hover .file-upload-icon{
+    color: #0d6efd;
+}
+
+.file-count-text{
+    font-size:14px;
+    color:#555;
+    font-weight:500;
+}
     
 </style>
