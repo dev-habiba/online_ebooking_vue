@@ -1,5 +1,17 @@
 <script setup>
-    import { ref } from "vue";
+    import { ref, computed } from 'vue';
+
+    import BaseModal from '@/shared/components/modal/BaseModal.vue';
+    import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
+
+    import { useToast } from "vue-toastification"; // Toast call
+
+    const toast = useToast();
+
+    const showCustModal = ref(false)
+
+    //---- Dangerous Goods Check Box -----//
+    const isDgChecked = ref(false); 
 
     const fileCount = ref(0);
     const invoiceFileCount = ref(0);
@@ -12,6 +24,220 @@
         invoiceFileCount.value = event.target.files.length;
     };
 
+
+
+
+
+
+    const validateNumber = (row, field, event) => {
+        let value = event.target.value;
+
+        // ১. শুধুমাত্র সংখ্যা এবং একটি দশমিক (.) বাদে বাকি সব ক্যারেক্টার মুছে ফেলবে
+        value = value.replace(/[^0-9.]/g, '');
+
+        // ২. একের অধিক দশমিক (.) ইনপুট দিলে তা আটকে দেবে
+        const parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        // ৩. রো-এর নির্দিষ্ট ফিল্ডে ফিল্টার করা ভ্যালুটি অ্যাসাইন করবে
+        row[field] = value;
+
+        // চার্জেবল ওয়েট আপডেট করার জন্য ফাংশনটি কল করবে
+        calculateItemChargeableWeight(row);
+    };
+
+
+
+
+    // ১. প্যাকেজ টাইপ অপশনগুলোর লিস্ট
+    const pkgTypes = [
+    { value: 'AM', label: 'AM-Ampoule, non-protect' },
+    { value: 'AP', label: 'AP-Ampoule, protected' },
+    { value: 'BG', label: 'BG-Bag' },
+    { value: '5L', label: '5L-Bag, textile' },
+    { value: 'BL', label: 'BL-Bale' },
+    { value: 'BF', label: 'BF-Balloon, non-protect' },
+    { value: 'BX', label: 'BX-Box' },
+    { value: '4A', label: '4A-Box, steel' },
+    { value: 'BE', label: 'BE-Bundle' },
+    { value: 'CI', label: 'CI-Canister' },
+    { value: 'CO', label: 'CO-Carboy, non-protecte' },
+    { value: 'CT', label: 'CT-CARTON' },
+    { value: 'CQ', label: 'CQ-Cartridge' },
+    { value: 'CS', label: 'CS-Case' },
+    { value: 'EF', label: 'EF-Case, with pallet ba' },
+    { value: 'ED', label: 'ED-Case, with pallet ba' },
+    { value: 'CR', label: 'CR-Crate' }
+    ];
+
+    // ২. Rows Reactive Data (ডিফল্ট ১টি রো থাকবে)
+    const rows = ref([
+    {
+        qty: 1,
+        type: '',
+        weight: 0,
+        weightType: 'kg',
+        length: 0,
+        width: 0,
+        height: 0,
+        chargeableWeight: 0,
+        dimensionType: 'cm',
+        remarks: ''
+    }
+    ]);
+
+    // ৩. নতুন রো অ্যাড করার ফাংশন
+    const addRowPKGbtn = () => {
+    rows.value.push({
+        qty: 1,
+        type: '',
+        weight: 0,
+        weightType: 'kg',
+        length: 0,
+        width: 0,
+        height: 0,
+        chargeableWeight: 0,
+        dimensionType: 'cm',
+        remarks: ''
+    });
+    };
+
+    // ৪. রো ডিলিট করার ফাংশন
+    const deleteRow = (index) => {
+    if (rows.value.length > 1) {
+        rows.value.splice(index, 1);
+    } else {
+        toast.error("There must be at least one row!", {position: "top-right", timeout: 3000,});
+    }
+    };
+
+    // ৫. চার্জেবল ওয়েট ক্যালকুলেশন (উদাহরণস্বরূপ Volume Weight এর লজিক দেওয়া হলো)
+    // আপনি আপনার লজিক অনুযায়ী এটি পরিবর্তন করতে পারেন
+    const calculateChargeableWeight = (row) => {
+    if (row.length && row.width && row.height && row.qty) {
+        // Air Freight Standard Volumetric formula: (L * W * H) / 6000 * Qty
+        const volWeight = ((parseFloat(row.length) * parseFloat(row.width) * parseFloat(row.height)) / 6000) * parseInt(row.qty);
+        const grossWeight = parseFloat(row.weight) || 0;
+        row.chargeableWeight = Math.max(grossWeight, volWeight).toFixed(3);
+    } else {
+        row.chargeableWeight = (parseFloat(row.weight) || 0).toFixed(3);
+    }
+    };
+
+    // ৬. ফুটারের জন্য টোটাল হিসাব (Computed Properties)
+    const totalQty = computed(() => {
+    return rows.value.reduce((sum, row) => sum + (parseInt(row.qty) || 0), 0);
+    });
+
+    const totalWeight = computed(() => {
+    return rows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
+    });
+
+    const totalChargeableWeight = computed(() => {
+    return rows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+    // ১. আইটেম টাইপ অপশনগুলোর লিস্ট
+    const itemPkgTypes = [
+    { value: 'AM', label: 'AM-Ampoule, non-protect' },
+    { value: 'AP', label: 'AP-Ampoule, protected' },
+    { value: 'BG', label: 'BG-Bag' },
+    { value: '5L', label: '5L-Bag, textile' },
+    { value: 'BL', label: 'BL-Bale' },
+    { value: 'BF', label: 'BF-Balloon, non-protect' },
+    { value: 'BX', label: 'BX-Box' },
+    { value: '4A', label: '4A-Box, steel' },
+    { value: 'BE', label: 'BE-Bundle' },
+    { value: 'CI', label: 'CI-Canister' },
+    { value: 'CO', label: 'CO-Carboy, non-protecte' },
+    { value: 'CT', label: 'CT-CARTON' },
+    { value: 'CQ', label: 'CQ-Cartridge' },
+    { value: 'CS', label: 'CS-Case' },
+    { value: 'EF', label: 'EF-Case, with pallet ba' },
+    { value: 'ED', label: 'ED-Case, with pallet ba' },
+    { value: 'CR', label: 'CR-Crate' }
+    ];
+
+    // ২. Items Reactive Data (ডিফল্ট ১টি রো থাকবে)
+    const itemRows = ref([
+    {
+        qty: 1,
+        type: '',
+        weight: 0,
+        weightType: 'kg',
+        length: 0,
+        width: 0,
+        height: 0,
+        chargeableWeight: 0,
+        dimensionType: 'cm',
+        remarks: ''
+    }
+    ]);
+
+    // ৩. নতুন আইটেম রো অ্যাড করার ফাংশন
+    const addItemRow = () => {
+    itemRows.value.push({
+        qty: 1,
+        type: '',
+        weight: 0,
+        weightType: 'kg',
+        length: 0,
+        width: 0,
+        height: 0,
+        chargeableWeight: 0,
+        dimensionType: 'cm',
+        remarks: ''
+    });
+    };
+
+    // ৪. আইটেম রো ডিলিট করার ফাংশন
+    const deleteItemRow = (index) => {
+    if (itemRows.value.length > 1) {
+        itemRows.value.splice(index, 1);
+    } else {
+        toast.error("There must be at least one row!", {position: "top-right", timeout: 3000,});
+    }
+    };
+
+    // ৫. চার্জেবল ওয়েট ক্যালকুলেশন লজিক
+    const calculateItemChargeableWeight = (row) => {
+    if (row.length && row.width && row.height && row.qty) {
+        // Volumetric formula: (L * W * H) / 6000 * Qty
+        const volWeight = ((parseFloat(row.length) * parseFloat(row.width) * parseFloat(row.height)) / 6000) * parseInt(row.qty);
+        const grossWeight = parseFloat(row.weight) || 0;
+        row.chargeableWeight = Math.max(grossWeight, volWeight).toFixed(3);
+    } else {
+        row.chargeableWeight = (parseFloat(row.weight) || 0).toFixed(3);
+    }
+    };
+
+    // ৬. ফুটারের জন্য টোটাল হিসাব (Computed Properties)
+    const totalItemQty = computed(() => {
+    return itemRows.value.reduce((sum, row) => sum + (parseInt(row.qty) || 0), 0);
+    });
+
+    const totalItemWeight = computed(() => {
+    return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
+    });
+
+    const totalItemChargeableWeight = computed(() => {
+    return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
+    });
+
+
 </script>
 
 <template>
@@ -19,7 +245,6 @@
         <div class="card-header border-bottom dot_border bg-gradient d-flex align-items-center">
             <h5 class="header-title"> <i class="fa-solid fa-truck-fast"></i> COURIER BOOKINGS </h5>
         </div>
-
         
         <div class="card-body">
             <form id="courier_booking_form" method="POST" action="http://cargoaimonline.test/my_bookings/courier" enctype="multipart/form-data" autocomplete="off">
@@ -109,8 +334,9 @@
                                 </td>
                             </tr>
 
-                            <!--- Shipper Contact Details Table--->
+                            <!--- Shipper and Consignee Contact Details Table--->
                             <tr class="border-bootom-dotted">
+                                <!--- Shipper Contact Details Table--->
                                 <td style="width: 49.5%">
                                     <div class="card card_children shadow-sm shipper-card mb-3">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
@@ -121,7 +347,7 @@
                                             <button type="button" id="save_shipper_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient">
                                                 <i class="far fa-save" style="font-size: 16px;"></i>
                                             </button>
-                                        </div>
+                                        </div> 
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
@@ -139,7 +365,7 @@
 
                                                                 <input type="text" name="shipper_name" id="shipper_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name">
 
-                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_id">
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
                                                                 </button>
                                                             </div>
@@ -265,6 +491,7 @@
 
                                 <td style="width: 1%;"></td>
 
+                                <!--- Consignee Contact Details Table--->
                                 <td style="width: 49.5%">
                                     <div class="card card_children shadow-sm consinee-card mb-3">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
@@ -293,7 +520,7 @@
                                                             
                                                                 <input type="text" name="consignee_name" id="consignee_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
 
-                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="consignee_list_id">
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="consignee_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
                                                                 </button>
                                                             </div>
@@ -449,115 +676,96 @@
                                             <div class="table-responsive package_table">
                                                 <table class="table table-bordered table-striped align-middle m-0">
                                                     <thead>
-                                                        <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
-                                                            <th style="width: 20px;">SN</th>
-                                                            <th style="width: 40px;">PKG</th>
-                                                            <th style="width: 90px;">Type</th>
-                                                            <th style="width: 80px;">G.WT</th>
-                                                            <th style="width: 40px;">Type</th>
-                                                            <th style="width: 80px;">Length</th>
-                                                            <th style="width: 80px;">Width</th>
-                                                            <th style="width: 80px;">Height</th>
-                                                            <th style="width: 80px;">C.WT</th>
-                                                            <th style="width: 50px;">Type</th>
-                                                            <th>REMARK</th>
-                                                            <th class="text-center" style="width: 35px;">
-                                                                <button type="button" id="pkg_add_row_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn ml4" data-bs-target="#customerModal"> 
-                                                                    <i class="fa-solid fa-square-plus"></i>
-                                                                </button>
-                                                            </th>
-                                                        </tr>
+                                                    <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
+                                                        <th style="width: 20px;">SN</th>
+                                                        <th style="width: 40px;">PKG</th>
+                                                        <th style="width: 120px;">Type</th>
+                                                        <th style="width: 90px;">G.WT</th>
+                                                        <th style="width: 40px;">Type</th>
+                                                        <th style="width: 90px;">Length</th>
+                                                        <th style="width: 90px;">Width</th>
+                                                        <th style="width: 90px;">Height</th>
+                                                        <th style="width: 110px;">C.WT</th>
+                                                        <th style="width: 50px;">Type</th>
+                                                        <th>REMARK</th>
+                                                        <th class="text-center" style="width: 35px;">
+                                                        <button @click="addRowPKGbtn" type="button" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn"> 
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
+                                                        </th>
+                                                    </tr>
                                                     </thead>
-                                                    <tbody id="pkg_details_table_body">
-                                                        <tr data-index="0">
-                                                            <td class="text-center row-sl">1</td>
-                                                            <td>
-                                                                <input type="hidden" name="pkg_row_id[0]" id="pkg_row_id0">
-
-                                                                <input name="doc_page_pkg_pkg_qty[0]" id="doc_page_pkg_pkg_qty0" type="text" class="form-control form-control-sm doc_page_pkg_pkg_qty" placeholder="" value="1">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_pkg_type[0]" id="doc_page_pkg_pkg_type0" class="form-select form-select-sm">
-                                                                    <option value=""></option>
-                                                                    <option value="AM">AM-Ampoule, non-protect</option>
-                                                                    <option value="AP">AP-Ampoule, protected</option>
-                                                                    <option value="BG">BG-Bag</option>
-                                                                    <option value="5L">5L-Bag, textile</option>
-                                                                    <option value="BL">BL-Bale</option>
-                                                                    <option value="BF">BF-Balloon, non-protect</option>
-                                                                    <option value="BX">BX-Box</option>
-                                                                    <option value="4A">4A-Box, steel</option>
-                                                                    <option value="BE">BE-Bundle</option>
-                                                                    <option value="CI">CI-Canister</option>
-                                                                    <option value="CO">CO-Carboy, non-protecte</option>
-                                                                    <option value="CT">CT-CARTON</option>
-                                                                    <option value="CQ">CQ-Cartridge</option>
-                                                                    <option value="CS">CS-Case</option>
-                                                                    <option value="EF">EF-Case, with pallet ba</option>
-                                                                    <option value="ED">ED-Case, with pallet ba</option>
-                                                                    <option value="CR">CR-Crate</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_weight[0]" id="doc_page_pkg_weight0" type="text" class="form-control form-control-sm doc_page_pkg_weight" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_weight_type[0]" id="doc_page_pkg_weight_type0" class="form-select form-select-sm">
-                                                                    <option value="kg">kg</option>
-                                                                    <option value="lb">lb</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_length[0]" id="doc_page_pkg_length0" type="text" class="form-control form-control-sm length" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_width[0]" id="doc_page_pkg_width0" type="text" class="form-control form-control-sm width" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_height[0]" id="doc_page_pkg_height0" type="text" class="form-control form-control-sm height" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_chargeable_weight[0]" id="doc_page_pkg_chargeable_weight0" type="text" class="form-control form-control-sm doc_page_pkg_chargeable_weight" placeholder="0.000" readonly="">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_dimension_type[0]" id="doc_page_pkg_dimension_type0" class="form-select form-select-sm">
-                                                                    <option value="cm">cm</option>
-                                                                    <option value="in">in</option>
-                                                                    <option value="mm">mm</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="doc_page_pkg_remarks[0]" id="doc_page_pkg_remarks0" cols="30" rows="1" class="form-control form-control-sm uppercase-only" style="min-height: 28px !important;"></textarea>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <button type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
-                                                                    <i class="fa-solid fa-xmark"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
+                                                    
+                                                    <tbody>
+                                                    <tr v-for="(row, index) in rows" :key="index" :data-index="index">
+                                                        <td class="text-center row-sl">{{ index + 1 }}</td>
+                                                        <td>
+                                                        <input v-model="row.qty" @input="validateNumber(row, 'qty', $event)" type="text" class="form-control form-control-sm text-center">
+                                                        </td>
+                                                        <td>
+                                                        <slot>
+                                                            <select v-model="row.type" class="form-select form-select-sm">
+                                                            <option value=""></option>
+                                                            <option v-for="type in pkgTypes" :key="type.value" :value="type.value">
+                                                                {{ type.label }}
+                                                            </option>
+                                                            </select>
+                                                        </slot>
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.weight" @input="validateNumber(row, 'weight', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <select v-model="row.weightType" class="form-select form-select-sm">
+                                                            <option value="kg">kg</option>
+                                                            <option value="lb">lb</option>
+                                                        </select>
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.length" @input="validateNumber(row, 'length', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.width" @input="validateNumber(row, 'width', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.height" @input="validateNumber(row, 'height', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <input :value="row.chargeableWeight" type="text" class="form-control form-control-sm" placeholder="0.000" readonly>
+                                                        </td>
+                                                        <td>
+                                                        <select v-model="row.dimensionType" class="form-select form-select-sm">
+                                                            <option value="cm">cm</option>
+                                                            <option value="in">in</option>
+                                                            <option value="mm">mm</option>
+                                                        </select>
+                                                        </td>
+                                                        <td>
+                                                        <textarea v-model="row.remarks" cols="30" rows="1" class="form-control form-control-sm text-uppercase" style="min-height: 28px !important;"></textarea>
+                                                        </td>
+                                                        <td class="text-center">
+                                                        <button @click="deleteRow(index)" type="button" class="btn btn-danger btn-cargoaim btn-sm">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                        </td>
+                                                    </tr>
                                                     </tbody>
 
                                                     <tfoot>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td>
-                                                                <span id="total_pkg_qty">0</span>
-                                                            </td>
-                                                            <td class="text-end"></td>
-                                                            <td>
-                                                                <span id="total_pkg_weight">0</span>
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <span id="total_pkg_chargeable_weight">0</span>
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td class="text-center"><strong>{{ totalQty }}</strong></td>
+                                                        <td></td>
+                                                        <td><strong>{{ totalWeight }}</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td><strong>{{ totalChargeableWeight }}</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
@@ -578,115 +786,94 @@
                                             <div class="table-responsive items_table">
                                                 <table class="table table-bordered table-striped align-middle m-0">
                                                     <thead>
-                                                        <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
-                                                            <th style="width: 20px;">SN</th>
-                                                            <th style="width: 40px;">PKG</th>
-                                                            <th style="width: 90px;">Type</th>
-                                                            <th style="width: 80px;">G.WT</th>
-                                                            <th style="width: 40px;">Type</th>
-                                                            <th style="width: 80px;">Length</th>
-                                                            <th style="width: 80px;">Width</th>
-                                                            <th style="width: 80px;">Height</th>
-                                                            <th style="width: 80px;">C.WT</th>
-                                                            <th style="width: 50px;">Type</th>
-                                                            <th>REMARK</th>
-                                                            <th class="text-center" style="width: 35px;">
-                                                                <button type="button" id="pkg_add_row_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn ml4" data-bs-target="#customerModal"> 
-                                                                    <i class="fa-solid fa-square-plus"></i>
-                                                                </button>
-                                                            </th>
-                                                        </tr>
+                                                    <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
+                                                        <th style="width: 20px;">SN</th>
+                                                        <th style="width: 40px;">PKG</th>
+                                                        <th style="width: 120px;">Type</th>
+                                                        <th style="width: 90px;">G.WT</th>
+                                                        <th style="width: 40px;">Type</th>
+                                                        <th style="width: 90px;">Length</th>
+                                                        <th style="width: 90px;">Width</th>
+                                                        <th style="width: 90px;">Height</th>
+                                                        <th style="width: 110px;">C.WT</th>
+                                                        <th style="width: 50px;">Type</th>
+                                                        <th>REMARK</th>
+                                                        <th class="text-center" style="width: 35px;">
+                                                        <button @click="addItemRow" type="button" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn item_row_add_btn"> 
+                                                            <i class="fa-solid fa-plus"></i>
+                                                        </button>
+                                                        </th>
+                                                    </tr>
                                                     </thead>
-                                                    <tbody id="pkg_details_table_body">
-                                                        <tr data-index="0">
-                                                            <td class="text-center row-sl">1</td>
-                                                            <td>
-                                                                <input type="hidden" name="pkg_row_id[0]" id="pkg_row_id0">
-
-                                                                <input name="doc_page_pkg_pkg_qty[0]" id="doc_page_pkg_pkg_qty0" type="text" class="form-control form-control-sm doc_page_pkg_pkg_qty" placeholder="" value="1">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_pkg_type[0]" id="doc_page_pkg_pkg_type0" class="form-select form-select-sm">
-                                                                    <option value=""></option>
-                                                                    <option value="AM">AM-Ampoule, non-protect</option>
-                                                                    <option value="AP">AP-Ampoule, protected</option>
-                                                                    <option value="BG">BG-Bag</option>
-                                                                    <option value="5L">5L-Bag, textile</option>
-                                                                    <option value="BL">BL-Bale</option>
-                                                                    <option value="BF">BF-Balloon, non-protect</option>
-                                                                    <option value="BX">BX-Box</option>
-                                                                    <option value="4A">4A-Box, steel</option>
-                                                                    <option value="BE">BE-Bundle</option>
-                                                                    <option value="CI">CI-Canister</option>
-                                                                    <option value="CO">CO-Carboy, non-protecte</option>
-                                                                    <option value="CT">CT-CARTON</option>
-                                                                    <option value="CQ">CQ-Cartridge</option>
-                                                                    <option value="CS">CS-Case</option>
-                                                                    <option value="EF">EF-Case, with pallet ba</option>
-                                                                    <option value="ED">ED-Case, with pallet ba</option>
-                                                                    <option value="CR">CR-Crate</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_weight[0]" id="doc_page_pkg_weight0" type="text" class="form-control form-control-sm doc_page_pkg_weight" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_weight_type[0]" id="doc_page_pkg_weight_type0" class="form-select form-select-sm">
-                                                                    <option value="kg">kg</option>
-                                                                    <option value="lb">lb</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_length[0]" id="doc_page_pkg_length0" type="text" class="form-control form-control-sm length" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_width[0]" id="doc_page_pkg_width0" type="text" class="form-control form-control-sm width" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_height[0]" id="doc_page_pkg_height0" type="text" class="form-control form-control-sm height" placeholder="0.000">
-                                                            </td>
-                                                            <td>
-                                                                <input name="doc_page_pkg_chargeable_weight[0]" id="doc_page_pkg_chargeable_weight0" type="text" class="form-control form-control-sm doc_page_pkg_chargeable_weight" placeholder="0.000" readonly="">
-                                                            </td>
-                                                            <td>
-                                                                <select name="doc_page_pkg_dimension_type[0]" id="doc_page_pkg_dimension_type0" class="form-select form-select-sm">
-                                                                    <option value="cm">cm</option>
-                                                                    <option value="in">in</option>
-                                                                    <option value="mm">mm</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="doc_page_pkg_remarks[0]" id="doc_page_pkg_remarks0" cols="30" rows="1" class="form-control form-control-sm uppercase-only" style="min-height: 28px !important;"></textarea>
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <button type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
-                                                                    <i class="fa-solid fa-xmark"></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
+                                                    
+                                                    <tbody>
+                                                    <tr v-for="(row, index) in itemRows" :key="index" :data-index="index">
+                                                        <td class="text-center row-sl">{{ index + 1 }}</td>
+                                                        <td>
+                                                        <input v-model.number="row.qty" @input="calculateItemChargeableWeight(row)" type="text" class="form-control form-control-sm text-center">
+                                                        </td>
+                                                        <td>
+                                                        <select v-model="row.type" class="form-select form-select-sm">
+                                                            <option value=""></option>
+                                                            <option v-for="type in itemPkgTypes" :key="type.value" :value="type.value">
+                                                            {{ type.label }}
+                                                            </option>
+                                                        </select>
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.weight" @input="validateNumber(row, 'weight', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <select v-model="row.weightType" class="form-select form-select-sm">
+                                                            <option value="kg">kg</option>
+                                                            <option value="lb">lb</option>
+                                                        </select>
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.length" @input="validateNumber(row, 'length', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <input v-model="row.width" @input="validateNumber(row, 'width', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                            <input v-model="row.height" @input="validateNumber(row, 'height', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                        </td>
+                                                        <td>
+                                                        <input :value="row.chargeableWeight" type="text" class="form-control form-control-sm" placeholder="0.000" readonly>
+                                                        </td>
+                                                        <td>
+                                                        <select v-model="row.dimensionType" class="form-select form-select-sm">
+                                                            <option value="cm">cm</option>
+                                                            <option value="in">in</option>
+                                                            <option value="mm">mm</option>
+                                                        </select>
+                                                        </td>
+                                                        <td>
+                                                        <textarea v-model="row.remarks" cols="30" rows="1" class="form-control form-control-sm text-uppercase" style="min-height: 28px !important;"></textarea>
+                                                        </td>
+                                                        <td class="text-center">
+                                                        <button @click="deleteItemRow(index)" type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
+                                                            <i class="fa-solid fa-xmark"></i>
+                                                        </button>
+                                                        </td>
+                                                    </tr>
                                                     </tbody>
 
                                                     <tfoot>
-                                                        <tr>
-                                                            <td></td>
-                                                            <td>
-                                                                <span id="total_pkg_qty">0</span>
-                                                            </td>
-                                                            <td class="text-end"></td>
-                                                            <td>
-                                                                <span id="total_pkg_weight">0</span>
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td>
-                                                                <span id="total_pkg_chargeable_weight">0</span>
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td class="text-center"><strong>{{ totalItemQty }}</strong></td>
+                                                        <td></td>
+                                                        <td><strong>{{ totalItemWeight }}</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td><strong>{{ totalItemChargeableWeight }}</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
@@ -695,14 +882,16 @@
                                 </td>
                             </tr>
 
-                             <!--- Dangerous Goods Table--->
+                            <!--- Dangerous Goods Table--->
                             <tr>
                                 <td colspan="3">
                                     <div class="card card_children shadow-sm dangerous-good-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center gap-2">
-                                                <h5 class="header_title_children mb-0"><i class="fa-solid fa-triangle-exclamation text-warning"></i> Dangerous Goods</h5>
-                                                <input type="checkbox" id="dg" name="dg" value="Bike" title="Dangerous Goods">
+                                                <h5 class="header_title_children mb-0">
+                                                    <i class="fa-solid fa-triangle-exclamation text-warning"></i> Dangerous Goods
+                                                </h5>
+                                                <input type="checkbox" id="dg" name="dg" value="Bike" title="Dangerous Goods" v-model="isDgChecked">
                                             </div>
                                         </div>
 
@@ -712,39 +901,43 @@
                                                     <tr>
                                                         <td style="width: 20%">
                                                             <label class="form-label">IMO Class : </label>
-                                                            <input type="text" name="dg_imo_class" id="dg_imo_class" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="" autocomplete="off" readonly="">
+                                                            <input type="text" name="dg_imo_class" id="dg_imo_class" 
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
+                                                                placeholder="" autocomplete="off" 
+                                                                :disabled="!isDgChecked" 
+                                                                :required="isDgChecked">
                                                         </td>
                                                         <td style="width: 20%">
                                                             <label class="form-label">UN NO : </label>
-                                                            <input type="text" name="dg_un_no" id="dg_un_no" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="" autocomplete="off" readonly="">
+                                                            <input type="text" name="dg_un_no" id="dg_un_no" 
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
+                                                                placeholder="" autocomplete="off" 
+                                                                :disabled="!isDgChecked" 
+                                                                :required="isDgChecked">
                                                         </td>
                                                         <td style="width: 20%">
                                                             <label class="form-label">Package Group : </label>
-                                                            <input type="text" name="dg_pkg_group" id="dg_pkg_group" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="" autocomplete="off" readonly="">
+                                                            <input type="text" name="dg_pkg_group" id="dg_pkg_group" 
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
+                                                                placeholder="" autocomplete="off" 
+                                                                :disabled="!isDgChecked" 
+                                                                :required="isDgChecked">
                                                         </td>
                                                         <td style="width: 20%">
                                                             <label class="form-label">Flash Point : </label>
-                                                            <input type="text" name="dg_flash_point" id="dg_flash_point" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="" autocomplete="off" readonly="">
+                                                            <input type="text" name="dg_flash_point" id="dg_flash_point" 
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
+                                                                placeholder="" autocomplete="off" 
+                                                                :disabled="!isDgChecked" 
+                                                                :required="isDgChecked">
                                                         </td>
                                                         <td style="width: 20%">
                                                             <label class="form-label">Upload File :</label>
-                                                            <label class="file-upload-container">
-                                                                <input
-                                                                    type="file"
-                                                                    class="file-input"
-                                                                    multiple
-                                                                    @change="handleFileChange"
-                                                                >
+                                                            <label class="file-upload-container" :style="!isDgChecked ? 'pointer-events: none; opacity: 0.5;' : ''">
+                                                                <input type="file" class="file-input" multiple @change="handleFileChange" :disabled="!isDgChecked">
 
-                                                                <i
-                                                                    v-if="fileCount === 0"
-                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
-                                                                ></i>
-
-                                                                <span
-                                                                    v-else
-                                                                    class="file-count-text"
-                                                                >
+                                                                <i v-if="fileCount === 0" class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                                                                <span v-else class="file-count-text">
                                                                     {{ fileCount }} file(s) selected
                                                                 </span>
                                                             </label>
@@ -1127,7 +1320,6 @@
                                     </div>                                            
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                 </div>
@@ -1140,7 +1332,16 @@
             </form>
         </div> <!-- end card-body -->
     </div> 
-        <!-- end card-->
+    <!-- end card-->
+
+
+    <!-- Create modal start -->
+    <BaseModal v-model:modalValue="showCustModal" :closeOnBackdrop="false" position="top" width="1380px" height="auto" padding="0px">
+        <template #body>
+            <CustListModal />
+        </template>
+    </BaseModal>
+
 </template>
 
 <style scoped>
@@ -1189,13 +1390,16 @@
     }
     .package_table,
     .items_table { 
-        border-radius: 0px;
+        border-radius: 4px;
+        border: 2px solid #ddd;
         margin: 0px 4px;
     }
     .package_table thead tr th,
     .items_table thead tr th { 
+        background: #4483B4!important;
+        color: #FFFFFF;
         font-weight: 400;
-        letter-spacing: 0.5px;
+        /* letter-spacing: 0.5px; */
         padding: 1px 4px;
     }
     .package_table tbody tr td,
@@ -1212,42 +1416,45 @@
 
 
 
-.file-upload-container{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 30px;
-    border: 1px dashed #6c757d;
-    border-radius: 8px;
-    cursor: pointer;
-    background: #f8f9fa;
-}
-.file-upload-container:hover {
-    border-color: #0d6efd;
-    background-color: #e9ecef;
-}
+    .file-upload-container{
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 30px;
+        border: 1px dashed #6c757d;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #f8f9fa;
+    }
+    .file-upload-container:hover {
+        border-color: #0d6efd;
+        background-color: #e9ecef;
+    }
 
-.file-input{
-    position:absolute;
-    inset:0;
-    opacity:0;
-    cursor:pointer;
-}
+    .file-input{
+        position:absolute;
+        inset:0;
+        opacity:0;
+        cursor:pointer;
+    }
 
-.file-upload-icon{
-    font-size:24px;
-    color:#6c757d;
-}
-.file-upload-container:hover .file-upload-icon{
-    color: #0d6efd;
-}
+    .file-upload-icon{
+        font-size:24px;
+        color:#6c757d;
+    }
+    .file-upload-container:hover .file-upload-icon{
+        color: #0d6efd;
+    }
 
-.file-count-text{
-    font-size:14px;
-    color:#555;
-    font-weight:500;
-}
+    .file-count-text{
+        font-size:14px;
+        color:#555;
+        font-weight:500;
+    }
+
+
+
     
 </style>

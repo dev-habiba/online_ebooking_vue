@@ -346,13 +346,6 @@
 </template>
 
 
-
-
-
-
-
-
-
 <style lang="css" scoped>
   :global(.modal-header:has(.filing-modal-header-title)) {
       background-color: #eee9fd !important;
