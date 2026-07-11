@@ -1,38 +1,72 @@
 <script setup>
-    
+import { ref } from "vue";
+
+const createRow = () => ({
+    gtn_inttra: "",
+    buyer_po: "",
+    shipper_po: "",
+    article_style: "",
+    hs_code: "",
+    po_commodity: "",
+    ff_color: "",
+    item_name: "",
+    lot: "",
+    pieces: "",
+    pkg_type: "",
+    qty: "",
+    weight_kg: "",
+    length: "",
+    width: "",
+    height: "",
+    cbm: "",
+});
+
+const cargoRows = ref([createRow()]);
+
+const addRow = () => {
+    cargoRows.value.push(createRow());
+};
+
+const deleteRow = (index) => {
+    if (cargoRows.value.length === 1) return;
+
+    cargoRows.value.splice(index, 1);
+};
 </script>
 
 <template>
     <div class="card booking_card">
         <div class="card-header border-bottom dot_border bg-gradient d-flex align-items-center">
-            <h2 class="header-title"><i class="fa-regular fa-truck"></i> FREIGHT FORWARDING</h2>
+            <h2 class="header-title"><i class="fa-solid fa-ship"></i> FREIGHT FORWARDING</h2>
         </div>
 
         <div class="card-body px-3">
             <form id="freight_forwarding_form" method="POST" action="http://cargoaimonline.test/my_bookings/freight_forwarding" enctype="multipart/form-data">
                 <input type="hidden" name="_token" value="kuH21cVpWbukw6QsAKgnELktNasP9gTsgtgfzotL" autocomplete="off">                        <div class="table-responsive box-border couriar_table">
-                    <table class="table table-borderless">
+                    <table class="table table-borderless" style="width: 100%;">
                         <tbody>
                             <tr class="border-bootom-dotted">
                                 <td colspan="3" class="">
                                     <div class="card card_children shadow-sm shipment-profile-card mb-2">
                                         <div class="card-header bg-light bg-gradient py-1 d-flex justify-content-between align-items-center">
-                                            <h5 class="header-title mb-0"><i class="fa-solid fa-house"></i></h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-house"></i></h5>
                                             <h5 class="hbl_show mb-0"> </h5>
                                         </div>
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 35%">
+                                                        <td style="width: 19%">
                                                             <label class="form-label"> Load Form Booking Template : </label>
-                                                            <select name="ff_shipment_profile" id="ff_shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
+                                                        </td>
+                                                        <td>
+                                                            <select name="ff_shipment_profile" id="ff_shipment_profile" class="form-select form-select-sm" autocomplete="off" style="width: 400px">
+                                                                <option value=""></option>
                                                                 <option value="TEST FF">
                                                                     TEST FF
                                                                 </option>
                                                             </select>
                                                         </td>
-                                                        <td></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -43,9 +77,9 @@
 
                             <tr class="border-bootom-dotted">
                                 <td style="width: 60%">
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
+                                            <h5 class="header_title_children mb-0">
                                                 <i class="fa-solid fa-receipt"></i>
                                                 Booking Type
                                             </h5>
@@ -161,9 +195,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
+                                            <h5 class="header_title_children mb-0">
                                                 <i class="fa-solid fa-ship"></i>
                                                 Port Pairs
                                             </h5>
@@ -309,9 +343,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
+                                            <h5 class="header_title_children mb-0">
                                                 <i class="fa-brands fa-bandcamp"></i>
                                                 Commodity and References
                                             </h5>
@@ -321,7 +355,7 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 152px;">
+                                                        <td style="width: 160px;">
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                 <span>Commodity/Item<span style="color: red;">*</span></span>
                                                                 <span>:</span>
@@ -333,10 +367,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <table class="table table-borderless">
+                                                            <table class="table table-borderless m-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="width: 150px;">
+                                                                        <td  style="width: 160px;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                                 <span>Cargo Handover Date</span>
                                                                                 <span>:</span>
@@ -376,10 +410,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <table class="table table-borderless">
+                                                            <table class="table table-borderless m-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="width: 150px;">
+                                                                        <td style="width: 160px;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                                 <span>Invoice</span>
                                                                                 <span>:</span>
@@ -404,10 +438,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <table class="table table-borderless">
+                                                            <table class="table table-borderless m-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="width: 150px;">
+                                                                        <td style="width: 160px;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                                 <span>EXP</span>
                                                                                 <span>:</span>
@@ -432,10 +466,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <table class="table table-borderless">
+                                                            <table class="table table-borderless m-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="width: 150px;">
+                                                                        <td style="width: 160px;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                                 <span>Others</span>
                                                                                 <span>:</span>
@@ -444,37 +478,17 @@
                                                                         <td style="width: 100px;">
                                                                             <select name="other_no_type" id="other_no_type" class="form-select form-select-sm" autocomplete="off">
                                                                                 <option value=""></option>
-                                                                                                                                                                        <option value="CON"> 
-                                                                                        CONT. NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="LC"> 
-                                                                                        L/C NO  
-                                                                                    </option>
-                                                                                                                                                                        <option value="PC"> 
-                                                                                        P/C NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PD"> 
-                                                                                        Product 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PI"> 
-                                                                                        P/I NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PO"> 
-                                                                                        P/O NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="SBILL"> 
-                                                                                        S/BILL NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="SC"> 
-                                                                                        S/C NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="TT"> 
-                                                                                        T/T NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="VPS"> 
-                                                                                        Virtual Payment 
-                                                                                    </option>
-                                                                                                                                                                </select>
+                                                                                <option value="CON">CONT. NO</option>
+                                                                                <option value="LC">L/C NO</option>
+                                                                                <option value="PC">P/C NO</option>
+                                                                                <option value="PD">Product</option>
+                                                                                <option value="PI">P/I NO</option>
+                                                                                <option value="PO">P/O NO</option>
+                                                                                <option value="SBILL">S/BILL NO</option>
+                                                                                <option value="SC">S/C NO</option>
+                                                                                <option value="TT">T/T NO</option>
+                                                                                <option value="VPS">Virtual Payment</option>
+                                                                            </select>
                                                                         </td>
                                                                         <td>
                                                                             <input type="text" name="other_no" id="other_no" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
@@ -495,10 +509,10 @@
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <table class="table table-borderless">
+                                                            <table class="table table-borderless m-0">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="width: 150px;">
+                                                                        <td style="width: 160px;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                                 <span>Others-2</span>
                                                                                 <span>:</span>
@@ -507,37 +521,17 @@
                                                                         <td style="width: 100px;">
                                                                             <select name="other_no_type_two" id="other_no_type_two" class="form-select form-select-sm" autocomplete="off">
                                                                                 <option value=""></option>
-                                                                                                                                                                        <option value="CON"> 
-                                                                                        CONT. NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="LC"> 
-                                                                                        L/C NO  
-                                                                                    </option>
-                                                                                                                                                                        <option value="PC"> 
-                                                                                        P/C NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PD"> 
-                                                                                        Product 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PI"> 
-                                                                                        P/I NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="PO"> 
-                                                                                        P/O NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="SBILL"> 
-                                                                                        S/BILL NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="SC"> 
-                                                                                        S/C NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="TT"> 
-                                                                                        T/T NO 
-                                                                                    </option>
-                                                                                                                                                                        <option value="VPS"> 
-                                                                                        Virtual Payment 
-                                                                                    </option>
-                                                                                                                                                                </select>
+                                                                                <option value="CON">CONT. NO</option>
+                                                                                <option value="LC">L/C NO</option>
+                                                                                <option value="PC">P/C NO</option>
+                                                                                <option value="PD">Product</option>
+                                                                                <option value="PI">P/I NO</option>
+                                                                                <option value="PO">P/O NO</option>
+                                                                                <option value="SBILL">S/BILL NO</option>
+                                                                                <option value="SC">S/C NO</option>
+                                                                                <option value="TT">T/T NO</option>
+                                                                                <option value="VPS">Virtual Payment</option>
+                                                                            </select>
                                                                         </td>
                                                                         <td>
                                                                             <input type="text" name="other_no_two" id="other_no_two" class="form-control form-control-sm uppercase-only" placeholder="" autocomplete="off">
@@ -562,9 +556,9 @@
                                     </div>
 
                                     
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
+                                            <h5 class="header_title_children mb-0">
                                                 <i class="fa-solid fa-envelope"></i>
                                                 Add CC Email Addresses
                                             </h5>
@@ -577,7 +571,8 @@
                                                     <tbody>
                                                         <tr>
                                                             <td>
-                                                                <textarea name="email_cc" id="email_cc" class="form-control ff_email_textarea ff_emailcc_chip_input global_mail_chip_original_textarea"></textarea><div class="global_mail_chip_container"><div class="global_mail_chip_wrapper"><input type="text" class="global_mail_chip_input_field" placeholder="Type email and press Enter"></div></div>
+                                                                <textarea name="email_cc" id="email_cc" class="form-control ff_email_textarea ff_emailcc_chip_input global_mail_chip_original_textarea" style="height: 95px;"></textarea>
+                                                                <div class="global_mail_chip_container"><div class="global_mail_chip_wrapper"><input type="text" class="global_mail_chip_input_field" placeholder="Type email and press Enter"></div></div>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -590,11 +585,10 @@
                                 <td style="width: 1%;"></td>
 
                                 <td style="width: 39%">
-                                    <div class="card shadow-sm consinee-card mb-2">
+                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
-                                                <iconify-icon icon="mdi:account-tie" class="align-middle" style="font-size: 16px;"><template shadowrootmode="open"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c2.21 0 4 1.79 4 4s-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4m4 10.54c0 1.06-.28 3.53-2.19 6.29L13 15l.94-1.88c-.62-.07-1.27-.12-1.94-.12s-1.32.05-1.94.12L11 15l-.81 4.83C8.28 17.07 8 14.6 8 13.54c-2.39.7-4 1.96-4 3.46v4h16v-4c0-1.5-1.6-2.76-4-3.46"></path></svg></template></iconify-icon> 
-                                                
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user-tie"></i>
                                                 Shipper's Details<span style="color: red;">*</span>
                                             </h5>
 
@@ -630,11 +624,10 @@
                                     </div>
 
                                     
-                                    <div class="card shadow-sm consinee-card mb-2">
+                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
-                                                <iconify-icon icon="mdi:account-tie" class="align-middle" style="font-size: 16px;"><template shadowrootmode="open"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c2.21 0 4 1.79 4 4s-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4m4 10.54c0 1.06-.28 3.53-2.19 6.29L13 15l.94-1.88c-.62-.07-1.27-.12-1.94-.12s-1.32.05-1.94.12L11 15l-.81 4.83C8.28 17.07 8 14.6 8 13.54c-2.39.7-4 1.96-4 3.46v4h16v-4c0-1.5-1.6-2.76-4-3.46"></path></svg></template></iconify-icon> 
-                                                
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user-tie"></i>
                                                 Shipper's Bank Details
                                             </h5>
                                             
@@ -668,10 +661,10 @@
                                     </div>
 
                                     
-                                    <div class="card shadow-sm consinee-card mb-2">
+                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
-                                                <iconify-icon icon="mdi:account-tie" class="align-middle" style="font-size: 16px;"><template shadowrootmode="open"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c2.21 0 4 1.79 4 4s-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4m4 10.54c0 1.06-.28 3.53-2.19 6.29L13 15l.94-1.88c-.62-.07-1.27-.12-1.94-.12s-1.32.05-1.94.12L11 15l-.81 4.83C8.28 17.07 8 14.6 8 13.54c-2.39.7-4 1.96-4 3.46v4h16v-4c0-1.5-1.6-2.76-4-3.46"></path></svg></template></iconify-icon> 
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user-tie"></i> 
                                                 
                                                 Buyer's Details<span style="color: red;">*</span>
                                             </h5>
@@ -708,10 +701,10 @@
                                     </div>
 
                                     
-                                    <div class="card shadow-sm consinee-card mb-2">
+                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
-                                                <iconify-icon icon="mdi:account-tie" class="align-middle" style="font-size: 16px;"><template shadowrootmode="open"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c2.21 0 4 1.79 4 4s-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4m4 10.54c0 1.06-.28 3.53-2.19 6.29L13 15l.94-1.88c-.62-.07-1.27-.12-1.94-.12s-1.32.05-1.94.12L11 15l-.81 4.83C8.28 17.07 8 14.6 8 13.54c-2.39.7-4 1.96-4 3.46v4h16v-4c0-1.5-1.6-2.76-4-3.46"></path></svg></template></iconify-icon> 
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user-tie"></i> 
                                                 
                                                 Buyer's Bank Details
                                             </h5>
@@ -746,10 +739,10 @@
                                     </div>
 
                                     
-                                    <div class="card shadow-sm consinee-card mb-2">
+                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">
-                                                <iconify-icon icon="mdi:account-tie" class="align-middle" style="font-size: 16px;"><template shadowrootmode="open"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c2.21 0 4 1.79 4 4s-1.79 4-4 4s-4-1.79-4-4s1.79-4 4-4m4 10.54c0 1.06-.28 3.53-2.19 6.29L13 15l.94-1.88c-.62-.07-1.27-.12-1.94-.12s-1.32.05-1.94.12L11 15l-.81 4.83C8.28 17.07 8 14.6 8 13.54c-2.39.7-4 1.96-4 3.46v4h16v-4c0-1.5-1.6-2.76-4-3.46"></path></svg></template></iconify-icon> 
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user-tie"></i> 
                                                 
                                                 Notify Patry's Details
                                             </h5>
@@ -794,9 +787,9 @@
                                         <tbody>
                                             <tr>
                                                 <td style="width: 40%">
-                                                    <div class="card shadow-sm shipper-card mb-2">
+                                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                                            <h5 class="mb-0">
+                                                            <h5 class="header_title_children mb-0">
                                                                 <i class="fa-solid fa-circle-stop"></i>
                                                                 Shipping Marks
                                                             </h5>
@@ -819,9 +812,9 @@
                                                 <td style="width: 1%;"></td>
 
                                                 <td style="width: 59%">
-                                                    <div class="card shadow-sm consinee-card mb-2">
+                                                    <div class="card card_children shadow-sm consinee-card mb-2">
                                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                                            <h5 class="mb-0">
+                                                            <h5 class="header_title_children mb-0">
                                                                 <i class="fa-solid fa-circle-stop"></i>
                                                                 Cargo Description
                                                             </h5>
@@ -849,9 +842,9 @@
                             
                             <tr>
                                 <td colspan="3">
-                                    <div class="card shadow-sm mb-2">
+                                    <div class="card card_children shadow-sm mb-2">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center" style="padding-right: 5px;">
-                                            <h5 class="mb-0"><i class="fa-solid fa-box"></i> Cargo Details</h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-box"></i> Cargo Details</h5>
                                             
                                             <button type="button" id="ff_cargo_details_load_xl" class="btn btn-sm btn-success btn-cargoaim bg-gradient"><i class="fa-solid fa-file-excel"></i>&nbsp;Load XL</button>                                            
                                         </div>
@@ -862,7 +855,7 @@
                                                     <thead>
                                                         <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
                                                             <th style="width: 20px;">SN</th>
-                                                            <th style="width: 120px;">GTN/INT/WH</th>
+                                                            <th style="width: 100px;">GTN/INT/WH</th>
                                                             <th style="width: 70px;">Buyer PO</th>
                                                             <th style="width: 63px;">Shipper PO</th>
                                                             <th style="width: 55px;">Article/Style</th>
@@ -878,94 +871,81 @@
                                                             <th style="width: 65px;">Length</th>
                                                             <th style="width: 65px;">Width</th>
                                                             <th style="width: 65px;">Height</th>
-                                                            <th style="width: 65px;">VOL. (CBM)*</th>
+                                                            <th style="width: auto;">VOL.(CBM)*</th>
                                                             <th style="width: 40px;">
-                                                                <button type="button" id="ff_cargo_add_row_btn" class="btn btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn ml4" data-bs-target="#customerModal"> 
-                                                                    <i class="fa-solid fa-square-plus"></i> 
+                                                                <button type="button" id="ff_cargo_add_row_btn" class="btn btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn"  @click="addRow"> 
+                                                                    <i class="fa-solid fa-plus"></i>
                                                                 </button>
                                                             </th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody id="ff_cargo_details_table_body">
-                                                        <tr data-index="0">
-                                                            <td class="text-center row-sl">1</td>
+                                                    <tbody>
+                                                        <tr v-for="(row, index) in cargoRows" :key="index">
+                                                            <td class="text-center">{{ index + 1 }}</td>
                                                             <td>
-                                                                <input type="hidden" name="pkg_row_id[0]" id="pkg_row_id0">
-
-                                                                <input type="text" name="gtn_inttra[0]" id="gtn_inttra0" class="form-control uppercase-only form-control-sm" placeholder="">
+                                                                <input v-model="row.gtn_inttra" :name="`gtn_inttra[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="buyer_po[0]" id="buyer_po0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.buyer_po" :name="`buyer_po[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="shipper_po[0]" id="shipper_po0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.shipper_po" :name="`shipper_po[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="article_style[0]" id="article_style0" type="text" class="form-control form-control-sm uppercase-only">
+                                                                <input v-model="row.article_style" :name="`article_style[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="hs_code[0]" id="hs_code0" class="form-control form-control-sm hs_code" placeholder="">
+                                                                <input v-model="row.hs_code" :name="`hs_code[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="po_commodity[0]" id="po_commodity0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.po_commodity" :name="`po_commodity[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="ff_color[0]" id="ff_color0" type="text" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.ff_color" :name="`ff_color[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="item_name[0]" id="item_name0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.item_name" :name="`item_name[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="lot[0]" id="lot0" class="form-control form-control-sm uppercase-only" placeholder="">
+                                                                <input v-model="row.lot" :name="`lot[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="pieces[0]" id="pieces0" class="form-control form-control-sm pkg" placeholder="">
+                                                                <input v-model="row.pieces" :name="`pieces[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <select name="pkg_type[0]" id="pkg_type0" class="form-select form-select-sm">
+                                                                <select v-model="row.pkg_type" :name="`pkg_type[${index}]`" class="form-select form-select-sm">
                                                                     <option value=""></option>
                                                                     <option value="AM">AM-Ampoule, non-protect</option>
                                                                     <option value="AP">AP-Ampoule, protected</option>
                                                                     <option value="BG">BG-Bag</option>
-                                                                    <option value="5L">5L-Bag, textile</option>
-                                                                    <option value="BL">BL-Bale</option>
-                                                                    <option value="BF">BF-Balloon, non-protect</option>
                                                                     <option value="BX">BX-Box</option>
-                                                                    <option value="4A">4A-Box, steel</option>
-                                                                    <option value="BE">BE-Bundle</option>
-                                                                    <option value="CI">CI-Canister</option>
-                                                                    <option value="CO">CO-Carboy, non-protecte</option>
                                                                     <option value="CT">CT-CARTON</option>
-                                                                    <option value="CQ">CQ-Cartridge</option>
                                                                     <option value="CS">CS-Case</option>
-                                                                    <option value="EF">EF-Case, with pallet ba</option>
-                                                                    <option value="ED">ED-Case, with pallet ba</option>
                                                                     <option value="CR">CR-Crate</option>
                                                                     <option value="DR">DR-Drum</option>
-                                                                    <option value="LV">LV-Liftvan</option>
                                                                     <option value="PK">PK-Package</option>
                                                                 </select>
                                                             </td>
                                                             <td>
-                                                                <input name="qty[0]" id="qty0" type="text" class="form-control form-control-sm qty">
+                                                                <input v-model="row.qty" :name="`qty[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="weight_kg[0]" id="weight_kg0" type="text" class="form-control form-control-sm weight" placeholder="">
+                                                                <input v-model="row.weight_kg" :name="`weight_kg[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="length[0]" id="length0" type="text" class="form-control form-control-sm length" placeholder="000.000">
+                                                                <input v-model="row.length" :name="`length[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="width[0]" id="width0" type="text" class="form-control form-control-sm width" placeholder="000.000">
+                                                                <input v-model="row.width" :name="`width[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input name="height[0]" id="height0" type="text" class="form-control form-control-sm height" placeholder="000.000">
+                                                                <input v-model="row.height" :name="`height[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td>
-                                                                <input type="text" name="cbm[0]" id="cbm0" class="form-control form-control-sm cbm" placeholder="">
+                                                                <input v-model="row.cbm" :name="`cbm[${index}]`" class="form-control form-control-sm">
                                                             </td>
                                                             <td class="text-center">
-                                                                <button type="button" class="btn btn-danger btn-cargoaim btn-sm delete-row">
+                                                                <button type="button" class="btn btn-danger btn-sm" style="padding: 1px 2px;" @click="deleteRow(index)" :disabled="cargoRows.length === 1">
                                                                     <i class="fa-solid fa-xmark"></i>
                                                                 </button>
                                                             </td>
@@ -1004,9 +984,9 @@
                             
                             <tr class="border-bootom-dotted">
                                 <td colspan="3">
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0"><i class="fa-solid fa-folder text-warning"></i> File Upload</h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-folder text-warning"></i> File Upload</h5>
                                         </div>
 
                                         <div class="card-body p-2">
@@ -1057,9 +1037,9 @@
 
                             <tr class="border-bootom-dotted">
                                 <td colspan="3">
-                                    <div class="card shadow-sm shipper-card mb-2">
+                                    <div class="card card_children shadow-sm shipper-card mb-2">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0"><i class="fa-solid fa-comment-dots"></i> Comment</h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-comment-dots"></i> Comment</h5>
                                         </div>
 
                                         <div class="card-body p-2">
@@ -1079,9 +1059,9 @@
 
                             <tr id="saveShipmentRow">
                                 <td colspan="3">
-                                    <div class="card shadow-sm billing-card mb-2">
+                                    <div class="card card_children shadow-sm billing-card mb-2">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0"><i class="fa-solid fa-floppy-disk"></i> Save as Booking Template Name</h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-floppy-disk"></i> Save as Booking Template Name</h5>
                                         </div>
 
                                         <div class="card-body p-2">
@@ -1175,9 +1155,10 @@
     }
     .package_table thead tr th,
     .items_table thead tr th { 
+        background: #4483B4!important;
         font-weight: 400;
         letter-spacing: 0.5px;
-        padding: 1px 4px;
+        padding: 1px 2px;
     }
     .package_table tbody tr td,
     .items_table tbody tr td { 

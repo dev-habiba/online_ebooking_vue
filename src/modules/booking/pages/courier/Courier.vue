@@ -32,19 +32,15 @@
     const validateNumber = (row, field, event) => {
         let value = event.target.value;
 
-        // ১. শুধুমাত্র সংখ্যা এবং একটি দশমিক (.) বাদে বাকি সব ক্যারেক্টার মুছে ফেলবে
         value = value.replace(/[^0-9.]/g, '');
 
-        // ২. একের অধিক দশমিক (.) ইনপুট দিলে তা আটকে দেবে
         const parts = value.split('.');
         if (parts.length > 2) {
             value = parts[0] + '.' + parts.slice(1).join('');
         }
 
-        // ৩. রো-এর নির্দিষ্ট ফিল্ডে ফিল্টার করা ভ্যালুটি অ্যাসাইন করবে
         row[field] = value;
 
-        // চার্জেবল ওয়েট আপডেট করার জন্য ফাংশনটি কল করবে
         calculateItemChargeableWeight(row);
     };
 
@@ -150,7 +146,7 @@
 
 
 
-    // ১. আইটেম টাইপ অপশনগুলোর লিস্ট
+    // ১. আইটেম টাইপ অপশনগুলোর লিস্ট 
     const itemPkgTypes = [
     { value: 'AM', label: 'AM-Ampoule, non-protect' },
     { value: 'AP', label: 'AP-Ampoule, protected' },
