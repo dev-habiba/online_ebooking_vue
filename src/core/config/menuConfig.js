@@ -9,7 +9,7 @@ export const menus = {
         {
             id: 109,
             title: "USER ADMIN",
-            path: "#",
+            path: "/user-admin",
             icon: "fa-solid fa-user-group",
         }
     ],

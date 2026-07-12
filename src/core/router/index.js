@@ -5,6 +5,7 @@ import { authGuard } from "@/core/guards/authGuard";
 import authRoutes from '@/modules/auth/routes/index.js'
 import dashRoutes from '@/modules/dashboard/routes/index.js';
 import ebookingRoutes from '@/modules/booking/routes/index.js';
+import userRoutes from '@/modules/users/routes/index.js';
 import uiRoutes from '@modules/ui/routes/index.js'
 
 /** progress bar */
@@ -23,6 +24,7 @@ const routes = [
     ...authRoutes,
     ...dashRoutes,
     ...ebookingRoutes,
+    ...userRoutes,
     ...uiRoutes,
     
     //** Not Found or Access Denied */

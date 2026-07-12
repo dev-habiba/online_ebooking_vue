@@ -1,15 +1,19 @@
 <script setup>
-    import { ref, computed } from "vue";
+    import { ref, computed, h } from "vue";
     import { useRouter } from "vue-router";
     import { useAuth } from '@modules/auth/composable/useAuth';
 
     import BaseModal from '@/shared/components/modal/BaseModal.vue';
-    import IcsEnsModal from '@/modules/customs_filing/components/modal/IcsEnsModal.vue';
 
     import { useLoader } from '@/shared/composables/useLoader.js'
     import CircleDivisionLoader from '@/shared/components/loaders/CircleDivisionLoader.vue';
     import SquareDivisionLoader from '@/shared/components/loaders/SquareDivisionLoader.vue';
 
+
+    import DataTable from '@/shared/Components/DataTable/DataTable.vue';
+
+    const isTableVisible = ref(false)
+    const all_bookings = ref([]);
     const { is_loading } = useAuth();
 
     const {
@@ -22,23 +26,282 @@
     } = useLoader();
     
     const showTestModal = ref(false)
-    const isTableVisible = ref(false)
-    const tableData = ref([])
     const selectedIds = ref([])
 
     const selectAll = computed({
       get: () => {
-        return tableData.value.length > 0 && selectedIds.value.length === tableData.value.length;
+        return all_bookings.value.length > 0 && selectedIds.value.length === all_bookings.value.length;
       },
       set: (value) => {
         if (value) {
-          selectedIds.value = tableData.value.map(item => item.id);
+          selectedIds.value = all_bookings.value.map(item => item.id);
         } else {
           selectedIds.value = [];
         }
       }
     });
 
+
+
+
+
+
+
+
+    const columns = [
+        // Checkbox
+        {
+          id: 'select',
+          header: () =>
+            h(
+              'div',
+              { class: 'text-center' },
+              h('input', {
+                  type: 'checkbox',
+                  class: 'all_check_box',
+                  checked: selectAll.value,
+                  onChange: (e) => {
+                    selectAll.value = e.target.checked
+                  }
+              })
+            ),
+
+            enableSorting: false,
+            enableGlobalFilter: false,
+            size: 40,
+
+            meta: {
+              sticky: 'left'
+            },
+
+            cell: ({ row }) =>
+              h(
+                'div',
+                { class: 'text-center' },
+                h('input', {
+                    type: 'checkbox',
+                    class: 'ens_dt_check_box',
+                    value: row.original.id,
+                    checked: selectedIds.value.includes(row.original.id),
+                    onChange: (e) => {
+                        if (e.target.checked) {
+                            selectedIds.value.push(row.original.id)
+                        } else {
+                            selectedIds.value = selectedIds.value.filter(
+                                id => id !== row.original.id
+                            )
+                        }
+                    }
+                })
+              ),
+        },
+
+        // SN
+        {
+            id: 'sn',
+            header: 'SN',
+            enableSorting: false,
+            size: 40,
+            meta: {
+              sticky: 'left'
+            },
+            cell: ({ row, table }) => {
+              const pageIndex = table.getState().pagination.pageIndex
+              const pageSize = table.getState().pagination.pageSize
+              const index = table.getRowModel().rows.findIndex(r => r.id === row.id)
+
+              return h(
+                'div',
+                {
+                  class: 'text-center'
+                },
+                pageIndex * pageSize + index + 1
+              )
+            }
+        },
+
+        // FLAGS
+        {
+          id:'flag',
+          accessorKey: 'flag',
+          header: 'FLAGS',
+          size: 70,
+          meta: {
+            sticky: 'left'
+          },
+          enableSorting: false,
+          cell: ({ getValue }) =>
+              h('img', {
+                  src: getValue(),
+                  class: 'filing_flags_icon'
+              }),
+        },
+
+        // MBL
+        {
+          id:'mbl',
+          size: 120,
+          meta: {
+            sticky: 'left'
+          },
+          accessorKey: 'mbl',
+          header: 'MBL',
+        },
+
+        // HBL
+        {
+          id:'hbl',
+          size: 120,
+          meta: {
+            sticky: 'left'
+          },
+          accessorKey: 'hbl',
+          header: 'HBL/ENS BL',
+        },
+
+        // Edit
+        {
+            id: 'edit',
+            header: '-',
+            enableSorting: false,
+            size: 43,
+            cell: ({ row }) =>
+                h(
+                    'button',
+                    {
+                        class: 'btn btn-sm btn-outline-info data_table_btn editBtn',
+                        'data-id': row.original.id,
+                    },
+                    [h('i', { class: 'fas fa-pen' })]
+                ),
+        },
+
+        // Copy
+        {
+            id: 'copy',
+            header: '-',
+            enableSorting: false,
+            size: 43,
+            cell: ({ row }) =>
+                h(
+                    'button',
+                    {
+                        class: 'btn btn-sm btn-outline-secondary bg-gradient data_table_btn copyBtn',
+                        'data-id': row.original.id,
+                    },
+                    [h('i', { class: 'fas fa-copy' })]
+                ),
+        },
+
+        // MRN
+        {
+            accessorKey: 'mrn',
+            header: 'MRN / REF NO.',
+        },
+
+        // Status
+        {
+            accessorKey: 'status',
+            header: 'Status',
+        },
+
+        // Dispose
+        {
+            accessorKey: 'dispose',
+            header: 'DISPOSE',
+        },
+
+        // EQ
+        {
+            accessorKey: 'eq',
+            header: 'EQ',
+        },
+
+        // TYPE
+        {
+            accessorKey: 'type',
+            header: 'TYPE',
+        },
+
+        // KG
+        {
+            accessorKey: 'kg',
+            header: 'KG',
+        },
+
+        // CBM
+        {
+            accessorKey: 'cbm',
+            header: 'CBM',
+        },
+
+        // TO
+        {
+            accessorKey: 'to',
+            header: 'To',
+        },
+
+        // SHIPPER
+        {
+            accessorKey: 'shipper',
+            header: 'SHIPPER',
+            size: 200,
+            cell: ({ getValue }) =>
+                h('span', { class: 'text-start d-block' }, getValue()),
+        },
+
+        // CONSIGNEE
+        {
+            accessorKey: 'consignee',
+            header: 'CONSIGNEE',
+            size: 200,
+            cell: ({ getValue }) =>
+                h('span', { class: 'text-start d-block' }, getValue()),
+        },
+
+        // Action
+        {
+            id: 'action',
+            header: '-',
+            enableSorting: false,
+            size: 43,
+            meta: {
+              sticky: 'right'
+            },
+            cell: ({ row }) =>
+                h(
+                    'button',
+                    {
+                        class: 'btn btn-sm btn-outline-primary bg-gradient data_table_btn actionBtn',
+                        'data-id': row.original.id,
+                    },
+                    [h('i', { class: 'fas fa-bolt' })]
+                ),
+        },
+
+        // Delete
+        {
+            id: 'delete',
+            header: '-',
+            enableSorting: false,
+            size: 43,
+            meta: {
+              sticky: 'right'
+            },
+            cell: ({ row }) =>
+                h(
+                    'button',
+                    {
+                        class: 'btn btn-sm btn-outline-danger bg-gradient data_table_btn deleteBtn',
+                        'data-id': row.original.id,
+                    },
+                    [h('i', { class: 'fas fa-trash' })]
+                ),
+        },
+    ]
+
+
+    
     const filingLoadData = () => {
       isTableVisible.value = false;
       is_loading.value = true;
@@ -49,7 +312,7 @@
         isTableVisible.value = true
         is_loading.value = false;
       
-        tableData.value = [
+        all_bookings.value = [
           {
             id: "40371",
             flag: "/backend/assets/images/flags/european-union.png",
@@ -99,6 +362,374 @@
             consignee: "KRK GARMENTS LTD"
           },
           {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
+            id: "40373",
+            flag: "/backend/assets/images/flags/european-union.png",
+            mbl: "FFFFFFFFFFFFF",
+            hbl: "HAHAHAHAHAAA",
+            mrn: "",
+            status: "",
+            dispose: "",
+            eq: 1,
+            type: "6156",
+            kg: 1710,
+            cbm: 8037,
+            to: "AUHUB",
+            shipper: "KRK GARMENTS LTD",
+            consignee: "KRK GARMENTS LTD"
+          },
+          {
             id: "40374",
             flag: "/backend/assets/images/flags/european-union.png",
             mbl: "FFFFFFFFFFFFF",
@@ -115,6 +746,14 @@
             consignee: "KRK GARMENTS LTD"
           }
         ]
+
+        hideCircleLoader('cargoaim_custom_form_wrapper')
+
+        is_loading.value = false
+
+        // Data load হওয়ার পর table show হবে
+        isTableVisible.value = true
+
       }, 2000);
     }
 
@@ -217,7 +856,6 @@
                 <td class="text-center">
                   <button type="" class="btn btn-primary bg-gradient btn-cargoaim w-100 px-1 flex-fill" id="filing_load_data_btn" @click.prevent="filingLoadData" :disabled="is_loading">
                     <span v-if="!is_loading">
-                      <!-- <i class="fa-regular fa-circle" style="font-size: 14px;"></i> -->
                       <i class="fa-solid fa-arrows-rotate" style="font-size: 14px;"></i>
                       LOAD
                     </span>
@@ -231,81 +869,11 @@
           </div>
         </form>
 
-        
-
-
+        <!-- Initial Data Table -->
         <div class="cargoaim_custom_form_wrapper mt-2 position-relative" id="filing_dataLoad_customize">
           <CircleDivisionLoader loader-key="cargoaim_custom_form_wrapper" />
 
-          <table v-show="isTableVisible" id="filing_cargoaim_table" class="table table-bordered table-striped nowrap table-hover mb-0">
-            <thead :style="{ display: isTableVisible ? 'table-header-group' : 'none' }" id="filing_cargoaim_table_thead">
-              <tr class="text-center">
-                <th>
-                  <input type="checkbox" class="all_check_box" v-model="selectAll">
-                </th>
-                <th>SN</th>
-                <th>FLAGS</th>
-                <th>MBL</th>
-                <th>HBL/ENS BL</th>
-                <th>-</th>
-                <th>-</th>
-                <th title="MRN / REF NO.">MRN / REF NO.</th>
-                <th>Status</th>
-                <th>DISPOSE</th>
-                <th>EQ</th>
-                <th>TYPE</th>
-                <th>KG</th>
-                <th>CBM</th>
-                <th>To</th>
-                <th>SHIPPER</th>
-                <th>CONSIGNEE</th>
-                <th>-</th>
-                <th>-</th>
-              </tr>
-            </thead>
-            <tbody id="filing_cargoaim_table_tbody">
-              <!-- initially empty -->
-              <tr v-for="(item, index) in tableData" :key="index">
-                <td>
-                    <input type="checkbox" :name="'check_name[]'" :value="item.id" v-model="selectedIds" class="ens_dt_check_box">
-                </td>
-                <td>{{ index + 1 }}</td>
-                <td><img :src="item.flag" alt="" class="filing_flags_icon"></td>
-                <td>{{ item.mbl }}</td>
-                <td>{{ item.hbl }}</td>
-                <td>
-                    <button type="button" :data-id="item.id" class="btn btn-sm btn-outline-info editBtn ens_ld_dt_btn">
-                        <i class="fas fa-pen"></i>
-                    </button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-outline-secondary bg-gradient copyBtn ens_ld_dt_btn" :data-id="item.id">
-                        <i class="fas fa-copy" title="Copy"></i>
-                    </button>
-                </td>
-                <td>{{ item.mrn }}</td>
-                <td>{{ item.status }}</td>
-                <td>{{ item.dispose }}</td>
-                <td>{{ item.eq }}</td>
-                <td>{{ item.type }}</td>
-                <td>{{ item.kg }}</td>
-                <td>{{ item.cbm }}</td>
-                <td class="text-center">{{ item.to }}</td>
-                <td class="text-start">{{ item.shipper }}</td>
-                <td class="text-start">{{ item.consignee }}</td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-outline-primary bg-gradient actionBtn ens_ld_dt_btn" :data-id="item.id">
-                        <i class="fas fa-bolt"></i>
-                    </button>
-                </td>
-                <td class="text-center">
-                    <button type="button" class="btn btn-sm bg-gradient btn-outline-danger deleteBtn ens_ld_dt_btn" :data-id="item.id">
-                        <i class="fas fa-trash" title="Delete"></i>
-                    </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <DataTable v-if="all_bookings.length > 0" :columns="columns" :rows="all_bookings" :loading="is_loading"/>
 
           <!-- Initial message outside tbody -->
           <div v-if="!isTableVisible" id="filing_cargoaim_table_message" class="text-start text-muted p-4">
@@ -313,7 +881,6 @@
           </div>
           
         </div>
-
       </div>
     </div>
   </div>
@@ -322,26 +889,6 @@
   
   
   <!-- Create modal start -->
-  <BaseModal v-model:modalValue="showTestModal" :closeOnBackdrop="false" position="top" width="1460px" height="600px" padding="0px">
-      <template #header>
-        <i class="fa-solid fa-file-circle-plus fa-xl"></i> &nbsp;
-        <span class="filing-modal-header-title">ICS2 (HBL ENS)</span>
-      </template>
-
-      <template #body>
-          <IcsEnsModal />
-      </template>
-      
-      <template #footer>
-          <button class="btn btn-danger btn-sm bg-gradient me-2" @click="showTestModal = false">
-              <i class="fa-solid fa-xmark"></i>&nbsp;Cancel
-          </button>
-
-          <button class="btn btn-success btn-sm bg-gradient me-2" @click="showTestModal = false">
-              <i class="fa-solid fa-floppy-disk"></i>&nbsp;Save
-          </button>
-      </template>
-  </BaseModal>
 
 </template>
 
@@ -357,6 +904,7 @@
       background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));;
   }
 
+  
 .new_booking_dropdown_menu{
   background: #000;
   padding: 0px;
@@ -561,5 +1109,14 @@
 
 
 
+
+
+
+
+
+
+:deep(button.data_table_btn) {
+  padding: 1px 3px !important;
+}
 
 </style>
