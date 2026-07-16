@@ -115,7 +115,7 @@
 
     <!-- TABLE -->
     <div class="table-container">
-        <table class="table table-striped table-bordered table-hover align-middle mb-0" style="min-width:2200px;">
+        <table class="table table-striped nowarp table-hover mb-0" style="min-width:2200px;">
             <!-- HEADER -->
             <TableHeader :table="table" :flex-render="flexRender"/>
 

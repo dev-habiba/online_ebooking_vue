@@ -68,7 +68,7 @@
 
             enableSorting: false,
             enableGlobalFilter: false,
-            size: 40,
+            size: 43,
 
             meta: {
               sticky: 'left'
@@ -79,45 +79,46 @@
                 'div',
                 { class: 'text-center' },
                 h('input', {
-                    type: 'checkbox',
-                    class: 'ens_dt_check_box',
-                    value: row.original.id,
-                    checked: selectedIds.value.includes(row.original.id),
-                    onChange: (e) => {
-                        if (e.target.checked) {
-                            selectedIds.value.push(row.original.id)
-                        } else {
-                            selectedIds.value = selectedIds.value.filter(
-                                id => id !== row.original.id
-                            )
-                        }
+                  type: 'checkbox',
+                  class: 'ens_dt_check_box',
+                  value: row.original.id,
+                  checked: selectedIds.value.includes(row.original.id),
+                  onChange: (e) => {
+                    if (e.target.checked) {
+                      selectedIds.value.push(row.original.id)
+                    } else {
+                      selectedIds.value = selectedIds.value.filter(
+                        id => id !== row.original.id
+                      )
                     }
-                })
-              ),
+                  }
+                }
+              )
+            ),
         },
 
         // SN
         {
-            id: 'sn',
-            header: 'SN',
-            enableSorting: false,
-            size: 40,
-            meta: {
-              sticky: 'left'
-            },
-            cell: ({ row, table }) => {
-              const pageIndex = table.getState().pagination.pageIndex
-              const pageSize = table.getState().pagination.pageSize
-              const index = table.getRowModel().rows.findIndex(r => r.id === row.id)
+          id: 'sn',
+          header: 'SN',
+          enableSorting: false,
+          size: 43,
+          meta: {
+            sticky: 'left'
+          },
+          cell: ({ row, table }) => {
+            const pageIndex = table.getState().pagination.pageIndex
+            const pageSize = table.getState().pagination.pageSize
+            const index = table.getRowModel().rows.findIndex(r => r.id === row.id)
 
-              return h(
-                'div',
-                {
-                  class: 'text-center'
-                },
-                pageIndex * pageSize + index + 1
-              )
-            }
+            return h(
+              'div',
+              {
+                class: 'text-center'
+              },
+              pageIndex * pageSize + index + 1
+            )
+          }
         },
 
         // FLAGS
@@ -125,16 +126,16 @@
           id:'flag',
           accessorKey: 'flag',
           header: 'FLAGS',
-          size: 70,
+          size: 80,
           meta: {
             sticky: 'left'
           },
           enableSorting: false,
           cell: ({ getValue }) =>
-              h('img', {
-                  src: getValue(),
-                  class: 'filing_flags_icon'
-              }),
+            h('img', {
+              src: getValue(),
+              class: 'filing_flags_icon'
+            }),
         },
 
         // MBL
@@ -152,151 +153,151 @@
         {
           id:'hbl',
           size: 120,
-          meta: {
-            sticky: 'left'
-          },
+          // meta: {
+          //   sticky: 'left'
+          // },
           accessorKey: 'hbl',
           header: 'HBL/ENS BL',
         },
 
         // Edit
         {
-            id: 'edit',
-            header: '-',
-            enableSorting: false,
-            size: 43,
-            cell: ({ row }) =>
-                h(
-                    'button',
-                    {
-                        class: 'btn btn-sm btn-outline-info data_table_btn editBtn',
-                        'data-id': row.original.id,
-                    },
-                    [h('i', { class: 'fas fa-pen' })]
-                ),
+          id: 'edit',
+          header: '-',
+          enableSorting: false,
+          size: 43,
+          cell: ({ row }) =>
+            h(
+              'button',
+              {
+                class: 'btn btn-sm btn-outline-info data_table_btn editBtn',
+                'data-id': row.original.id,
+              },
+              [h('i', { class: 'fas fa-pen' })]
+            ),
         },
 
         // Copy
         {
-            id: 'copy',
-            header: '-',
-            enableSorting: false,
-            size: 43,
-            cell: ({ row }) =>
-                h(
-                    'button',
-                    {
-                        class: 'btn btn-sm btn-outline-secondary bg-gradient data_table_btn copyBtn',
-                        'data-id': row.original.id,
-                    },
-                    [h('i', { class: 'fas fa-copy' })]
-                ),
+          id: 'copy',
+          header: '-',
+          enableSorting: false,
+          size: 43,
+          cell: ({ row }) =>
+            h(
+              'button',
+              {
+                class: 'btn btn-sm btn-outline-secondary bg-gradient data_table_btn copyBtn',
+                'data-id': row.original.id,
+              },
+              [h('i', { class: 'fas fa-copy' })]
+            ),
         },
 
         // MRN
         {
-            accessorKey: 'mrn',
-            header: 'MRN / REF NO.',
+          accessorKey: 'mrn',
+          header: 'MRN / REF NO.',
         },
 
         // Status
         {
-            accessorKey: 'status',
-            header: 'Status',
+          accessorKey: 'status',
+          header: 'Status',
         },
 
         // Dispose
         {
-            accessorKey: 'dispose',
-            header: 'DISPOSE',
+          accessorKey: 'dispose',
+          header: 'DISPOSE',
         },
 
         // EQ
         {
-            accessorKey: 'eq',
-            header: 'EQ',
+          accessorKey: 'eq',
+          header: 'EQ',
         },
 
         // TYPE
         {
-            accessorKey: 'type',
-            header: 'TYPE',
+          accessorKey: 'type',
+          header: 'TYPE',
         },
 
         // KG
         {
-            accessorKey: 'kg',
-            header: 'KG',
+          accessorKey: 'kg',
+          header: 'KG',
         },
 
         // CBM
         {
-            accessorKey: 'cbm',
-            header: 'CBM',
+          accessorKey: 'cbm',
+          header: 'CBM',
         },
 
         // TO
         {
-            accessorKey: 'to',
-            header: 'To',
+          accessorKey: 'to',
+          header: 'To',
         },
 
         // SHIPPER
         {
-            accessorKey: 'shipper',
-            header: 'SHIPPER',
-            size: 200,
-            cell: ({ getValue }) =>
-                h('span', { class: 'text-start d-block' }, getValue()),
+          accessorKey: 'shipper',
+          header: 'SHIPPER',
+          size: 200,
+          cell: ({ getValue }) =>
+            h('span', { class: 'text-start d-block' }, getValue()),
         },
 
         // CONSIGNEE
         {
-            accessorKey: 'consignee',
-            header: 'CONSIGNEE',
-            size: 200,
-            cell: ({ getValue }) =>
-                h('span', { class: 'text-start d-block' }, getValue()),
+          accessorKey: 'consignee',
+          header: 'CONSIGNEE',
+          size: 200,
+          cell: ({ getValue }) =>
+            h('span', { class: 'text-start d-block' }, getValue()),
         },
 
         // Action
         {
-            id: 'action',
-            header: '-',
-            enableSorting: false,
-            size: 43,
-            meta: {
-              sticky: 'right'
-            },
-            cell: ({ row }) =>
-                h(
-                    'button',
-                    {
-                        class: 'btn btn-sm btn-outline-primary bg-gradient data_table_btn actionBtn',
-                        'data-id': row.original.id,
-                    },
-                    [h('i', { class: 'fas fa-bolt' })]
-                ),
+          id: 'action',
+          header: '-',
+          enableSorting: false,
+          size: 43,
+          meta: {
+            sticky: 'right'
+          },
+          cell: ({ row }) =>
+            h(
+              'button',
+              {
+                class: 'btn btn-sm btn-outline-primary bg-gradient data_table_btn actionBtn',
+                'data-id': row.original.id,
+              },
+              [h('i', { class: 'fas fa-bolt' })]
+            ),
         },
 
         // Delete
         {
-            id: 'delete',
-            header: '-',
-            enableSorting: false,
-            size: 43,
-            meta: {
-              sticky: 'right'
-            },
-            cell: ({ row }) =>
-                h(
-                    'button',
-                    {
-                        class: 'btn btn-sm btn-outline-danger bg-gradient data_table_btn deleteBtn',
-                        'data-id': row.original.id,
-                    },
-                    [h('i', { class: 'fas fa-trash' })]
-                ),
+          id: 'delete',
+          header: '-',
+          enableSorting: false,
+          size: 43,
+          meta: {
+            sticky: 'right'
+          },
+          cell: ({ row }) =>
+            h(
+              'button',
+              {
+                class: 'btn btn-sm btn-outline-danger bg-gradient data_table_btn deleteBtn',
+                'data-id': row.original.id,
+              },
+              [h('i', { class: 'fas fa-trash' })]
+            ),
         },
     ]
 
@@ -887,7 +888,6 @@
   <!-- .page-container এর ক্লোজিং ট্যাগ -->
   
   
-  
   <!-- Create modal start -->
 
 </template>
@@ -905,218 +905,218 @@
   }
 
   
-.new_booking_dropdown_menu{
-  background: #000;
-  padding: 0px;
-  border-radius: 0px;
-  border: 1px solid #baa3f1;
-}
-.new_booking_dropdown_item{
-    padding: 3px 10px;
-    gap: 5px;
-    border-bottom: 1px solid #959595;
-    font-size: 13px;
-}
+  .new_booking_dropdown_menu{
+    background: #000;
+    padding: 0px;
+    border-radius: 0px;
+    border: 1px solid #baa3f1;
+  }
+  .new_booking_dropdown_item{
+      padding: 3px 10px;
+      gap: 5px;
+      border-bottom: 1px solid #959595;
+      font-size: 13px;
+  }
 
 
 
 
-.table.nowrap th input[type="checkbox"],
-.table.nowrap td input[type="checkbox"] {
-  display: inline-block;
-  vertical-align: middle;
-}
+  .table.nowrap th input[type="checkbox"],
+  .table.nowrap td input[type="checkbox"] {
+    display: inline-block;
+    vertical-align: middle;
+  }
 
 
 
-.filing_content {
-  height: 90vh !important;
-}
+  .filing_content {
+    height: 90vh !important;
+  }
 
-.bg-gradient {
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.3),
-    rgba(255, 255, 255, 0)
-  ) !important;
-}
+  .bg-gradient {
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0)
+    ) !important;
+  }
 
-/* ===================== Card shell (matches reference design) ===================== */
+  /* ===================== Card shell (matches reference design) ===================== */
 
-.filing-content-wrapper .card-header {
-  background: linear-gradient(90deg, #f3f0fc 0%, #e6defa 100%) !important;
-  border-bottom: 1px solid #c7bdee !important;
-  padding: 4px 5px !important;
-}
+  .filing-content-wrapper .card-header {
+    background: linear-gradient(90deg, #f3f0fc 0%, #e6defa 100%) !important;
+    border-bottom: 1px solid #c7bdee !important;
+    padding: 4px 5px !important;
+  }
 
-.filing-content-wrapper .card-title {
-  color: #0072a7 !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  letter-spacing: 0.2px;
-}
+  .filing-content-wrapper .card-title {
+    color: #0072a7 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.2px;
+  }
 
-.filing-content-wrapper .new_booking_file_btn {
-  font-size: 13.5px;
-  padding: 3px 9px;
-  font-weight: 200 !important;
-  background-image: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.3),
-    rgba(255, 255, 255, 0)
-  ) !important;
-}
+  .filing-content-wrapper .new_booking_file_btn {
+    font-size: 13.5px;
+    padding: 3px 9px;
+    font-weight: 200 !important;
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0)
+    ) !important;
+  }
 
-/* ===================== Search filter row (Type/From/To/...) ===================== */
+  /* ===================== Search filter row (Type/From/To/...) ===================== */
 
-.filing-content-body {
-  flex-grow: 1;
-  background-color: #fff;
-  padding: 6px;
-  box-sizing: border-box;
-  overflow: auto;
-  border-radius: 10px;
-}
-.filing_search_bg_color {
-  background-color: #a3c8e8;
-}
-.filing_search_responsive_table_wrapper {
-  border: 2px solid #dddddd;
-  border-radius: 5px;
-  width: 100%;
-  overflow-x: auto;
-  padding: 0;
-}
+  .filing-content-body {
+    flex-grow: 1;
+    background-color: #fff;
+    padding: 6px;
+    box-sizing: border-box;
+    overflow: auto;
+    border-radius: 10px;
+  }
+  .filing_search_bg_color {
+    background-color: #a3c8e8;
+  }
+  .filing_search_responsive_table_wrapper {
+    border: 2px solid #dddddd;
+    border-radius: 5px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0;
+  }
 
-.filing_search_table {
-  margin-bottom: 0rem !important;
-}
+  .filing_search_table {
+    margin-bottom: 0rem !important;
+  }
 
-.filing_search_table th,
-.filing_search_table td {
-  border-right: 1px dotted #f2f2f2 !important;
-}
-.filing_search_table td {
-  padding: 2px 1px;
-}
+  .filing_search_table th,
+  .filing_search_table td {
+    border-right: 1px dotted #f2f2f2 !important;
+  }
+  .filing_search_table td {
+    padding: 2px 1px;
+  }
 
-.filing_search_table th {
-  font-weight: 100 !important;
-  font-size: 13px !important;
-  padding: 5px 5px !important;
-}
-.filing_search_table_row th {
-  border: none;
-}
+  .filing_search_table th {
+    font-weight: 100 !important;
+    font-size: 13px !important;
+    padding: 5px 5px !important;
+  }
+  .filing_search_table_row th {
+    border: none;
+  }
 
-.filing_search_table .form-control,
-.filing_search_table .form-select {
-  height: 30px !important;
-  min-height: 30px !important;
-  font-size: 12px !important;
-  line-height: 1.2 !important;
-  padding: 4px 8px !important;
-  border: 1px solid #c2c2c2 !important;
-  border-radius: 4px !important;
-  background-color: #fff !important;
-  box-shadow: none !important;
-}
-
-
-
-
-
-/************************ Excel / PDF icon buttons ******************/
-#cm_vol_report_exl_btn,
-#cm_vol_report_pdf_btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: 1px solid #b4aee8 !important; 
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 4px;
-  font-size: 11px;
-  background: rgba(255, 255, 255, 0.4); 
-  box-shadow: none; 
-  transition: all 0.2s ease-in-out;
-}
-
-#cm_vol_report_exl_btn {
-  color: #107c41; 
-}
-
-#cm_vol_report_exl_btn:hover {
-  background: rgba(16, 124, 65, 0.12) !important;
-  border-color: #107c41 !important;
-}
-
-#cm_vol_report_pdf_btn {
-  color: #f40f02; 
-}
-
-#cm_vol_report_pdf_btn:hover {
-  background: rgba(244, 15, 2, 0.12) !important;
-  border-color: #f40f02 !important;
-}
-
-#cm_vol_report_exl_btn:active,
-#cm_vol_report_pdf_btn:active {
-  transform: scale(0.95);
-}
+  .filing_search_table .form-control,
+  .filing_search_table .form-select {
+    height: 30px !important;
+    min-height: 30px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 4px 8px !important;
+    border: 1px solid #c2c2c2 !important;
+    border-radius: 4px !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+  }
 
 
 
 
 
+  /************************ Excel / PDF icon buttons ******************/
+  #cm_vol_report_exl_btn,
+  #cm_vol_report_pdf_btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid #b4aee8 !important; 
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4px;
+    font-size: 11px;
+    background: rgba(255, 255, 255, 0.4); 
+    box-shadow: none; 
+    transition: all 0.2s ease-in-out;
+  }
 
-/* ===================== Result list panel ===================== */
-#filing_dataLoad_customize {
-  border: 1px solid #e6e6e6;
-  border-radius: 4px;
-}
+  #cm_vol_report_exl_btn {
+    color: #107c41; 
+  }
 
-#filing_load_data_btn {
-  width: auto !important;
-  min-width: 70px !important;
-  height: 32px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  padding: 5px 12px !important;
-  border-radius: 4px !important;
-  background-color: #1fa363 !important;
-  border: 1px solid #1fa363 !important;
-  color: #fff !important;
-  text-decoration: none !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-#loadDataBtn:hover {
-  background-color: #2558c4 !important;
-  border-color: #2558c4 !important;
-}
+  #cm_vol_report_exl_btn:hover {
+    background: rgba(16, 124, 65, 0.12) !important;
+    border-color: #107c41 !important;
+  }
 
-#filing_cargoaim_table_tbody .btn-sm {
-  width: 26px;
-  height: 26px;
-  padding: 0px !important;
-  margin: 0px !important;
-}
+  #cm_vol_report_pdf_btn {
+    color: #f40f02; 
+  }
+
+  #cm_vol_report_pdf_btn:hover {
+    background: rgba(244, 15, 2, 0.12) !important;
+    border-color: #f40f02 !important;
+  }
+
+  #cm_vol_report_exl_btn:active,
+  #cm_vol_report_pdf_btn:active {
+    transform: scale(0.95);
+  }
 
 
 
 
 
 
+  /* ===================== Result list panel ===================== */
+  #filing_dataLoad_customize {
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+  }
+
+  #filing_load_data_btn {
+    width: auto !important;
+    min-width: 70px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 5px 12px !important;
+    border-radius: 4px !important;
+    background-color: #1fa363 !important;
+    border: 1px solid #1fa363 !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  #loadDataBtn:hover {
+    background-color: #2558c4 !important;
+    border-color: #2558c4 !important;
+  }
+
+  #filing_cargoaim_table_tbody .btn-sm {
+    width: 26px;
+    height: 26px;
+    padding: 0px !important;
+    margin: 0px !important;
+  }
 
 
 
 
-:deep(button.data_table_btn) {
-  padding: 1px 3px !important;
-}
+
+
+
+
+
+
+  :deep(button.data_table_btn) {
+    padding: 1px 3px !important;
+  }
 
 </style>

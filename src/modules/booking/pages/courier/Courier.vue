@@ -1,5 +1,6 @@
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref, computed, onMounted } from 'vue';
+    import axios from "axios";
 
     import BaseModal from '@/shared/components/modal/BaseModal.vue';
     import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
@@ -10,18 +11,177 @@
 
     const showCustModal = ref(false)
 
+    const countries = ref([]);
+
+    const form = ref({
+        // Shipment Profile
+        web_cms_shipment_profile: "",
+        web_cms_imp_exp: "1",
+        web_cms_ship_form: "", //pol
+        web_cms_ship_form_code: "", //pol
+        web_cms_ship_to: "",//pod
+        web_cms_ship_to_code: "",//pod
+
+        // Shipper
+        web_cms_shipper_code: "",
+        web_cms_shipper_name: "",
+        web_cms_shipper_address: "",
+        web_cms_shipper_postal_code: "",
+        web_cms_shipper_country: "",
+        web_cms_shipper_state_tax: "",
+        web_cms_shipper_city: "",
+        web_cms_shipper_contract_name: "",
+        web_cms_shipper_phone_number: "",
+        web_cms_shipper_email: "",
+        web_cms_shipper_carrier: "",
+
+        // Consignee
+        web_cms_consignee_code: "",
+        web_cms_consignee_name: "",
+        web_cms_consignee_address: "",
+        web_cms_consignee_postal_code: "",
+        web_cms_consignee_country: "",
+        web_cms_consignee_state_tax: "",
+        web_cms_consignee_city: "",
+        web_cms_consignee_contract_name: "",
+        web_cms_consignee_phone_number: "",
+        web_cms_consignee_email: "",
+        web_cms_consignee_carrier: "",
+
+        // Third Party
+        web_cms_third_party_code: "",
+        web_cms_third_party_name: "",
+        web_cms_third_party_address: "",
+        web_cms_third_party_postal_code: "",
+        web_cms_third_party_country: "",
+        web_cms_third_party_state_tax: "",
+        web_cms_third_party_city: "",
+        web_cms_third_party_contract_name: "",
+        web_cms_third_party_phone_number: "",
+        web_cms_third_party_email: "",
+        web_cms_third_party_carrier: "",
+
+        // Dangerous Goods
+        web_cms_dg: false,
+        web_cms_dg_imo_class: "",
+        web_cms_dg_un_no: "",
+        web_cms_dg_pkg_group: "",
+        web_cms_dg_flash_point: "",
+        web_cms_dg_files: [],
+
+        // Service Details
+        web_cms_service_date: "",
+        web_cms_service_type: "",
+        web_cms_service_signature: "",
+
+        // Additional Options
+        web_cms_shipment_ref: "",
+        web_cms_po_no: "",
+        web_cms_invoice_no: "",
+        web_cms_invoice_upload_file: [],
+        web_cms_department_no: "",
+        web_cms_comm_doc_type: "",
+
+        // Pickup / Drop-off
+        web_cms_picup_drop_off_type: "",
+        web_cms_picup_drop_off_date: "",
+        web_cms_earliest_possible_time: "",
+        web_cms_latest_possible_time: "",
+        web_cms_picup_instructions: "",
+        web_cms_picup_drop_off_name: "",
+        web_cms_picup_drop_off_phone: "",
+        web_cms_picup_drop_off_email: "",
+        web_cms_picup_drop_off_address: "",
+
+        // Billing
+        web_cms_billing_type: "",
+        web_cms_account_no: "",
+
+        // Save Shipment Profile
+        web_cms_save_shipment_rofile: "",
+
+
+        
+        // Packages field...
+        packages: [
+            {
+                web_cms_qty: "",
+                web_cms_type: "",
+                web_cms_weight: "",
+                web_cms_weightType: "", //kg
+                web_cms_length: "",
+                web_cms_width: "",
+                web_cms_height: "",
+                web_cms_chargeableWeight: "",
+                web_cms_dimensionType: "", //cm
+                web_cms_remarks: "",
+            }
+        ],
+
+        // Items field...
+        items: [
+            {
+                web_cms_qty: "",
+                web_cms_type: "",
+                web_cms_weight: "",
+                web_cms_weightType: "", //kg
+                web_cms_length: "",
+                web_cms_width: "",
+                web_cms_height: "",
+                web_cms_chargeableWeight: "",
+                web_cms_dimensionType: "", //cm
+                web_cms_remarks: "",
+            }
+        ]
+    });
+
+    const getCountries = async () => {
+        try {
+            const payload = {
+                soft_cust_id: "DEMO",
+                partition_id: "1004",
+                language_id: "EN",
+                user_id: "admin.demo",
+                country_name_or_code: ""
+            };
+
+            const res = await axios.post(
+                "https://connect.cargoaim.com/common/country_list_json.php",
+                payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            if (res.data.header_data.success) {
+                countries.value = res.data.details_data;
+            }
+
+            console.log(res.data);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    onMounted(() => {
+        getCountries();
+    });
+
+
+
+
+
     //---- Dangerous Goods Check Box -----//
-    const isDgChecked = ref(false); 
 
-    const fileCount = ref(0);
-    const invoiceFileCount = ref(0);
-
-    const handleFileChange = (e) => {
-        fileCount.value = e.target.files.length;
+    const handleDGFileChange = (event) => {
+        form.value.web_cms_dg_files = Array.from(event.target.files);
     };
 
     const handleInvoiceFileChange = (event) => {
-        invoiceFileCount.value = event.target.files.length;
+        form.value.web_cms_invoice_upload_file = Array.from(event.target.files);
     };
 
 
@@ -248,7 +408,7 @@
                 <div class="table-responsive box-border couriar_table">
                     <table class="table table-borderless">
                         <tbody>
-                            <!--- Others Table--->
+                            <!--- Others Table --->
                             <tr class="border-bootom-dotted">
                                 <td colspan="3" class="">
                                     <div class="card card_children shadow-sm shipment-profile-card mb-3">
@@ -265,7 +425,7 @@
                                                             <input type="hidden" name="row_id" id="row_id">
 
                                                             <label class="form-label"> Load Shipment Profile : </label>
-                                                            <select name="shipment_profile" id="shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
+                                                            <select v-model="form.web_cms_shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
                                                                 <option value="FILE">FILE</option> 
                                                                 <option value="TEST">TEST</option>
                                                                 <option value="TEST 2">TEST 2</option>
@@ -274,7 +434,7 @@
                                                         </td>
                                                         <td style="width: 25%;">
                                                             <label class="form-label"> Export/Import : </label>
-                                                            <select name="imp_exp" id="imp_exp" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_imp_exp" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="1"> Outbound Shipment </option>
                                                                 <option value="2"> Inbound Shipment </option>
                                                             </select>
@@ -282,10 +442,10 @@
                                                         <td style="width: 25%;">
                                                             <label for="inputEmail4" class="form-label"> Ship From :</label>
                                                             <div class="position-relative">
-                                                                <input type="hidden" name="ship_form_code" id="ship_form_code" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.web_cms_ship_form_code" class="uppercase-only">
 
                                                                 <div class="input-group online_bkg_search_inp">
-                                                                    <input type="text" name="ship_form" id="ship_form" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
+                                                                    <input type="text" v-model="form.web_cms_ship_form" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
 
                                                                     <span class="input-group-text search_keyword search_keyword_enty_form">
                                                                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -304,10 +464,10 @@
                                                             <label for="inputPassword4" class="form-label"> Deliver / Ship To :</label>
 
                                                             <div class="position-relative">
-                                                                <input type="hidden" name="ship_to_code" id="ship_to_code" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.web_cms_ship_to_code" class="uppercase-only">
                                                                 
                                                                 <div class="input-group online_bkg_search_inp">
-                                                                    <input type="text" name="ship_to" id="ship_to" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
+                                                                    <input type="text" v-model="form.web_cms_ship_to" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
 
                                                                     <span class="input-group-text search_keyword search_keyword_enty_form">
                                                                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -357,9 +517,9 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex gap-1 align-items-center">
-                                                                <input type="hidden" name="shipper_code" id="shipper_code" value="NMS20260705131817">
+                                                                <input type="hidden" v-model="form.web_cms_shipper_code" value="NMS20260705131817">
 
-                                                                <input type="text" name="shipper_name" id="shipper_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name">
+                                                                <input type="text" v-model="form.web_cms_shipper_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name">
 
                                                                 <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
@@ -375,7 +535,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <textarea name="shipper_address" id="shipper_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.web_cms_shipper_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
@@ -386,7 +546,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="shipper_postal_code" id="shipper_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipper_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -397,16 +557,19 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="shipper_country" id="shipper_country" class="form-select form-select-sm" autocomplete="off">
-                                                                <option value="" selected=""></option>  
-                                                                <option value="AF">AF - Afghanistan</option>
-                                                                <option value="AL"> AL - Albania</option>
-                                                                <option value="DZ">DZ - Algeria</option>
-                                                                <option value="AS">AS - American Samoa</option>
-                                                                <option value="AD">AD - Andorra</option>
-                                                                <option value="AO">AO - Angola</option>
-                                                                <option value="AI">AI - Anguilla</option>
-                                                                <option value="AQ">AQ - Antarctica</option>
+                                                            <select
+                                                                class="form-select form-select-sm"
+                                                                v-model="form.web_cms_shipper_country"
+                                                            >
+                                                                <option value="">Select Country</option>
+
+                                                                <option
+                                                                    v-for="country in countries"
+                                                                    :key="country.country_code"
+                                                                    :value="country.country_code"
+                                                                >
+                                                                    {{ country.country_code }} - {{ country.country_name }}
+                                                                </option>
                                                             </select>
                                                         </td>
                                                     </tr>
@@ -419,7 +582,7 @@
                                                         </td>
                                                         
                                                         <td>
-                                                            <input type="text" name="shipper_state_tax" id="shipper_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipper_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -430,7 +593,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="shipper_city" id="shipper_city" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_shipper_city" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected=""></option>
                                                                 
                                                             </select>
@@ -444,7 +607,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="shipper_contract_name" id="shipper_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipper_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -455,7 +618,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="shipper_phone_number" id="shipper_phone_number" class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipper_phone_number" class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -466,7 +629,7 @@
                                                             </div>
                                                         </td>
                                                             <td>
-                                                            <input type="email" name="shipper_email" id="shipper_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
+                                                            <input type="email" v-model="form.web_cms_shipper_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -477,7 +640,7 @@
                                                             </div>
                                                         </td>
                                                             <td>
-                                                            <input type="text" name="shipper_carrier" id="shipper_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipper_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
                                                         </td>
                                                     </tr>
                                             </tbody></table>
@@ -512,9 +675,9 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex gap-1 align-items-center">
-                                                                <input type="hidden" name="consignee_code" id="consignee_code" value="NMS20260705131817" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.web_cms_consignee_code" class="uppercase-only">
                                                             
-                                                                <input type="text" name="consignee_name" id="consignee_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
+                                                                <input type="text" v-model="form.web_cms_consignee_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
 
                                                                 <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="consignee_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
@@ -530,7 +693,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <textarea name="consignee_address" id="consignee_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.web_cms_consignee_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
@@ -541,7 +704,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="consignee_postal_code" id="consignee_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_consignee_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -552,7 +715,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="consignee_country" id="consignee_country" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_consignee_country" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected=""></option>
                                                                 <option value="AF">AF - Afghanistan</option>
                                                                 <option value="AL"> AL - Albania</option>
@@ -573,7 +736,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="consignee_state_tax" id="consignee_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_consignee_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -584,7 +747,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="consignee_city" id="consignee_city" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_consignee_city" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected=""></option>
                                                                 
                                                             </select>
@@ -598,7 +761,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="consignee_contract_name" id="consignee_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_consignee_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -609,7 +772,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="consignee_phone_number" id="consignee_phone_number" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_consignee_phone_number" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -620,7 +783,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="email" name="consignee_email" id="consignee_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
+                                                            <input type="email" v-model="form.web_cms_consignee_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -631,7 +794,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="consignee_carrier" id="consignee_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_consignee_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -885,9 +1048,15 @@
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center gap-2">
                                                 <h5 class="header_title_children mb-0">
-                                                    <i class="fa-solid fa-triangle-exclamation text-warning"></i> Dangerous Goods
+                                                    <i class="fa-solid fa-triangle-exclamation text-warning"></i>
+                                                    Dangerous Goods
                                                 </h5>
-                                                <input type="checkbox" id="dg" name="dg" value="Bike" title="Dangerous Goods" v-model="isDgChecked">
+
+                                                <input
+                                                    type="checkbox"
+                                                    v-model="form.web_cms_dg"
+                                                    title="Dangerous Goods"
+                                                >
                                             </div>
                                         </div>
 
@@ -895,49 +1064,90 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 20%">
-                                                            <label class="form-label">IMO Class : </label>
-                                                            <input type="text" name="dg_imo_class" id="dg_imo_class" 
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
-                                                                placeholder="" autocomplete="off" 
-                                                                :disabled="!isDgChecked" 
-                                                                :required="isDgChecked">
-                                                        </td>
-                                                        <td style="width: 20%">
-                                                            <label class="form-label">UN NO : </label>
-                                                            <input type="text" name="dg_un_no" id="dg_un_no" 
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
-                                                                placeholder="" autocomplete="off" 
-                                                                :disabled="!isDgChecked" 
-                                                                :required="isDgChecked">
-                                                        </td>
-                                                        <td style="width: 20%">
-                                                            <label class="form-label">Package Group : </label>
-                                                            <input type="text" name="dg_pkg_group" id="dg_pkg_group" 
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
-                                                                placeholder="" autocomplete="off" 
-                                                                :disabled="!isDgChecked" 
-                                                                :required="isDgChecked">
-                                                        </td>
-                                                        <td style="width: 20%">
-                                                            <label class="form-label">Flash Point : </label>
-                                                            <input type="text" name="dg_flash_point" id="dg_flash_point" 
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1" 
-                                                                placeholder="" autocomplete="off" 
-                                                                :disabled="!isDgChecked" 
-                                                                :required="isDgChecked">
-                                                        </td>
-                                                        <td style="width: 20%">
-                                                            <label class="form-label">Upload File :</label>
-                                                            <label class="file-upload-container" :style="!isDgChecked ? 'pointer-events: none; opacity: 0.5;' : ''">
-                                                                <input type="file" class="file-input" multiple @change="handleFileChange" :disabled="!isDgChecked">
 
-                                                                <i v-if="fileCount === 0" class="fas fa-cloud-upload-alt file-upload-icon"></i>
-                                                                <span v-else class="file-count-text">
-                                                                    {{ fileCount }} file(s) selected
+                                                        <td style="width:20%">
+                                                            <label class="form-label">IMO Class :</label>
+
+                                                            <input
+                                                                type="text"
+                                                                v-model="form.web_cms_dg_imo_class"
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
+                                                                autocomplete="off"
+                                                                :disabled="!form.web_cms_dg"
+                                                                :required="form.web_cms_dg"
+                                                            >
+                                                        </td>
+
+                                                        <td style="width:20%">
+                                                            <label class="form-label">UN NO :</label>
+
+                                                            <input
+                                                                type="text"
+                                                                v-model="form.web_cms_dg_un_no"
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
+                                                                autocomplete="off"
+                                                                :disabled="!form.web_cms_dg"
+                                                                :required="form.web_cms_dg"
+                                                            >
+                                                        </td>
+
+                                                        <td style="width:20%">
+                                                            <label class="form-label">Package Group :</label>
+
+                                                            <input
+                                                                type="text"
+                                                                v-model="form.web_cms_dg_pkg_group"
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
+                                                                autocomplete="off"
+                                                                :disabled="!form.web_cms_dg"
+                                                                :required="form.web_cms_dg"
+                                                            >
+                                                        </td>
+
+                                                        <td style="width:20%">
+                                                            <label class="form-label">Flash Point :</label>
+
+                                                            <input
+                                                                type="text"
+                                                                v-model="form.web_cms_dg_flash_point"
+                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
+                                                                autocomplete="off"
+                                                                :disabled="!form.web_cms_dg"
+                                                                :required="form.web_cms_dg"
+                                                            >
+                                                        </td>
+
+                                                        <td style="width:20%">
+                                                            <label class="form-label">Upload File :</label>
+
+                                                            <label
+                                                                class="file-upload-container"
+                                                                :style="!form.web_cms_dg ? 'pointer-events:none;opacity:.5;' : ''"
+                                                            >
+
+                                                                <input
+                                                                    type="file"
+                                                                    class="file-input"
+                                                                    multiple
+                                                                    :disabled="!form.web_cms_dg"
+                                                                    @change="handleDGFileChange"
+                                                                >
+
+                                                                <i
+                                                                    v-if="form.web_cms_dg_files.length === 0"
+                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
+                                                                ></i>
+
+                                                                <span
+                                                                    v-else
+                                                                    class="file-count-text"
+                                                                >
+                                                                    {{ form.web_cms_dg_files.length }} file(s) selected
                                                                 </span>
+
                                                             </label>
                                                         </td>
+
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -960,11 +1170,11 @@
                                                     <tr>
                                                         <td style="width: 34%">
                                                             <label class="form-label">Date : </label>
-                                                            <input type="date" name="service_date" id="service_date" class="form-control form-control-sm" autocomplete="off">
+                                                            <input type="date" v-model="form.web_cms_service_date" class="form-control form-control-sm" autocomplete="off">
                                                         </td>
                                                         <td style="width: 33%">
                                                             <label class="form-label">Services : </label>
-                                                            <select name="service_type" id="service_type" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_service_type" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="">Select Service</option>
                                                                 <option value="First_Overnight®"> First Overnight® </option>
                                                                 <option value="International_First®"> International First® </option>
@@ -980,7 +1190,7 @@
                                                         </td>
                                                         <td style="width: 33%">
                                                             <label class="form-label">Signature Type : </label>
-                                                            <select name="service_signature" id="service_signature" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_service_signature" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected="">Select Signature Type</option>
                                                                 <option value="None_specified"> None specified </option>
                                                                 <option value="No_signature_required"> No signature required </option>
@@ -1016,7 +1226,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 40%;">
-                                                            <input type="text" name="shipment_ref" id="shipment_ref" class="form-control form-control-sm uppercase-only" placeholder="Shipment References" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipment_ref" class="form-control form-control-sm uppercase-only" placeholder="Shipment References" autocomplete="off">
                                                         </td>
                                                         <td style="width: 12%;">
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1025,7 +1235,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 31%;">
-                                                            <input type="text" name="po_no" id="po_no" class="form-control form-control-sm uppercase-only" placeholder="P.O.NO" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_po_no" class="form-control form-control-sm uppercase-only" placeholder="P.O.NO" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1040,7 +1250,7 @@
                                                                             </div>
                                                                         </td>
                                                                         <td style="width: 30%;">
-                                                                            <input type="text" name="invoice_no" id="invoice_no" class="form-control form-control-sm uppercase-only" placeholder="Invoice No" autocomplete="off">
+                                                                            <input type="text" v-model="form.web_cms_invoice_no" class="form-control form-control-sm uppercase-only" placeholder="Invoice No" autocomplete="off">
                                                                         </td>
                                                                         <td style="width: 15%;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1056,10 +1266,10 @@
                                                                                     class="file-input"
                                                                                     multiple
                                                                                     @change="handleInvoiceFileChange"
-                                                                                >
+                                                                                />
 
                                                                                 <i
-                                                                                    v-if="invoiceFileCount === 0"
+                                                                                    v-if="form.web_cms_invoice_upload_file.length === 0"
                                                                                     class="fas fa-cloud-upload-alt file-upload-icon"
                                                                                 ></i>
 
@@ -1067,7 +1277,7 @@
                                                                                     v-else
                                                                                     class="file-count-text"
                                                                                 >
-                                                                                    {{ invoiceFileCount }} file(s) selected
+                                                                                    {{ form.web_cms_invoice_upload_file.length }} file(s) selected
                                                                                 </span>
                                                                             </label>
                                                                         </td>
@@ -1083,7 +1293,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="department_no" id="department_no" class="form-control form-control-sm uppercase-only" placeholder="Department No" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_department_no" class="form-control form-control-sm uppercase-only" placeholder="Department No" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                         <tr>
@@ -1094,7 +1304,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="comm_doc_type" id="comm_doc_type" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_comm_doc_type" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected="">Select Commercial Document  Type</option>
                                                                 <option value="User"> User Uploaded </option>
                                                                 <option value="System"> System Generated </option>
@@ -1127,7 +1337,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 35%;">
-                                                            <select name="picup_drop_off_type" id="picup_drop_off_type" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_picup_drop_off_type" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected="">Select Pickup/Drop-off Type</option>
                                                                 <option value="I have already scheduled a pickup at my location"> I have already scheduled a pickup at my location </option>
                                                                 <option value="Schedule a new pickup"> Schedule a new pickup </option>
@@ -1142,7 +1352,7 @@
                                                         </td>
                                                         <td style="width: 35%;">
                                                             <div class="input-group">
-                                                                <input type="date" name="picup_drop_off_date" id="picup_drop_off_date" class="form-control form-control-sm" data-date-format="d-M-Y" autocomplete="off">
+                                                                <input type="date" v-model="form.web_cms_picup_drop_off_date" class="form-control form-control-sm" data-date-format="d-M-Y" autocomplete="off">
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -1154,7 +1364,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="earliest_possible_time" id="earliest_possible_time" class="form-control form-control-sm flatpickr-input" data-provider="timepickr" data-time-basic="true" placeholder="Select Earliest Possible Time" autocomplete="off" readonly="readonly">
+                                                            <input type="text" v-model="form.web_cms_earliest_possible_time" class="form-control form-control-sm flatpickr-input" data-provider="timepickr" data-time-basic="true" placeholder="Select Earliest Possible Time" autocomplete="off" readonly="readonly">
                                                         </td>
                                                         <td>
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1163,7 +1373,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="latest_possible_time" id="latest_possible_time" class="form-control form-control-sm flatpickr-input" data-provider="timepickr" data-time-basic="true" placeholder="Select Latest Possible Time" autocomplete="off" readonly="readonly">
+                                                            <input type="text" v-model="form.web_cms_latest_possible_time" class="form-control form-control-sm flatpickr-input" data-provider="timepickr" data-time-basic="true" placeholder="Select Latest Possible Time" autocomplete="off" readonly="readonly">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1174,7 +1384,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <select name="picup_instructions" id="picup_instructions" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_picup_instructions" class="form-select form-select-sm" autocomplete="off">
                                                                 <optgroup label="Standard">
                                                                     <option value="" selected=""> Select Pickup Instructions </option>
                                                                     <option value="No_instructions"> No instructions </option>
@@ -1199,7 +1409,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="picup_drop_off_name" id="picup_drop_off_name" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Contract Person Name" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_picup_drop_off_name" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Contract Person Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1210,7 +1420,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="picup_drop_off_phone" id="picup_drop_off_phone" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_picup_drop_off_phone" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                         <td>
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1219,7 +1429,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="email" name="picup_drop_off_email" id="picup_drop_off_email" class="form-control form-control-sm mt2_mb1" placeholder="EMAIL" autocomplete="off">
+                                                            <input type="email" v-model="form.web_cms_picup_drop_off_email" class="form-control form-control-sm mt2_mb1" placeholder="EMAIL" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1230,7 +1440,7 @@
                                                             </div>
                                                         </td>
                                                         <td colspan="3">
-                                                            <textarea name="picup_drop_off_address" id="picup_drop_off_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="PICKUP ADDRESS" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.web_cms_picup_drop_off_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="PICKUP ADDRESS" autocomplete="off"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1259,7 +1469,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 40%;">
-                                                            <select name="billing_type" id="billing_type" class="form-select form-select-sm" autocomplete="off">
+                                                            <select v-model="form.web_cms_billing_type" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected="">Select Billing Type</option>
                                                                 <option value="Recipient"> Recipient </option>
                                                                 <option value="My account"> My account </option>
@@ -1273,7 +1483,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 40%;">
-                                                            <input type="text" name="account_no" id="account_no" class="form-control form-control-sm uppercase-only" placeholder="Account No" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_account_no" class="form-control form-control-sm uppercase-only" placeholder="Account No" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1302,7 +1512,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="save_shipment_rofile" id="save_shipment_rofile" class="form-control form-control-sm uppercase-only" placeholder="Save Shipment Profile Name" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_save_shipment_rofile" class="form-control form-control-sm uppercase-only" placeholder="Save Shipment Profile Name" autocomplete="off">
                                                         </td>
                                                         <td style="width: 20px;">
                                                             <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="courier_save_btn" style="height: 28px;">
