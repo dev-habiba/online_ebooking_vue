@@ -172,7 +172,7 @@ const dialogStyle = computed(() => ({
     width: 420px;
     max-width: 95.2%;
     margin-top: 61px;
-    margin-left: 54px;
+    margin-left: 0px;
 }
 
 .modal-bottom {

@@ -1,6 +1,9 @@
 <script setup>
-    import { ref, computed, onMounted } from 'vue';
-    import axios from "axios";
+    import { ref, watch, computed, onMounted } from 'vue';
+    import apiClient from "@/core/apiClient";
+    import {userData} from "@/shared/utils/userInfo.js";
+
+    import BaseSuggestion from '@/shared/components/suggestion/BaseSuggestion.vue';
 
     import BaseModal from '@/shared/components/modal/BaseModal.vue';
     import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
@@ -12,13 +15,17 @@
     const showCustModal = ref(false)
 
     const countries = ref([]);
+    const shipperCities = ref([]);
+    const consigneeCities = ref([]);
+    const thirdPartyCities = ref([]);
+    const selectedItemData = ref(null);
 
     const form = ref({
         // Shipment Profile
         web_cms_shipment_profile: "",
         web_cms_imp_exp: "1",
-        web_cms_ship_form: "", //pol
-        web_cms_ship_form_code: "", //pol
+        ebkg_pol_country: "", //pol
+        ebkg_pol_code: "", //pol
         web_cms_ship_to: "",//pod
         web_cms_ship_to_code: "",//pod
 
@@ -135,40 +142,118 @@
         ]
     });
 
+
+    // তোমার চার্ট অব অ্যাকাউন্টস ডেটা
+    const dataList = ref([
+        { data_code: "101001", full_name: "Cash In Hand", general_ledger_full: "Current Assets", coa_child_full: "Cash Account" },
+        { data_code: "101002", full_name: "Sonali Bank A/C", general_ledger_full: "Bank Accounts", coa_child_full: "Cash At Bank" },
+        { data_code: "101003", full_name: "Dutch Bangla Bank", general_ledger_full: "Bank Accounts", coa_child_full: "Cash At Bank" }
+    ]);
+
+    // টেবিলের হেডারলিস্ট
+    const tableHeaders = ["SL", "Code", "Sub Ledger", "General Ledger", "Child Ledger"];
+
+    // অবজেক্টের প্রোপার্টি বা কি (Keys) যেগুলোর ডেটা টেবিলে দেখাবে
+    const dataColumns = ["data_code", "full_name", "general_ledger_full", "coa_child_full"];
+
+    // আইটেম সিলেক্ট হলে এই ফাংশনটি কল হবে
+    const handleSelect = (item) => {
+        selectedItemData.value = item;
+        // সরাসরি form অবজেক্টের ভেতরের code ফিল্ডে data_code বসিয়ে দেওয়া হলো
+        form.value.ebkg_pol_code = item.data_code; 
+        console.log("Selected Item Object:", item);
+    };
+
+
+
+
+    
+
     const getCountries = async () => {
         try {
             const payload = {
-                soft_cust_id: "DEMO",
-                partition_id: "1004",
-                language_id: "EN",
-                user_id: "admin.demo",
+                soft_cust_id: userData.soft_cust_id,
+                partition_id: userData.partition_id,
+                language_id: userData.language_id,
+                user_id: userData.user_id,
                 country_name_or_code: ""
             };
 
-            const res = await axios.post(
-                "https://connect.cargoaim.com/common/country_list_json.php",
-                payload,
-                {
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }
+            const { data } = await apiClient.post(
+                "/common/country_list_json.php",
+                payload
             );
 
-            if (res.data.header_data.success) {
-                countries.value = res.data.details_data;
+            if (data.header_data.success) {
+                countries.value = data.details_data;
             }
 
-            console.log(res.data);
+            console.log(data);
 
         } catch (error) {
-            console.error(error);
+            console.error("Country List Error:", error);
         }
     };
 
     onMounted(() => {
         getCountries();
     });
+
+
+
+    const getCities = async (countryCode, target) => {
+        try {
+            console.log("Country:", countryCode);
+            if (!countryCode) {
+                target.value = [];
+                return;
+            }
+
+            const payload = {
+                soft_cust_id: userData.soft_cust_id,
+                partition_id: userData.partition_id,
+                language_id: userData.language_id,
+                user_id: userData.user_id,
+                country_code: countryCode,
+                city_name: ""
+            };
+
+            const { data } = await apiClient.post(
+                "/common/city_location_list_json.php",
+                payload
+            );
+
+            target.value = data.header_data.success ? data.details_data : [];
+        } catch (error) {
+            console.error("City List Error:", error);
+            target.value = [];
+        }
+    };
+
+    watch(
+        () => form.value.web_cms_shipper_country,
+        (newCountry) => {
+            console.log("Shipper:", newCountry);
+            getCities(newCountry, shipperCities);
+        }
+    );
+
+    watch(
+        () => form.value.web_cms_consignee_country,
+        (newCountry) => {
+            console.log("Consignee:", newCountry);
+            getCities(newCountry, consigneeCities);
+        }
+    );
+
+    watch(
+        () => form.value.web_cms_third_party_country,
+        (newCountry) => {
+            console.log("Third Party:", newCountry);
+            getCities(newCountry, thirdPartyCities);
+        }
+    );
+
 
 
 
@@ -288,11 +373,11 @@
     });
 
     const totalWeight = computed(() => {
-    return rows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
+        return rows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
     });
 
     const totalChargeableWeight = computed(() => {
-    return rows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
+        return rows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
     });
 
 
@@ -386,11 +471,11 @@
     });
 
     const totalItemWeight = computed(() => {
-    return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
+        return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.weight) || 0), 0).toFixed(3);
     });
 
     const totalItemChargeableWeight = computed(() => {
-    return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
+        return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.chargeableWeight) || 0), 0).toFixed(3);
     });
 
 
@@ -410,7 +495,7 @@
                         <tbody>
                             <!--- Others Table --->
                             <tr class="border-bootom-dotted">
-                                <td colspan="3" class="">
+                                <td colspan="5" class="">
                                     <div class="card card_children shadow-sm shipment-profile-card mb-3">
                                         <div class="card-header bg-light bg-gradient py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-house"></i> </h5>
@@ -422,7 +507,7 @@
                                                 <tbody>
                                                     <tr>
                                                         <td style="width: 25%;">
-                                                            <input type="hidden" name="row_id" id="row_id">
+                                                            <input type="hidden" name="ebkg_bkg_row_id" id="ebkg_bkg_row_id">
 
                                                             <label class="form-label"> Load Shipment Profile : </label>
                                                             <select v-model="form.web_cms_shipment_profile" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
@@ -442,22 +527,29 @@
                                                         <td style="width: 25%;">
                                                             <label for="inputEmail4" class="form-label"> Ship From :</label>
                                                             <div class="position-relative">
-                                                                <input type="hidden" v-model="form.web_cms_ship_form_code" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.ebkg_pol_code" class="uppercase-only">
 
                                                                 <div class="input-group online_bkg_search_inp">
-                                                                    <input type="text" v-model="form.web_cms_ship_form" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
+                                                                    <input type="text" v-model="form.ebkg_pol_country" class="form-control form-control-sm uppercase-only" placeholder="3+ CHARS TO SEARCH" autocomplete="off">
 
                                                                     <span class="input-group-text search_keyword search_keyword_enty_form">
                                                                         <i class="fa-solid fa-magnifying-glass"></i>
                                                                     </span>
                                                                 </div>
                                                                 
-                                                                <div id="pol_loader" class="pol_loader circle-dot-loader" style="display:none;">
-                                                                    <div></div><div></div><div></div><div></div>
-                                                                    <div></div><div></div><div></div><div></div>
-                                                                </div>
-
-                                                                <!-- <div id="pol_suggestions_box" class="global-suggestions-box" style="width: 540px!important;"></div> -->
+                                                                <BaseSuggestion 
+                                                                    v-model="form.ebkg_pol_country"
+                                                                    :dataList="dataList"
+                                                                    :headers="tableHeaders"
+                                                                    :columns="dataColumns"
+                                                                    :minChars="3"
+                                                                    displayKey="full_name"
+                                                                    width="550px"
+                                                                    left="0"
+                                                                    right="auto"
+                                                                    @select="handleSelect"
+                                                                />
+                                                               
                                                             </div>
                                                         </td>
                                                         <td style="width: 25%;">
@@ -490,10 +582,19 @@
                                 </td>
                             </tr>
 
-                            <!--- Shipper and Consignee Contact Details Table--->
+
+
+
+
+
+
+
+                            
+
+                            <!--- Shipper, Consignee anf 3rd Party Contact Details Table--->
                             <tr class="border-bootom-dotted">
                                 <!--- Shipper Contact Details Table--->
-                                <td style="width: 49.5%">
+                                <td style="width: 38%">
                                     <div class="card card_children shadow-sm shipper-card mb-3">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0">
@@ -509,7 +610,7 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 30%;">
+                                                        <td style="width: 35%;">
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                                                 <span>Company Name</span>
                                                                 <span>:</span>
@@ -552,15 +653,14 @@
                                                     <tr>
                                                         <td style="width: 140px;">
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Country / Territory</span>
+                                                                <span>Country/Territory</span>
                                                                 <span>:</span>
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <select
                                                                 class="form-select form-select-sm"
-                                                                v-model="form.web_cms_shipper_country"
-                                                            >
+                                                                v-model="form.web_cms_shipper_country">
                                                                 <option value="">Select Country</option>
 
                                                                 <option
@@ -595,7 +695,10 @@
                                                         <td>
                                                             <select v-model="form.web_cms_shipper_city" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected=""></option>
-                                                                
+
+                                                                <option v-for="city in shipperCities" :key="city.location_code" :value="city.location_code">
+                                                                    {{ city.location_name }}
+                                                                </option>
                                                             </select>
                                                         </td>
                                                     </tr>
@@ -651,7 +754,7 @@
                                 <td style="width: 1%;"></td>
 
                                 <!--- Consignee Contact Details Table--->
-                                <td style="width: 49.5%">
+                                <td style="width: 30.5%">
                                     <div class="card card_children shadow-sm consinee-card mb-3">
                                         <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0">
@@ -667,12 +770,6 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 30%;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Company Name</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <div class="d-flex gap-1 align-items-center">
                                                                 <input type="hidden" v-model="form.web_cms_consignee_code" class="uppercase-only">
@@ -686,113 +783,57 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Address</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <textarea v-model="form.web_cms_consignee_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Postal Code</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="text" v-model="form.web_cms_consignee_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                            <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Country / Territory</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
-                                                            <select v-model="form.web_cms_consignee_country" class="form-select form-select-sm" autocomplete="off">
-                                                                <option value="" selected=""></option>
-                                                                <option value="AF">AF - Afghanistan</option>
-                                                                <option value="AL"> AL - Albania</option>
-                                                                <option value="DZ">DZ - Algeria</option>
-                                                                <option value="AS">AS - American Samoa</option>
-                                                                <option value="AD">AD - Andorra</option>
-                                                                <option value="AO">AO - Angola</option>
-                                                                <option value="AI">AI - Anguilla</option>
-                                                                <option value="AQ">AQ - Antarctica</option>
+                                                            <select class="form-select form-select-sm" v-model="form.web_cms_consignee_country">
+                                                                <option value="">Select Country</option>
+                                                                <option v-for="country in countries" :key="country.country_code" :value="country.country_code">
+                                                                    {{ country.country_code }} - {{ country.country_name }}
+                                                                </option>
                                                             </select>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                            <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>State TAX ID/I.E.</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="text" v-model="form.web_cms_consignee_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>City</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <select v-model="form.web_cms_consignee_city" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="" selected=""></option>
-                                                                
+
+                                                                <option v-for="city in consigneeCities" :key="city.location_code" :value="city.location_code">
+                                                                    {{ city.location_name }}
+                                                                </option>
                                                             </select>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Contract Name</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="text" v-model="form.web_cms_consignee_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Phone Number</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="text" v-model="form.web_cms_consignee_phone_number" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Email</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="email" v-model="form.web_cms_consignee_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 140px;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Carrier</span>
-                                                                <span>:</span>
-                                                            </div>
-                                                        </td>
                                                         <td>
                                                             <input type="text" v-model="form.web_cms_consignee_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
                                                         </td>
@@ -802,11 +843,117 @@
                                         </div>
                                     </div>
                                 </td>
+
+                                <td style="width: 1%;"></td>
+
+                                <!--- 3rd Party Contact Details Table--->
+                                <td style="width: 30.5%">
+                                    <div class="card card_children shadow-sm consinee-card mb-3">
+                                        <div class="card-header bg-light bg-gradient d-flex justify-content-between align-items-center">
+                                            <h5 class="header_title_children mb-0">
+                                                <i class="fa-solid fa-user"></i>
+                                                Third Party Contact Details
+                                            </h5>
+                                            <button type="button" id="save_consignee_btn" class="btn btn-sm btn-primary btn-cargoaim bg-gradient">
+                                                <i class="far fa-save" style="font-size: 16px;"></i>
+                                            </button>
+                                        </div>
+
+                                        <div class="card-body p-2">
+                                            <table class="table table-borderless align-middle m-0">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex gap-1 align-items-center">
+                                                                <input type="hidden" v-model="form.web_cms_third_party_code" class="uppercase-only">
+                                                            
+                                                                <input type="text" v-model="form.web_cms_third_party_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
+
+                                                                <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="third_party_list_id" @click="showCustModal = true">
+                                                                    <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <textarea v-model="form.web_cms_third_party_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                        </td>                                                            
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" v-model="form.web_cms_third_party_postal_code" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <select class="form-select form-select-sm" v-model="form.web_cms_third_party_country">
+                                                                <option value="">Select Country</option>
+                                                                <option v-for="country in countries" :key="country.country_code" :value="country.country_code">
+                                                                    {{ country.country_code }} - {{ country.country_name }}
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" v-model="form.web_cms_third_party_state_tax" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <select v-model="form.web_cms_third_party_city" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value="" selected=""></option>
+
+                                                                <option v-for="city in thirdPartyCities" :key="city.location_code" :value="city.location_code">
+                                                                    {{ city.location_name }}
+                                                                </option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" v-model="form.web_cms_third_party_contract_name" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" v-model="form.web_cms_third_party_phone_number" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="email" v-model="form.web_cms_third_party_email" class="form-control form-control-sm" placeholder="Email" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" v-model="form.web_cms_third_party_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                             <!--- Container Packages Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-box"></i> PACKAGES DETAILS</h5>
@@ -935,7 +1082,7 @@
 
                             <!--- Container Items Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-box"></i> ITEMS DETAILS</h5>
@@ -1043,7 +1190,7 @@
 
                             <!--- Dangerous Goods Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm dangerous-good-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <div class="d-flex align-items-center gap-2">
@@ -1158,7 +1305,7 @@
 
                             <!--- Service Details Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm service-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-toolbox"></i> Service Details</h5>
@@ -1209,7 +1356,7 @@
 
                              <!--- Additional Options Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm additional-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-circle"></i> Additional Options</h5>
@@ -1321,7 +1468,7 @@
 
                             <!--- Pickup/Drop-off Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm pickup-drop-off-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-truck"></i> Pickup/Drop-off </h5>
@@ -1452,7 +1599,7 @@
 
                             <!--- Billing Details Table--->
                             <tr>
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm billing-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-money-bills"></i> Billing Details</h5>
@@ -1495,7 +1642,7 @@
 
                             <!--- Save Shipment Profile Name Table--->
                             <tr id="saveShipmentRow">
-                                <td colspan="3">
+                                <td colspan="5">
                                     <div class="card card_children shadow-sm billing-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
                                             <h5 class="header_title_children mb-0"><i class="fa-solid fa-floppy-disk"></i> Save Shipment Profile Name</h5>
@@ -1578,7 +1725,8 @@
         font-size: 14px !important;
     }
     #shipper_list_id,
-    #consignee_list_id {
+    #consignee_list_id,
+    #third_party_list_id {
         width: 30px;
     }
     input::placeholder, 
@@ -1662,5 +1810,24 @@
 
 
 
+
+    @media (max-width: 1366px) {
+        .booking_card {
+            margin: 0px 100px;
+        }
+        .table tbody td
+        {
+            font-size: 12px;
+        }
+    }
+    @media (max-width: 1200px) {
+        .booking_card {
+            margin: 0px;
+        }
+        .table tbody td
+        {
+            font-size: 12px;
+        }
+    }
     
 </style>
