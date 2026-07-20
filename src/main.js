@@ -34,7 +34,6 @@ const pinia = createPinia();
 app.use(pinia)
 app.use(router)
 app.use(VueApexCharts)
-app.component('apexchart', VueApexCharts)
 app.use(Toast, {
     position: "top-right",
     timeout: 1500,

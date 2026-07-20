@@ -3,12 +3,12 @@ import DashboardLayout from '@/shared/layouts/DashboardLayout.vue'
 export default [
     {
         path: '/my_bookings',
-        name: 'All Bookings',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'All Bookings',
                 meta: { title: 'All Bookings' },
                 component: () => import('@/modules/booking/pages/Dashboard.vue')
             },

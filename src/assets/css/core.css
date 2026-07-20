@@ -290,7 +290,8 @@ select.form-select {
 
 /* Focus / Active state  */
 select.form-select:focus,
-input.form-control:focus {
+input.form-control:focus,
+textarea.form-control:focus {
     outline: none;
     border-color: var(--input-focus-border);
     background-color: var(--input-focus-bg);

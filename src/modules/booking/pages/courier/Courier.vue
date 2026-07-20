@@ -2,16 +2,20 @@
     import { ref, watch, computed, onMounted } from 'vue';
     import apiClient from "@/core/apiClient";
     import {userData} from "@/shared/utils/userInfo.js";
-
-    
-    import BaseModal from '@/shared/components/modal/BaseModal.vue';
-    import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
-    
-    import BaseSuggestion from '@/shared/components/suggestion/BaseSuggestion.vue';
-
+    import { useAuthStore } from '@/modules/auth/store/authStore'
     import { useToast } from "vue-toastification"; // Toast call
 
+    import BaseModal from '@/shared/components/modal/BaseModal.vue';
+    import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
+    import BaseSuggestion from '@/shared/components/suggestion/BaseSuggestion.vue';
+
     const toast = useToast();
+
+    const authStore = useAuthStore()
+    const user = authStore.getUser
+
+    console.log(user);
+
 
     const showCustModal = ref(false)
 
@@ -31,7 +35,7 @@
         language_id: "EN",
         user_id: "admin.demo",
         ebkg_bkg_row_id: "",
-        ebkg_creator_customer_code: "BD0001",
+        ebkg_creator_customer_code: user?.company_id ?? '',
 
         ebkg_bkg_no: "",
         ebkg_hbl_no: "",
@@ -46,10 +50,9 @@
         ebkg_pol_code: "", //pol
         ebkg_pod_country: "",//pod
         ebkg_pod_code: "",//pod
-        ebkg_creator_customer_code: "",//Create Customer Code
 
         // Shipper
-        ebkg_shipper_code: "",
+        ebkg_shipper_code: "BD0001",
         ebkg_shipper_name: "",
         ebkg_pay_party_party_type: "Customer",
         ebkg_shipper_address: "",
@@ -64,7 +67,7 @@
         ebkg_shipper_carrier: "",
 
         // Consignee
-        ebkg_consignee_code: "",
+        ebkg_consignee_code: "BD0001",
         ebkg_consignee_name: "",
         ebkg_consignee_party_type: "Customer",
         ebkg_consignee_address: "",
@@ -79,7 +82,7 @@
         ebkg_consignee_carrier: "",
 
         // Third Party
-        ebkg_pay_party_code: "",
+        ebkg_pay_party_code: "BD0001",
         ebkg_pay_party_name: "",
         ebkg_pay_party_party_type: "Customer",
         ebkg_pay_party_address: "",
@@ -94,7 +97,7 @@
         ebkg_pay_party_carrier: "",
 
         // Dangerous Goods
-        ebkg_dg_yes_no: false,
+        ebkg_dg_yes_no: "",
         ebkg_dg_class: "",
         ebkg_dg_un_no: "",
         ebkg_dg_pkg_group: "",
@@ -125,10 +128,14 @@
         ebkg_picup_drop_off_email: "",
         ebkg_picup_drop_off_address: "",
 
-        // Billing
-        ebkg_billing_type: "",
-        ebkg_account_no: "",
+        ebkg_email_cc: "",
+        ebkg_main_remarks: "",
 
+        // Billing
+        ebkg_billing_type: "1",
+        ebkg_account_no: "",
+        
+        ebkg_incoterm: "1",
         // Save Shipment btn 
         action: "ebkg_save_update",
 
@@ -168,7 +175,62 @@
     });
 
 
-    // Location list json (POL/POD)
+
+    const saveBooking = async () => {
+        try {
+            const payload = {
+                main_data: {
+                    ...form.value,
+                    package_data: undefined,
+                    item_data: undefined,
+                },
+
+                package_data: rows.value.map(row => ({
+                    ebkg_pkg_row_id: row.ebkg_pkg_row_id || "",
+                    ebkg_pkg_pkg_qty: row.ebkg_pkg_pkg_qty,
+                    ebkg_pkg_pkg_type: row.ebkg_pkg_pkg_type,
+                    ebkg_pkg_weight: row.ebkg_pkg_weight,
+                    ebkg_pkg_weight_type: row.ebkg_pkg_weight_type,
+                    ebkg_pkg_length: row.ebkg_pkg_length,
+                    ebkg_pkg_width: row.ebkg_pkg_width,
+                    ebkg_pkg_height: row.ebkg_pkg_height,
+                    ebkg_pkg_dimension_type: row.ebkg_pkg_dimension_type,
+                    ebkg_pkg_chargeable_weight: row.ebkg_pkg_chargeable_weight,
+                    ebkg_pkg_remarks: row.ebkg_pkg_remarks,
+                })),
+
+                item_data: itemRows.value.map(row => ({
+                    ebkg_item_row_id: row.ebkg_item_row_id || "",
+                    ebkg_item_name: row.ebkg_item_name,
+                    ebkg_item_qty: row.ebkg_item_qty,
+                    ebkg_item_customs_value: row.ebkg_item_customs_value,
+                    ebkg_item_currency: row.ebkg_item_currency,
+                    ebkg_item_hs_code: row.ebkg_item_hs_code,
+                    ebkg_item_weight: row.ebkg_item_weight,
+                    ebkg_item_weight_type: row.ebkg_item_weight_type,
+                    ebkg_item_made_in: row.ebkg_item_made_in,
+                    ebkg_item_remarks: row.ebkg_item_remarks,
+                })),
+            };
+
+            console.log(payload);
+
+            const { data } = await apiClient.post(
+                "/online/ebooking/new_ebkg_create_save_update_json.php",
+                payload
+            );
+
+            
+            console.log(data);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    
+
+
+    /**************** Location list api json (POL/POD) - Start ****************/
     const get_pol_pod_list = async (locationCode, target) => {
         if (!target) {
             console.warn("Target reference is missing!");
@@ -229,32 +291,30 @@
         }
     );
 
-    
-    // টেবিলের হেডারলিস্ট
+    // Suggestion Table Header 
     const tableHeaders = ["SN", "Code", "Country", "Location Name", "ZIP", "State"];
 
-    // অবজেক্টের প্রোপার্টি বা কি (Keys) যেগুলোর ডেটা টেবিলে দেখাবে
+    // Suggestion Table Body 
     const dataColumns = ["location_code", "country_code", "location_name", "zip_code", "state_code"];
 
-    // আইটেম সিলেক্ট হলে এই ফাংশনটি কল হবে
+    // Hidden code select data valu pol
     const handlePolCodeSelect = (item) => {
         selectedPolCode.value = item;
         form.value.ebkg_pol_code = item.location_code; 
         console.log("Selected POL code:", item);
     };
 
-    // আইটেম সিলেক্ট হলে এই ফাংশনটি কল হবে
+    // Hidden code select data valu pol
     const handlePodCodeSelect = (item) => {
         selectedPodCode.value = item;
         form.value.ebkg_pod_code = item.location_code; 
         console.log("Selected POD code:", item);
     };
+    /**************** Location list api json (POL/POD) - End ********************/
 
 
 
-
-    
-
+    /**************** Countries list api json - Start ********************/
     const getCountries = async () => {
         try {
             const payload = {
@@ -280,6 +340,11 @@
             console.error("Country List Error:", error);
         }
     };
+    /**************** Countries list api json - End ********************/
+
+
+
+    /**************** Container Package list api json - Start ********************/
     const getPackageList = async () => {
         try {
             const payload = {
@@ -305,6 +370,11 @@
             console.error("Package List Error:", error);
         }
     };
+    /**************** Container Package list api json - End ********************/
+
+
+
+    /**************** Currency list api json - Start ********************/
     const getcurrencyList = async () => {
         try {
             const payload = {
@@ -329,15 +399,19 @@
             console.error("Package List Error:", error);
         }
     };
-
+    /**************** Currency list api json - End ********************/
+    
+    /**************** Component Mounted Hook - Start ****************/
     onMounted(() => {
         getCountries();
         getPackageList();
         getcurrencyList();
     });
+    /**************** Component Mounted Hook - End ****************/
 
 
 
+    /**************** Load city list based on selected country - Start ****************/
     const getCities = async (countryCode, target) => {
         try {
             console.log("Country:", countryCode);
@@ -367,6 +441,7 @@
         }
     };
 
+    //Shipper Cities
     watch(
         () => form.value.ebkg_shipper_country,
         (newCountry) => {
@@ -375,6 +450,7 @@
         }
     );
 
+    //Consignee Cities
     watch(
         () => form.value.ebkg_consignee_country,
         (newCountry) => {
@@ -383,6 +459,7 @@
         }
     );
 
+    //Third Party Cities
     watch(
         () => form.value.ebkg_pay_party_country,
         (newCountry) => {
@@ -390,13 +467,14 @@
             getCities(newCountry, thirdPartyCities);
         }
     );
+    /**************** Load city list based on selected country - End ****************/
 
 
 
 
 
 
-    //---- Dangerous Goods Check Box -----//
+    //---- Handle all File Change Start -----//
 
     const handleDGFileChange = (event) => {
         form.value.ebkg_dg_files = Array.from(event.target.files);
@@ -405,6 +483,7 @@
     const handleInvoiceFileChange = (event) => {
         form.value.web_cms_invoice_upload_file = Array.from(event.target.files);
     };
+    //---- Handle all File Change End -----//
 
 
 
@@ -428,29 +507,7 @@
 
 
 
-
-    // ১. প্যাকেজ টাইপ অপশনগুলোর লিস্ট
-    const pkgTypes = [
-    { value: 'AM', label: 'AM-Ampoule, non-protect' },
-    { value: 'AP', label: 'AP-Ampoule, protected' },
-    { value: 'BG', label: 'BG-Bag' },
-    { value: '5L', label: '5L-Bag, textile' },
-    { value: 'BL', label: 'BL-Bale' },
-    { value: 'BF', label: 'BF-Balloon, non-protect' },
-    { value: 'BX', label: 'BX-Box' },
-    { value: '4A', label: '4A-Box, steel' },
-    { value: 'BE', label: 'BE-Bundle' },
-    { value: 'CI', label: 'CI-Canister' },
-    { value: 'CO', label: 'CO-Carboy, non-protecte' },
-    { value: 'CT', label: 'CT-CARTON' },
-    { value: 'CQ', label: 'CQ-Cartridge' },
-    { value: 'CS', label: 'CS-Case' },
-    { value: 'EF', label: 'EF-Case, with pallet ba' },
-    { value: 'ED', label: 'ED-Case, with pallet ba' },
-    { value: 'CR', label: 'CR-Crate' }
-    ];
-
-    // ২. Rows Reactive Data (ডিফল্ট ১টি রো থাকবে)
+    /************** Package row add delete (footer total count) Start **********/
     const rows = ref([
     {
         ebkg_pkg_pkg_qty: 1,
@@ -466,7 +523,6 @@
     }
     ]);
 
-    // ৩. নতুন রো অ্যাড করার ফাংশন
     const addRowPKGbtn = () => {
     rows.value.push({
         ebkg_pkg_pkg_qty: 1,
@@ -482,7 +538,6 @@
     });
     };
 
-    // ৪. রো ডিলিট করার ফাংশন
     const deleteRow = (index) => {
     if (rows.value.length > 1) {
         rows.value.splice(index, 1);
@@ -491,8 +546,6 @@
     }
     };
 
-    // ৫. চার্জেবল ওয়েট ক্যালকুলেশন (উদাহরণস্বরূপ Volume Weight এর লজিক দেওয়া হলো)
-    // আপনি আপনার লজিক অনুযায়ী এটি পরিবর্তন করতে পারেন
     const calculateChargeableWeight = (row) => {
     if (row.ebkg_pkg_length && row.ebkg_pkg_width && row.ebkg_pkg_height && row.ebkg_pkg_pkg_qty) {
         // Air Freight Standard Volumetric formula: (L * W * H) / 6000 * Qty
@@ -504,7 +557,6 @@
     }
     };
 
-    // ৬. ফুটারের জন্য টোটাল হিসাব (Computed Properties)
     const totalQty = computed(() => {
     return rows.value.reduce((sum, row) => sum + (parseInt(row.ebkg_pkg_pkg_qty) || 0), 0);
     });
@@ -516,14 +568,14 @@
     const totalChargeableWeight = computed(() => {
         return rows.value.reduce((sum, row) => sum + (parseFloat(row.ebkg_pkg_chargeable_weight) || 0), 0).toFixed(3);
     });
+    /************** Package row add delete (footer total count) End **********/
 
     
    
 
 
 
-
-    // ২. Items Reactive Data (ডিফল্ট ১টি রো থাকবে)
+    /************** Items row add delete (footer total count) Start **********/
     const itemRows = ref([
         {
             ebkg_item_qty: 1,
@@ -538,7 +590,6 @@
         }
     ]);
 
-    // ৩. নতুন আইটেম রো অ্যাড করার ফাংশন
     const addItemRow = () => {
         itemRows.value.push({
             ebkg_item_qty: 1,
@@ -553,7 +604,6 @@
         });
     };
 
-    // ৪. আইটেম রো ডিলিট করার ফাংশন
     const deleteItemRow = (index) => {
         if (itemRows.value.length > 1) {
             itemRows.value.splice(index, 1);
@@ -562,7 +612,6 @@
         }
     };
 
-    // ৫. ফুটারের জন্য টোটাল হিসাব (Computed Properties)
     const totalItemQty = computed(() => {
         return itemRows.value.reduce((sum, row) => sum + (parseInt(row.ebkg_item_qty) || 0), 0);
     });
@@ -570,6 +619,50 @@
     const totalItemWeight = computed(() => {
         return itemRows.value.reduce((sum, row) => sum + (parseFloat(row.ebkg_item_weight) || 0), 0).toFixed(3);
     });
+
+    /************** Items row add delete (footer total count) End **********/
+
+
+
+
+
+
+    /******************* CC Email Start***************/
+    const cc_emails = ref([]);
+    const cc_inputEmail = ref("");
+    const cc_emailInput = ref(null);
+
+    const ebkg_email_cc = computed(() => cc_emails.value.join(","));
+
+    const ccEmailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    const ccAddEmail = () => {
+        const email = cc_inputEmail.value.trim();
+
+        if (!email) return;
+
+        if (!ccEmailRegex.test(email)) {
+            alert("Invalid email address");
+            return;
+        }
+
+        if (!cc_emails.value.includes(email)) {
+            cc_emails.value.push(email);
+        }
+
+        cc_inputEmail.value = "";
+    };
+
+    const ccRemoveEmail = (index) => {
+        cc_emails.value.splice(index, 1);
+    };
+
+    const ccFocusInput = () => {
+        cc_emailInput.value?.focus();
+    };
+    /******************* CC Email End***************/
+
+
 
 
 
@@ -668,30 +761,6 @@
                                                                 />
                                                             </div>
                                                         </td>
-                                                        <!-- <td style="width: 20%;">
-                                                            <label for="inputPassword4" class="form-label"> Creator Customer :</label>
-
-                                                            <div class="position-relative">
-                                                                <input type="hidden" v-model="form.ebkg_creator_customer_code" class="uppercase-only">
-
-                                                                <div class="">
-                                                                    <i class="fa fa-search suggestion-search-icon"></i>
-                                                                    <input type="search" v-model="form.ebkg_creator_customer_name" class="suggestion-search-input form-control form-control-sm" placeholder="Search category…">
-                                                                </div>
-                                                                
-                                                                <BaseSuggestion 
-                                                                    v-model="form.ebkg_creator_customer_name"
-                                                                    :dataList="pol_pod_list"
-                                                                    :headers="tableHeaders"
-                                                                    :columns="dataColumns"
-                                                                    :minChars="3"
-                                                                    displayKey="location_name"
-                                                                    width="550px"
-                                                                    left="auto"
-                                                                    right="0"
-                                                                />
-                                                            </div>
-                                                        </td> -->
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -699,9 +768,6 @@
                                     </div>
                                 </td>
                             </tr>
-
-
-
 
                             <!--- Shipper, Consignee anf 3rd Party Contact Details Table--->
                             <tr class="border-bootom-dotted">
@@ -1783,46 +1849,62 @@
                                 </td>
                             </tr>
 
-
-
-
-                            <!--- Billing Details Table--->
+                            <!--- CC Email & Remarks Table--->
                             <tr>
                                 <td colspan="5">
                                     <div class="card card_children shadow-sm billing-card mb-3">
                                         <div class="card-header bg-light py-1 d-flex justify-content-between align-items-center">
-                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-money-bills"></i> CC Email & Remarks </h5>
+                                            <h5 class="header_title_children mb-0"><i class="fa-solid fa-envelope"></i> CC Email & Remarks </h5>
                                         </div>
 
                                         <div class="card-body p-2">
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 50%;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Billing Type</span>
-                                                                <span>:</span>
-                                                            </div>
+                                                        <td style="width: 60%;">
+                                                            <span>Add CC Email Addresses:</span>
                                                         </td>
-                                                        <td style="width: 50%;">
-                                                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                <span>Account No</span>
-                                                                <span>:</span>
-                                                            </div>
+                                                        <td style="width: 40%;">
+                                                            <span>Remark:</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="width: 50%;">
-                                                            <select v-model="form.ebkg_billing_type" class="form-select form-select-sm" autocomplete="off">
-                                                                <option value="" selected="">Select Billing Type</option>
-                                                                <option value="Recipient"> Recipient </option>
-                                                                <option value="My account"> My account </option>
-                                                                <option value="Third-party"> Third-party </option>
-                                                            </select>
+                                                        <td style="width:60%;">
+                                                            <!-- Hidden textarea -->
+                                                            <textarea class="form-control d-none" v-model="ebkg_email_cc" autocomplete="off" readonly></textarea>
+
+                                                            <!-- Chip Container -->
+                                                            <div class="mail-chip-container" @click="ccFocusInput">
+                                                                <div
+                                                                    v-for="(email, index) in cc_emails"
+                                                                    :key="index"
+                                                                    class="mail-chip"
+                                                                >
+                                                                    <span>{{ email }}</span>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        class="mail-chip-remove"
+                                                                        @click.stop="ccRemoveEmail(index)"
+                                                                    >
+                                                                        ×
+                                                                    </button>
+                                                                </div>
+
+                                                                <input
+                                                                    ref="cc_emailInput"
+                                                                    v-model="cc_inputEmail"
+                                                                    type="text"
+                                                                    class="mail-chip-input"
+                                                                    placeholder="Type email and press Enter"
+                                                                    @keydown.enter.prevent="ccAddEmail"
+                                                                    autocomplete="off"
+                                                                />
+                                                            </div>
                                                         </td>
                                                         
-                                                        <td style="width: 5dvw;">
-                                                            <input type="text" v-model="form.ebkg_account_no" class="form-control form-control-sm uppercase-only" placeholder="Account No" autocomplete="off">
+                                                        <td style="width: 40%;">
+                                                            <textarea  v-model="form.ebkg_main_remarks" cols="30" rows="1" class="form-control" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1831,8 +1913,6 @@
                                     </div>                                            
                                 </td>
                             </tr>
-
-
 
 
                             <!--- Save Shipment Profile Name Table--->
@@ -1873,7 +1953,7 @@
                 </div>
                 
                 <div class="text-end mb-2" style="margin-right: 9px;">
-                    <button type="submit" class="btn btn-primary btn-cargoaim bg-gradient" id="ebkg_save_update">
+                    <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="ebkg_save_update" @click="saveBooking">
                         <i class="fas fa-check-circle"></i>&nbsp;Submit
                     </button>
                 </div>
@@ -1915,9 +1995,6 @@
         font-size: 13px;
         transition: border-color .2s, box-shadow .2s;
     }
-    /* .suggestion-search-input:focus {
-        border-color: #0099FA;
-    } */
 
 
     .booking_card {
@@ -2026,6 +2103,123 @@
         font-size:14px;
         color:#555;
         font-weight:500;
+    }
+
+
+
+
+
+
+
+
+
+
+    .mail-chip-container {
+        min-height: 160px;
+        max-height: 160px;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 5px;
+        cursor: text;
+        background: #fff;
+        
+    }
+    .mail-chip-container:focus-within {
+        border-color: var(--input-focus-border);
+        background-color: var(--input-focus-bg);
+        box-shadow: 0 0 0 var(--input-focus-shadow-spread) var(--input-focus-shadow);
+    }
+
+    /* Scrollbar width */
+    .mail-chip-container::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .mail-chip-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    /* Thumb */
+    .mail-chip-container::-webkit-scrollbar-thumb {
+        background: #9a9a9a;
+        border-radius: 10px;
+        border: 2px solid #f1f1f1;
+    }
+
+    .mail-chip-container::-webkit-scrollbar-thumb:hover {
+        background: #7b7b7b;
+    }
+
+    /* Arrow buttons */
+    .mail-chip-container::-webkit-scrollbar-button:single-button {
+        display: block;
+        height: 14px;
+        background: #e5e5e5;
+        border-radius: 6px;
+    }
+
+    /* Up arrow */
+    .mail-chip-container::-webkit-scrollbar-button:single-button:vertical:decrement {
+        background: #e5e5e5
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><polygon points='5,2 9,7 1,7' fill='%23666'/></svg>")
+            no-repeat center;
+    }
+
+    /* Down arrow */
+    .mail-chip-container::-webkit-scrollbar-button:single-button:vertical:increment {
+        background: #e5e5e5
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><polygon points='1,3 9,3 5,8' fill='%23666'/></svg>")
+            no-repeat center;
+    }
+
+
+
+
+    .mail-chip {
+        display: inline-flex;
+        align-items: center;
+        background: #e9f2ff;
+        color: #0d6efd;
+        border-radius: 20px;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        height: 22px;
+    }
+
+    .mail-chip-remove {
+        border: none;
+        background: transparent;
+        color: #0d6efd;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-left: 6px;
+        line-height: 1;
+    }
+
+    .mail-chip-input {
+        flex: 1;
+        min-width: 180px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        padding: 5px;
+        background: transparent;
+        height: 22px;
+    }
+
+    .mail-chip-input::placeholder {
+        color: #6c757d;
     }
 
 

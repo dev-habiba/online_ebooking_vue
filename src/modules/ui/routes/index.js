@@ -3,12 +3,12 @@ import DashboardLayout from '@/shared/layouts/DashboardLayout.vue'
 export default [
     {
         path: '/blank',
-        name: 'Blank Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Blank Page', // ✅
                 meta: { title: 'Blank Page' },
                 component: () => import('@modules/ui/pages/BlankPage.vue')
             }
@@ -16,12 +16,12 @@ export default [
     },
     {
         path: '/loader',
-        name: 'Loader Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Loader Page',
                 meta: { title: 'Loader Page' },
                 component: () => import('@modules/ui/pages/LoaderTest.vue')
             }
@@ -29,12 +29,12 @@ export default [
     },
     {
         path: '/modal',
-        name: 'Modal Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Modal Page',
                 meta: { title: 'Modal Page' },
                 component: () => import('@modules/ui/pages/Modal.vue')
             }
@@ -42,12 +42,12 @@ export default [
     },
     {
         path: '/sweetalert',
-        name: 'SweetAlert Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'SweetAlert Page',
                 meta: { title: 'SweetAlert Page' },
                 component: () => import('@modules/ui/pages/SweetAlert.vue')
             }
@@ -55,12 +55,12 @@ export default [
     },
     {
         path: '/table',
-        name: 'Table Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Table Page',
                 meta: { title: 'Table Page' },
                 component: () => import('@modules/ui/pages/Table.vue')
             }
@@ -68,12 +68,12 @@ export default [
     },
     {
         path: '/breadcrumb',
-        name: 'Breadcrumb Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Breadcrumb Page',
                 meta: { title: 'Breadcrumb Page' },
                 component: () => import('@modules/ui/pages/Breadcrumb.vue')
             }
@@ -81,12 +81,12 @@ export default [
     },
     {
         path: '/color',
-        name: 'Color Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Color Page',
                 meta: { title: 'Color Page' },
                 component: () => import('@modules/ui/pages/Color.vue')
             }
@@ -94,12 +94,12 @@ export default [
     },
     {
         path: '/suggestion',
-        name: 'Suggestion Test Page',
-        component: DashboardLayout ,
+        component: DashboardLayout,
         meta: { requiresAuth: true },
         children: [
             {
                 path: '',
+                name: 'Suggestion Test Page',
                 meta: { title: 'Suggestion Page' },
                 component: () => import('@modules/ui/pages/Suggestion.vue')
             }
