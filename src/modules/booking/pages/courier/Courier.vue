@@ -5,6 +5,8 @@
     import { useAuthStore } from '@/modules/auth/store/authStore'
     import { useToast } from "vue-toastification"; // Toast call
 
+    import { vUppercase, vNumberDecimal, vNumberOnly } from '@/modules/booking/composables/bookingMain.js';
+
     import BaseModal from '@/shared/components/modal/BaseModal.vue';
     import CustListModal from '@/modules/booking/components/modal/CustomerListModal.vue';
     import BaseSuggestion from '@/shared/components/suggestion/BaseSuggestion.vue';
@@ -33,7 +35,7 @@
         soft_cust_id: "DEMO",
         partition_id: "1004",
         language_id: "EN",
-        user_id: "admin.demo",
+        user_id: user?.userId ?? '',
         ebkg_bkg_row_id: "",
         ebkg_creator_customer_code: user?.company_id ?? '',
 
@@ -135,7 +137,7 @@
         ebkg_billing_type: "1",
         ebkg_account_no: "",
         
-        ebkg_incoterm: "1",
+        ebkg_incoterm: "",
         // Save Shipment btn 
         action: "ebkg_save_update",
 
@@ -228,7 +230,6 @@
         }
     };
     
-
 
     /**************** Location list api json (POL/POD) - Start ****************/
     const get_pol_pod_list = async (locationCode, target) => {
@@ -334,7 +335,7 @@
                 countries.value = data.details_data;
             }
 
-            console.log(data);
+            // console.log(data);
 
         } catch (error) {
             console.error("Country List Error:", error);
@@ -364,7 +365,7 @@
                 packageList.value = data.details_data;
             }
 
-            console.log(data);
+            // console.log(data);
 
         } catch (error) {
             console.error("Package List Error:", error);
@@ -393,7 +394,7 @@
                 currencyList.value = data.details_data;
             }
 
-            console.log(data);
+            // console.log(data);
 
         } catch (error) {
             console.error("Package List Error:", error);
@@ -474,36 +475,38 @@
 
 
 
-    //---- Handle all File Change Start -----//
+    //---- Handle DG Toggle Change Start -----//
 
+    const handleDGToggle = (event) => {
+        if (!form.value.ebkg_dg_yes_no) {
+            form.value.ebkg_dg_class = "";
+            form.value.ebkg_dg_un_no = "";
+            form.value.ebkg_dg_pkg_group = "";
+            form.value.ebkg_dg_flash_poin = "";
+            form.value.ebkg_dg_files = [];
+
+            // File input clear
+            event.target
+                .closest(".dangerous-good-card")
+                .querySelector(".file-input").value = "";
+        }
+    };
+
+    // Handle DG Upload File
     const handleDGFileChange = (event) => {
         form.value.ebkg_dg_files = Array.from(event.target.files);
     };
+    //---- Handle DG Toggle Change Start -----//
 
+
+    //---- Handle Invoice Upload File Start -----//
     const handleInvoiceFileChange = (event) => {
         form.value.web_cms_invoice_upload_file = Array.from(event.target.files);
     };
-    //---- Handle all File Change End -----//
+    //---- Handle Invoice Upload File End -----//
 
 
 
-
-
-
-    const validateNumber = (row, field, event) => {
-        let value = event.target.value;
-
-        value = value.replace(/[^0-9.]/g, '');
-
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-
-        row[field] = value;
-
-        calculateItemChargeableWeight(row);
-    };
 
 
 
@@ -524,18 +527,18 @@
     ]);
 
     const addRowPKGbtn = () => {
-    rows.value.push({
-        ebkg_pkg_pkg_qty: 1,
-        ebkg_pkg_pkg_type: 'CT',
-        ebkg_pkg_weight: '',
-        ebkg_pkg_weight_type: 'KG',
-        ebkg_pkg_length: '',
-        ebkg_pkg_width: '',
-        ebkg_pkg_height: '',
-        ebkg_pkg_chargeable_weight: '',
-        ebkg_pkg_dimension_type: 'CM',
-        ebkg_pkg_remarks: ''
-    });
+        rows.value.push({
+            ebkg_pkg_pkg_qty: 1,
+            ebkg_pkg_pkg_type: 'CT',
+            ebkg_pkg_weight: '',
+            ebkg_pkg_weight_type: 'KG',
+            ebkg_pkg_length: '',
+            ebkg_pkg_width: '',
+            ebkg_pkg_height: '',
+            ebkg_pkg_chargeable_weight: '',
+            ebkg_pkg_dimension_type: 'CM',
+            ebkg_pkg_remarks: ''
+        });
     };
 
     const deleteRow = (index) => {
@@ -547,14 +550,14 @@
     };
 
     const calculateChargeableWeight = (row) => {
-    if (row.ebkg_pkg_length && row.ebkg_pkg_width && row.ebkg_pkg_height && row.ebkg_pkg_pkg_qty) {
-        // Air Freight Standard Volumetric formula: (L * W * H) / 6000 * Qty
-        const volWeight = ((parseFloat(row.ebkg_pkg_length) * parseFloat(row.ebkg_pkg_width) * parseFloat(row.ebkg_pkg_height)) / 6000) * parseInt(row.ebkg_pkg_pkg_qty);
-        const grossWeight = parseFloat(row.ebkg_pkg_weight) || 0;
-        row.ebkg_pkg_chargeable_weight = Math.max(grossWeight, volWeight).toFixed(3);
-    } else {
-        row.ebkg_pkg_chargeable_weight = (parseFloat(row.ebkg_pkg_weight) || 0).toFixed(3);
-    }
+        if (row.ebkg_pkg_length && row.ebkg_pkg_width && row.ebkg_pkg_height && row.ebkg_pkg_pkg_qty) {
+            // Air Freight Standard Volumetric formula: (L * W * H) / 6000 * Qty
+            const volWeight = ((parseFloat(row.ebkg_pkg_length) * parseFloat(row.ebkg_pkg_width) * parseFloat(row.ebkg_pkg_height)) / 6000) * parseInt(row.ebkg_pkg_pkg_qty);
+            const grossWeight = parseFloat(row.ebkg_pkg_weight) || 0;
+            row.ebkg_pkg_chargeable_weight = Math.max(grossWeight, volWeight).toFixed(3);
+        } else {
+            row.ebkg_pkg_chargeable_weight = (parseFloat(row.ebkg_pkg_weight) || 0).toFixed(3);
+        }
     };
 
     const totalQty = computed(() => {
@@ -584,7 +587,7 @@
             ebkg_item_currency: '',
             ebkg_item_hs_code: '',
             ebkg_item_weight: '',
-            ebkg_item_weight_type: 'kg',
+            ebkg_item_weight_type: 'KG',
             ebkg_item_made_in: 'CM',
             ebkg_item_remarks: ''
         }
@@ -598,7 +601,7 @@
             ebkg_item_currency: '',
             ebkg_item_hs_code: '',
             ebkg_item_weight: '',
-            ebkg_item_weight_type: 'kg',
+            ebkg_item_weight_type: 'KG',
             ebkg_item_made_in: 'CM',
             ebkg_item_remarks: ''
         });
@@ -614,6 +617,10 @@
 
     const totalItemQty = computed(() => {
         return itemRows.value.reduce((sum, row) => sum + (parseInt(row.ebkg_item_qty) || 0), 0);
+    });
+
+    const totalItemValue = computed(() => {
+        return itemRows.value.reduce((sum, row) => sum + (parseInt(row.ebkg_item_customs_value) || 0), 0);
     });
 
     const totalItemWeight = computed(() => {
@@ -666,6 +673,8 @@
 
 
 
+
+
 </script>
 
 <template>
@@ -693,32 +702,33 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-                                                        <td style="width: 25%;">
+                                                        <td style="width: 20%;">
                                                             <input type="hidden" v-model="form.ebkg_bkg_row_id">
 
                                                             <label class="form-label"> Load Shipment Profile : </label>
-                                                            <select v-model="form.shipment_profile_to_save_list" class="form-select form-select-sm" autocomplete="off"><option value=""></option>
+                                                            <select v-model="form.shipment_profile_to_save_list" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
                                                                 <option value="FILE">FILE</option> 
                                                                 <option value="TEST">TEST</option>
                                                                 <option value="TEST 2">TEST 2</option>
                                                                 <option value="TEST 3">TEST 3</option>
                                                             </select>
                                                         </td>
-                                                        <td style="width: 25%;">
+                                                        <td style="width: 20%;">
                                                             <label class="form-label"> Export/Import : </label>
                                                             <select v-model="form.ebkg_imp_exp" class="form-select form-select-sm" autocomplete="off">
                                                                 <option value="1"> Outbound Shipment </option>
                                                                 <option value="2"> Inbound Shipment </option>
                                                             </select>
                                                         </td>
-                                                        <td style="width: 25%;">
+                                                        <td style="width: 22%;">
                                                             <label for="inputEmail4" class="form-label"> Ship From :</label>
                                                             <div class="position-relative">
                                                                 <input type="hidden" v-model="form.ebkg_pol_code" class="uppercase-only">
 
                                                                 <div class="">
                                                                     <i class="fa fa-search suggestion-search-icon"></i>
-                                                                    <input type="search" v-model="form.ebkg_pol_country" class="suggestion-search-input form-control form-control-sm" placeholder="Search category…">
+                                                                    <input type="search" v-model="form.ebkg_pol_country" v-uppercase class="suggestion-search-input form-control form-control-sm" placeholder="Search category…">
                                                                 </div>
                                                                 
                                                                 <BaseSuggestion 
@@ -736,7 +746,7 @@
                                                                
                                                             </div>
                                                         </td>
-                                                        <td style="width: 25%;">
+                                                        <td style="width: 22%;">
                                                             <label for="inputPassword4" class="form-label"> Deliver / Ship To :</label>
 
                                                             <div class="position-relative">
@@ -744,7 +754,7 @@
 
                                                                 <div class="">
                                                                     <i class="fa fa-search suggestion-search-icon"></i>
-                                                                    <input type="search" v-model="form.ebkg_pod_country" class="suggestion-search-input form-control form-control-sm" placeholder="Search category…">
+                                                                    <input type="search" v-model="form.ebkg_pod_country" v-uppercase class="suggestion-search-input form-control form-control-sm" placeholder="Search category…">
                                                                 </div>
                                                                 
                                                                 <BaseSuggestion 
@@ -760,6 +770,25 @@
                                                                     @select="handlePodCodeSelect"
                                                                 />
                                                             </div>
+                                                        </td>
+                                                        <td style="width: 16%;">
+                                                            <label for="" class="form-label"> PP/CC :</label>
+
+                                                            <select  v-model="form.ebkg_incoterm" class="form-select form-select-sm" autocomplete="off">
+                                                                <option value=""></option>
+                                                                <option value="CFR">CFR - Cost and Freight (Prepaid)</option>
+                                                                <option value="CIF">CIF - Cost Insurance and Freight (Prepaid)</option>
+                                                                <option value="CIP">CIP - Carriage and Insurance Paid To (Prepaid)</option>
+                                                                <option value="CNF">CNF - Cost and Freight (Prepaid)</option>
+                                                                <option value="CPT">CPT - Carriage Paid To (Prepaid)</option>
+                                                                <option value="DAP">DAP - Delivered at Place (Prepaid)</option>
+                                                                <option value="DAT">DAT - Delivered at Terminal (Prepaid)</option>
+                                                                <option value="DDP">DDP - Delivered Duty Paid (Prepaid)</option>
+                                                                <option value="DPU">DPU - Delivered at Place Unloaded (Prepaid)</option>
+                                                                <option value="EXW">EXW - Ex Works (Collect)</option>
+                                                                <option value="FAS">FAS - Free Alongside Ship (Collect)</option>
+                                                                <option value="FCA">FCA - Free Carrier (Collect)</option><option value="FOB">FOB - Free On Board (Collect)</option>          
+                                                            </select>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -798,13 +827,13 @@
                                                             <div class="d-flex gap-1 align-items-center">
                                                                 <input type="hidden" v-model="form.ebkg_shipper_code">
 
-                                                                <input type="text" v-model="form.ebkg_shipper_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name">
+                                                                <input type="text" v-model="form.ebkg_shipper_name" v-uppercase class="form-control form-control-sm" placeholder="Company Name">
 
                                                                 <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="shipper_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
                                                                 </button>
 
-                                                                <input type="hidden" v-model="form.ebkg_pay_party_party_type">
+                                                                <input type="hidden" v-model="form.ebkg_pay_party_party_type" v-uppercase>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -816,7 +845,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <textarea v-model="form.ebkg_shipper_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.ebkg_shipper_address" v-uppercase cols="30" rows="1" class="form-control form-control-sm" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
@@ -827,7 +856,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_zip" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_zip" v-uppercase class="form-control form-control-sm" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -856,7 +885,7 @@
                                                         </td>
                                                         
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_state" class="form-control form-control-sm uppercase-only" placeholder="State" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_state" v-uppercase class="form-control form-control-sm" placeholder="State" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -885,7 +914,7 @@
                                                         </td>
                                                         
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_bin" class="form-control form-control-sm uppercase-only" placeholder="BIN/TAX" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_bin" v-uppercase class="form-control form-control-sm" placeholder="BIN/TAX" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -896,7 +925,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_pic" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_pic" v-uppercase class="form-control form-control-sm" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -907,7 +936,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_mobile" class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_mobile" v-uppercase class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -929,7 +958,7 @@
                                                             </div>
                                                         </td>
                                                             <td>
-                                                            <input type="text" v-model="form.ebkg_shipper_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_shipper_carrier" v-uppercase class="form-control form-control-sm" placeholder="Carrier" autocomplete="off">
                                                         </td>
                                                     </tr>
                                             </tbody></table>
@@ -958,26 +987,26 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex gap-1 align-items-center">
-                                                                <input type="hidden" v-model="form.ebkg_consignee_code" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.ebkg_consignee_code" v-uppercase>
                                                             
-                                                                <input type="text" v-model="form.ebkg_consignee_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
+                                                                <input type="text" v-model="form.ebkg_consignee_name" v-uppercase class="form-control form-control-sm" placeholder="Company Name" autocomplete="off">
 
                                                                 <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="consignee_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
                                                                 </button>
 
-                                                                <input type="hidden" v-model="form.ebkg_consignee_party_type">
+                                                                <input type="hidden" v-model="form.ebkg_consignee_party_type" v-uppercase>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <textarea v-model="form.ebkg_consignee_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.ebkg_consignee_address" v-uppercase cols="30" rows="1" class="form-control form-control-sm" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_zip" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_zip" v-uppercase class="form-control form-control-sm" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -992,7 +1021,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_state" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_state" v-uppercase class="form-control form-control-sm" placeholder="State TAX ID/I.E." autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1008,17 +1037,17 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_bin" class="form-control form-control-sm uppercase-only" placeholder="BIN/TAX" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_bin" v-uppercase class="form-control form-control-sm" placeholder="BIN/TAX" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_pic" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_pic" v-uppercase class="form-control form-control-sm" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_mobile" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_mobile" v-uppercase class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1028,7 +1057,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_consignee_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_consignee_carrier" v-uppercase class="form-control form-control-sm" placeholder="Carrier" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1058,26 +1087,26 @@
                                                     <tr>
                                                         <td>
                                                             <div class="d-flex gap-1 align-items-center">
-                                                                <input type="hidden" v-model="form.ebkg_pay_party_code" class="uppercase-only">
+                                                                <input type="hidden" v-model="form.ebkg_pay_party_code" v-uppercase>
                                                             
-                                                                <input type="text" v-model="form.ebkg_pay_party_name" class="form-control form-control-sm uppercase-only" placeholder="Company Name" autocomplete="off">
+                                                                <input type="text" v-model="form.ebkg_pay_party_name" v-uppercase class="form-control form-control-sm" placeholder="Company Name" autocomplete="off">
 
                                                                 <button type="button" class="btn btn-success btn-cargoaim btn-sm bg-gradient" id="third_party_list_id" @click="showCustModal = true">
                                                                     <i class="fa-solid fa-list-ul" style="font-size: 16px;"></i>
                                                                 </button>
 
-                                                                <input type="hidden" v-model="form.ebkg_pay_party_party_type">
+                                                                <input type="hidden" v-model="form.ebkg_pay_party_party_type" v-uppercase>
                                                             </div>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <textarea v-model="form.ebkg_pay_party_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Address" autocomplete="off"></textarea>
+                                                            <textarea v-model="form.ebkg_pay_party_address" v-uppercase cols="30" rows="1" class="form-control form-control-sm" placeholder="Address" autocomplete="off"></textarea>
                                                         </td>                                                            
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_zip" class="form-control form-control-sm uppercase-only" placeholder="Postal Code" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_zip" v-uppercase class="form-control form-control-sm" placeholder="Postal Code" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1092,7 +1121,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_state" class="form-control form-control-sm uppercase-only" placeholder="State TAX ID/I.E." autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_state" v-uppercase class="form-control form-control-sm" placeholder="State TAX ID/I.E." autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1108,17 +1137,17 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_bin" class="form-control form-control-sm uppercase-only" placeholder="BIN/TAX" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_bin" v-uppercase class="form-control form-control-sm" placeholder="BIN/TAX" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_pic" class="form-control form-control-sm uppercase-only" placeholder="Contract Name" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_pic" v-uppercase class="form-control form-control-sm" placeholder="Contract Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_mobile" class="form-control form-control-sm uppercase-only" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_mobile" v-uppercase class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1128,7 +1157,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_pay_party_carrier" class="form-control form-control-sm uppercase-only" placeholder="Carrier" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_pay_party_carrier" v-uppercase class="form-control form-control-sm" placeholder="Carrier" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1171,14 +1200,14 @@
                                                     <thead>
                                                     <tr class="text-muted small text-center" style="white-space: nowrap; vertical-align: middle;">
                                                         <th style="width: 20px;">SN</th>
-                                                        <th style="width: 40px;">PKG</th>
+                                                        <th style="width: 45px;">PKG</th>
                                                         <th style="width: 120px;">Type</th>
-                                                        <th style="width: 90px;">G.WT</th>
+                                                        <th style="width: 100px;">G.WT</th>
                                                         <th style="width: 40px;">Type</th>
                                                         <th style="width: 90px;">Length</th>
                                                         <th style="width: 90px;">Width</th>
                                                         <th style="width: 90px;">Height</th>
-                                                        <th style="width: 110px;">C.WT</th>
+                                                        <th style="width: 100px;">C.WT</th>
                                                         <th style="width: 50px;">Type</th>
                                                         <th>REMARK</th>
                                                         <th class="text-center" style="width: 35px;">
@@ -1195,10 +1224,9 @@
                                                             <td>
                                                                 <input v-model="row.ebkg_pkg_row_id" type="hidden">
 
-                                                                <input v-model="row.ebkg_pkg_pkg_qty" @input="validateNumber(row, 'ebkg_pkg_pkg_qty', $event)" type="text" class="form-control form-control-sm text-center">
+                                                                <input v-model="row.ebkg_pkg_pkg_qty" v-number-only type="text" class="form-control form-control-sm text-end">
                                                             </td>
                                                             <td>
-                                                            <slot>
                                                                 <select v-model="row.ebkg_pkg_pkg_type" class="form-select form-select-sm">
                                                                     <option value=""></option>
 
@@ -1206,43 +1234,42 @@
                                                                         {{ pkg.pkg_code }}-{{ pkg.pkg_description }}
                                                                     </option>
                                                                 </select>
-                                                            </slot>
                                                             </td>
                                                             <td>
-                                                                <input v-model="row.ebkg_pkg_weight" @input="validateNumber(row, 'ebkg_pkg_weight', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                                <input v-model="row.ebkg_pkg_weight" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000">
                                                             </td>
                                                             <td>
-                                                            <select v-model="row.ebkg_pkg_weight_type" class="form-select form-select-sm">
-                                                                <option value="KG">KG</option>
-                                                                <option value="LB">LB</option>
-                                                            </select>
+                                                                <select v-model="row.ebkg_pkg_weight_type" class="form-select form-select-sm">
+                                                                    <option value="KG">KG</option>
+                                                                    <option value="LB">LB</option>
+                                                                </select>
                                                             </td>
                                                             <td>
-                                                            <input v-model="row.ebkg_pkg_length" @input="validateNumber(row, 'ebkg_pkg_length', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                                <input v-model="row.ebkg_pkg_length" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000">
                                                             </td>
                                                             <td>
-                                                            <input v-model="row.ebkg_pkg_width" @input="validateNumber(row, 'ebkg_pkg_width', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                                <input v-model="row.ebkg_pkg_width" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000">
                                                             </td>
                                                             <td>
-                                                            <input v-model="row.ebkg_pkg_height" @input="validateNumber(row, 'ebkg_pkg_height', $event)" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                                <input v-model="row.ebkg_pkg_height" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000">
                                                             </td>
                                                             <td>
-                                                                <input :value="row.ebkg_pkg_chargeable_weight" type="text" class="form-control form-control-sm" placeholder="0.000" readonly>
+                                                                <input :value="row.ebkg_pkg_chargeable_weight" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000" readonly>
                                                             </td>
                                                             <td>
-                                                            <select v-model="row.ebkg_pkg_dimension_type" class="form-select form-select-sm">
-                                                                <option value="CM">CM</option>
-                                                                <option value="IN">IN</option>
-                                                                <option value="MM">MM</option>
-                                                            </select>
+                                                                <select v-model="row.ebkg_pkg_dimension_type" class="form-select form-select-sm">
+                                                                    <option value="CM">CM</option>
+                                                                    <option value="IN">IN</option>
+                                                                    <option value="MM">MM</option>
+                                                                </select>
                                                             </td>
                                                             <td>
-                                                            <textarea v-model="row.ebkg_pkg_remarks" cols="30" rows="1" class="form-control form-control-sm text-uppercase" style="min-height: 28px !important;"></textarea>
+                                                                <textarea v-model="row.ebkg_pkg_remarks" v-uppercase cols="30" rows="1" class="form-control form-control-sm" style="min-height: 28px !important;"></textarea>
                                                             </td>
                                                             <td class="text-center">
-                                                            <button @click="deleteRow(index)" type="button" class="btn btn-danger btn-cargoaim btn-sm">
-                                                                <i class="fa-solid fa-xmark"></i>
-                                                            </button>
+                                                                <button @click="deleteRow(index)" type="button" class="btn btn-danger btn-cargoaim btn-sm">
+                                                                    <i class="fa-solid fa-xmark"></i>
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -1250,14 +1277,14 @@
                                                     <tfoot>
                                                         <tr>
                                                             <td></td>
-                                                            <td class="text-center"><strong>{{ totalQty }}</strong></td>
+                                                            <td class="text-end"><strong>{{ totalQty }}</strong></td>
                                                             <td></td>
-                                                            <td><strong>{{ totalWeight }}</strong></td>
-                                                            <td></td>
-                                                            <td></td>
+                                                            <td class="text-end"><strong>{{ totalWeight }}</strong></td>
                                                             <td></td>
                                                             <td></td>
-                                                            <td><strong>{{ totalChargeableWeight }}</strong></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="text-end"><strong>{{ totalChargeableWeight }}</strong></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -1291,7 +1318,7 @@
                                                             <th style="width: 90px;">HS CODE</th>
                                                             <th style="width: 90px;">N.WT</th>
                                                             <th style="width: 50px;">Type</th>
-                                                            <th style="width: 90px;">C/O</th>
+                                                            <th style="width: 100px;">C/O</th>
                                                             <th>REMARK</th>
                                                             <th class="text-center" style="width: 35px;">
                                                                 <button @click="addItemRow" type="button" class="btn btn-sm btn-primary btn-cargoaim bg-gradient open-second-modal plus-box-btn item_row_add_btn"> 
@@ -1310,17 +1337,17 @@
                                                             <td>
                                                                 <input v-model="row.ebkg_item_row_id" type="hidden">
 
-                                                                <input v-model="row.ebkg_item_name" type="text" class="form-control form-control-sm">
+                                                                <input v-model="row.ebkg_item_name" v-uppercase type="text" class="form-control form-control-sm">
                                                             </td>
                                                             
                                                             <!-- Quantity -->
                                                             <td>
-                                                                <input v-model.number="row.ebkg_item_qty" type="text" class="form-control form-control-sm text-center">
+                                                                <input v-model.number="row.ebkg_item_qty" v-number-only type="text" class="form-control form-control-sm text-end">
                                                             </td>
                                                             
                                                             <!-- Customs Value -->
                                                             <td>
-                                                                <input v-model="row.ebkg_item_customs_value" type="text" class="form-control form-control-sm" placeholder="0.00">
+                                                                <input v-model="row.ebkg_item_customs_value" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.00">
                                                             </td>
                                                             
                                                             <!-- Currency -->
@@ -1335,12 +1362,12 @@
                                                             
                                                             <!-- HS Code -->
                                                             <td>
-                                                                <input v-model="row.ebkg_item_hs_code" type="text" class="form-control form-control-sm">
+                                                                <input v-model="row.ebkg_item_hs_code" v-number-only type="text" class="form-control form-control-sm">
                                                             </td>
                                                             
                                                             <!-- Weight -->
                                                             <td>
-                                                                <input v-model="row.ebkg_item_weight" type="text" class="form-control form-control-sm" placeholder="0.000">
+                                                                <input v-model="row.ebkg_item_weight" v-number-decimal type="text" class="form-control form-control-sm text-end" placeholder="0.000">
                                                             </td>
                                                             
                                                             <!-- Weight Type -->
@@ -1363,7 +1390,7 @@
                                                             
                                                             <!-- Remarks -->
                                                             <td>
-                                                                <textarea v-model="row.ebkg_item_remarks" cols="30" rows="1" class="form-control form-control-sm text-uppercase" style="min-height: 28px !important;"></textarea>
+                                                                <textarea v-model="row.ebkg_item_remarks" v-uppercase cols="30" rows="1" class="form-control form-control-sm" style="min-height: 28px !important;"></textarea>
                                                             </td>
                                                             
                                                             <!-- Delete Button -->
@@ -1377,13 +1404,12 @@
 
                                                     <tfoot>
                                                         <tr>
+                                                            <td colspan="2"><strong>Total:</strong></td>
+                                                            <td class="text-end"><strong>{{ totalItemQty }}</strong></td>
+                                                            <td class="text-end"><strong>{{ totalItemValue }}</strong></td>
                                                             <td></td>
-                                                            <td class="text-end"><strong>Total:</strong></td>
-                                                            <td class="text-center"><strong>{{ totalItemQty }}</strong></td>
                                                             <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td class="text-center"><strong>{{ totalItemWeight }}</strong></td>
+                                                            <td class="text-end"><strong>{{ totalItemWeight }}</strong></td>
                                                             <td></td>
                                                             <td></td>
                                                             <td></td>
@@ -1408,11 +1434,7 @@
                                                     Dangerous Goods
                                                 </h5>
 
-                                                <input
-                                                    type="checkbox"
-                                                    v-model="form.ebkg_dg_yes_no"
-                                                    title="Dangerous Goods"
-                                                >
+                                                <input type="checkbox" v-model="form.ebkg_dg_yes_no" @change="handleDGToggle" title="Dangerous Goods" >
                                             </div>
                                         </div>
 
@@ -1420,90 +1442,44 @@
                                             <table class="table table-borderless align-middle m-0">
                                                 <tbody>
                                                     <tr>
-
                                                         <td style="width:20%">
                                                             <label class="form-label">IMO Class :</label>
 
-                                                            <input
-                                                                type="text"
-                                                                v-model="form.ebkg_dg_class"
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
-                                                                autocomplete="off"
-                                                                :disabled="!form.ebkg_dg_yes_no"
-                                                                :required="form.ebkg_dg_yes_no"
-                                                            >
+                                                            <input type="text" v-model="form.ebkg_dg_class" v-uppercase class="form-control form-control-sm" autocomplete="off" :disabled="!form.ebkg_dg_yes_no" :required="form.ebkg_dg_yes_no" >
                                                         </td>
 
                                                         <td style="width:20%">
                                                             <label class="form-label">UN NO :</label>
 
-                                                            <input
-                                                                type="text"
-                                                                v-model="form.ebkg_dg_un_no"
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
-                                                                autocomplete="off"
-                                                                :disabled="!form.ebkg_dg_yes_no"
-                                                                :required="form.ebkg_dg_yes_no"
-                                                            >
+                                                            <input type="text" v-model="form.ebkg_dg_un_no" v-uppercase class="form-control form-control-sm" autocomplete="off" :disabled="!form.ebkg_dg_yes_no" :required="form.ebkg_dg_yes_no" >
                                                         </td>
 
                                                         <td style="width:20%">
                                                             <label class="form-label">Package Group :</label>
 
-                                                            <input
-                                                                type="text"
-                                                                v-model="form.ebkg_dg_pkg_group"
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
-                                                                autocomplete="off"
-                                                                :disabled="!form.ebkg_dg_yes_no"
-                                                                :required="form.ebkg_dg_yes_no"
-                                                            >
+                                                            <input type="text" v-model="form.ebkg_dg_pkg_group" v-uppercase class="form-control form-control-sm" autocomplete="off" :disabled="!form.ebkg_dg_yes_no" :required="form.ebkg_dg_yes_no" >
                                                         </td>
 
                                                         <td style="width:20%">
                                                             <label class="form-label">Flash Point :</label>
 
-                                                            <input
-                                                                type="text"
-                                                                v-model="form.ebkg_dg_flash_poin"
-                                                                class="form-control form-control-sm uppercase-only mt2_mb1"
-                                                                autocomplete="off"
-                                                                :disabled="!form.ebkg_dg_yes_no"
-                                                                :required="form.ebkg_dg_yes_no"
-                                                            >
+                                                            <input type="text" v-model="form.ebkg_dg_flash_poin" v-uppercase class="form-control form-control-sm" autocomplete="off" :disabled="!form.ebkg_dg_yes_no" :required="form.ebkg_dg_yes_no" >
                                                         </td>
 
                                                         <td style="width:20%">
                                                             <label class="form-label">Upload File :</label>
 
-                                                            <label
-                                                                class="file-upload-container"
-                                                                :style="!form.ebkg_dg_yes_no ? 'pointer-events:none;opacity:.5;' : ''"
-                                                            >
+                                                            <label class="file-upload-container" :style="!form.ebkg_dg_yes_no ? 'pointer-events:none;opacity:.5;' : ''" >
 
-                                                                <input
-                                                                    type="file"
-                                                                    class="file-input"
-                                                                    multiple
-                                                                    :disabled="!form.ebkg_dg_yes_no"
-                                                                    @change="handleDGFileChange"
-                                                                >
+                                                                <input type="file" class="file-input" multiple :disabled="!form.ebkg_dg_yes_no" @change="handleDGFileChange" >
 
-                                                                <i
-                                                                    v-if="form.ebkg_dg_files.length === 0"
-                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
-                                                                ></i>
+                                                                <i v-if="form.ebkg_dg_files.length === 0" class="fas fa-cloud-upload-alt file-upload-icon" ></i>
 
-                                                                <span
-                                                                    v-else
-                                                                    class="file-count-text"
-                                                                >
+                                                                <span v-else class="file-count-text" >
                                                                     {{ form.ebkg_dg_files.length }} file(s) selected
                                                                 </span>
-
                                                             </label>
                                                         </td>
-
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1526,7 +1502,7 @@
                                                     <tr>
                                                         <td style="width: 34%">
                                                             <label class="form-label">Date : </label>
-                                                            <input type="date" v-model="form.ebkg_ervice_date" class="form-control form-control-sm" autocomplete="off">
+                                                            <input type="date" v-model="form.ebkg_ervice_date" v-uppercase class="form-control form-control-sm" autocomplete="off">
                                                         </td>
                                                         <td style="width: 33%">
                                                             <label class="form-label">Services : </label>
@@ -1582,7 +1558,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 40%;">
-                                                            <input type="text" v-model="form.web_cms_shipment_ref" class="form-control form-control-sm uppercase-only" placeholder="Shipment References" autocomplete="off">
+                                                            <input type="text" v-model="form.web_cms_shipment_ref" v-uppercase class="form-control form-control-sm" placeholder="Shipment References" autocomplete="off">
                                                         </td>
                                                         <td style="width: 12%;">
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1591,7 +1567,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 31%;">
-                                                            <input type="text" v-model="form.ebkg_po_no" class="form-control form-control-sm uppercase-only" placeholder="P.O.NO" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_po_no" v-uppercase class="form-control form-control-sm" placeholder="P.O.NO" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1606,7 +1582,7 @@
                                                                             </div>
                                                                         </td>
                                                                         <td style="width: 30%;">
-                                                                            <input type="text" v-model="form.web_cms_invoice_no" class="form-control form-control-sm uppercase-only" placeholder="Invoice No" autocomplete="off">
+                                                                            <input type="text" v-model="form.web_cms_invoice_no" v-uppercase class="form-control form-control-sm" placeholder="Invoice No" autocomplete="off">
                                                                         </td>
                                                                         <td style="width: 15%;">
                                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1616,23 +1592,11 @@
                                                                         </td>
                                                                         <td style="width: 28%;">
                                                                             <label class="file-upload-container">
-                                                                                <input
-                                                                                    type="file"
-                                                                                    name="invoice_upload_file[]"
-                                                                                    class="file-input"
-                                                                                    multiple
-                                                                                    @change="handleInvoiceFileChange"
-                                                                                />
+                                                                                <input type="file" name="invoice_upload_file[]" class="file-input" multiple @change="handleInvoiceFileChange" />
 
-                                                                                <i
-                                                                                    v-if="form.web_cms_invoice_upload_file.length === 0"
-                                                                                    class="fas fa-cloud-upload-alt file-upload-icon"
-                                                                                ></i>
+                                                                                <i v-if="form.web_cms_invoice_upload_file.length === 0" class="fas fa-cloud-upload-alt file-upload-icon"></i>
 
-                                                                                <span
-                                                                                    v-else
-                                                                                    class="file-count-text"
-                                                                                >
+                                                                                <span v-else class="file-count-text" >
                                                                                     {{ form.web_cms_invoice_upload_file.length }} file(s) selected
                                                                                 </span>
                                                                             </label>
@@ -1649,7 +1613,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_department_no" class="form-control form-control-sm uppercase-only" placeholder="Department No" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_department_no" v-uppercase class="form-control form-control-sm" placeholder="Department No" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                         <tr>
@@ -1765,7 +1729,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_picup_drop_off_name" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Contract Person Name" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_picup_drop_off_name" v-uppercase class="form-control form-control-sm" placeholder="Contract Person Name" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -1776,7 +1740,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.ebkg_picup_drop_off_phone" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="Phone Number" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_picup_drop_off_phone" class="form-control form-control-sm" placeholder="Phone Number" autocomplete="off">
                                                         </td>
                                                         <td>
                                                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1795,8 +1759,8 @@
                                                                 <span>:</span>
                                                             </div>
                                                         </td>
-                                                        <td colspan="3">
-                                                            <textarea v-model="form.ebkg_picup_drop_off_address" cols="30" rows="1" class="form-control form-control-sm uppercase-only mt2_mb1" placeholder="PICKUP ADDRESS" autocomplete="off"></textarea>
+                                                        <td colspan="1">
+                                                            <textarea v-model="form.ebkg_picup_drop_off_address" v-uppercase cols="30" rows="1" class="form-control form-control-sm" placeholder="PICKUP ADDRESS" autocomplete="off"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1839,7 +1803,7 @@
                                                             </div>
                                                         </td>
                                                         <td style="width: 40%;">
-                                                            <input type="text" v-model="form.ebkg_account_no" class="form-control form-control-sm uppercase-only" placeholder="Account No" autocomplete="off">
+                                                            <input type="text" v-model="form.ebkg_account_no" v-uppercase class="form-control form-control-sm" placeholder="Account No" autocomplete="off">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1871,40 +1835,25 @@
                                                     <tr>
                                                         <td style="width:60%;">
                                                             <!-- Hidden textarea -->
-                                                            <textarea class="form-control d-none" v-model="ebkg_email_cc" autocomplete="off" readonly></textarea>
+                                                            <textarea class="form-control d-none" v-model="form.ebkg_email_cc" autocomplete="off" readonly></textarea>
 
                                                             <!-- Chip Container -->
                                                             <div class="mail-chip-container" @click="ccFocusInput">
-                                                                <div
-                                                                    v-for="(email, index) in cc_emails"
-                                                                    :key="index"
-                                                                    class="mail-chip"
-                                                                >
+                                                                <div v-for="(email, index) in cc_emails" :key="index" class="mail-chip">
                                                                     <span>{{ email }}</span>
 
-                                                                    <button
-                                                                        type="button"
-                                                                        class="mail-chip-remove"
-                                                                        @click.stop="ccRemoveEmail(index)"
-                                                                    >
+                                                                    <button type="button" class="mail-chip-remove" @click.stop="ccRemoveEmail(index)">
                                                                         ×
                                                                     </button>
                                                                 </div>
 
-                                                                <input
-                                                                    ref="cc_emailInput"
-                                                                    v-model="cc_inputEmail"
-                                                                    type="text"
-                                                                    class="mail-chip-input"
-                                                                    placeholder="Type email and press Enter"
-                                                                    @keydown.enter.prevent="ccAddEmail"
-                                                                    autocomplete="off"
+                                                                <input ref="cc_emailInput" v-model="cc_inputEmail" type="text" class="mail-chip-input" placeholder="Type email and press Enter" @keydown.enter.prevent="ccAddEmail" autocomplete="off"
                                                                 />
                                                             </div>
                                                         </td>
                                                         
                                                         <td style="width: 40%;">
-                                                            <textarea  v-model="form.ebkg_main_remarks" cols="30" rows="1" class="form-control" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
+                                                            <textarea  v-model="form.ebkg_main_remarks" v-uppercase cols="30" rows="1" class="form-control" placeholder="" autocomplete="off" style="height: 160px;"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -1934,7 +1883,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <input type="text" v-model="form.shipment_profile_to_save" class="form-control form-control-sm uppercase-only" placeholder="Save Shipment Profile Name" autocomplete="off">
+                                                            <input type="text" v-model="form.shipment_profile_to_save" v-uppercase class="form-control form-control-sm" placeholder="Save Shipment Profile Name" autocomplete="off">
                                                         </td>
                                                         <td style="width: 20px;">
                                                             <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="courier_save_btn" style="height: 28px;">
@@ -1956,6 +1905,7 @@
                     <button type="button" class="btn btn-primary btn-cargoaim bg-gradient" id="ebkg_save_update" @click="saveBooking">
                         <i class="fas fa-check-circle"></i>&nbsp;Submit
                     </button>
+                    
                 </div>
             </form>
         </div> <!-- end card-body -->
@@ -2061,6 +2011,8 @@
     .items_table tfoot tr td { 
         background: #eee;
         background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+        font-size: 12px;
+        font-weight: 500 !important;
     }
 
 
