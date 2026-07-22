@@ -1,7 +1,10 @@
 <script setup>
-    import { ref, computed, h } from "vue";
+    import { ref, computed, onMounted, h } from "vue";
     import { useRouter } from "vue-router";
     import { useAuth } from '@modules/auth/composable/useAuth';
+    import apiClient from "@/core/apiClient";
+    import {userData} from "@/shared/utils/userInfo.js";
+    import { useAuthStore } from '@/modules/auth/store/authStore'
 
     import BaseModal from '@/shared/components/modal/BaseModal.vue';
 
@@ -12,9 +15,13 @@
 
     import DataTable from '@/shared/Components/DataTable/DataTable.vue';
 
+    const authStore = useAuthStore()
+    const user = authStore.getUser
+
+
+    const { is_loading } = useAuth();
     const isTableVisible = ref(false)
     const all_bookings = ref([]);
-    const { is_loading } = useAuth();
 
     const {
       showModernLoader,
@@ -44,719 +51,355 @@
 
 
 
+  /**************** All Booking list api json - Start ********************/
+  const date_type = ref("bkg_create_date");
+
+  const getDateString = (date) => {
+      return date.toISOString().split('T')[0];
+  };
+
+  const today = new Date();
+
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(today.getDate() - 7);
+
+  const date_from = ref(getDateString(oneWeekAgo));
+  const date_to = ref(getDateString(today));
+
+  const userId = user?.userId ?? '';
+  const ebkg_creator_customer_code = user?.company_id ?? '';
+
+  // const get_all_bookings = async () => {
+  //   try {
+  //     const payload = {
+  //       ebkg_creator_customer_code: ebkg_creator_customer_code,
+  //       user_id: userId,
+  //       language_id: userData.language_id,
+  //       date_type: date_type.value,
+  //       date_from: date_from.value,
+  //       date_to: date_to.value,
+  //     };
+
+  //     const { data } = await apiClient.post(
+  //       "/online/ebooking/ebkg_full_list_load_json.php",
+  //       payload
+  //     );
+
+  //     // console.log("API Response:", data);
+
+  //     if (data?.header_data?.success) {
+  //       all_bookings.value = data.details_data ?? [];
+  //     } else {
+  //       all_bookings.value = [];
+  //     }
+  //   } catch (error) {
+  //     console.error("All Booking List Error:", error);
+
+  //     all_bookings.value = [];
+
+  //     throw error;
+  //   }
+  // };
 
 
+const get_all_bookings = async () => {
+  try {
+    const payload = {
+      ebkg_creator_customer_code: ebkg_creator_customer_code,
+      user_id: userId,
+      language_id: userData.language_id,
+      date_type: date_type.value,
+      date_from: date_from.value,
+      date_to: date_to.value,
+    };
+
+    const { data } = await apiClient.post(
+      "/online/ebooking/ebkg_full_list_load_json.php",
+      payload
+    );
+
+    if (data?.header_data?.success) {
+      const bookings = data.details_data ?? [];
+
+      // আপাতত ১টা data কে 10 বার দেখাবে
+      if (bookings.length === 1) {
+        all_bookings.value = Array(20).fill(bookings[0]);
+      } else {
+        all_bookings.value = bookings;
+      }
+    } else {
+      all_bookings.value = [];
+    }
+
+  } catch (error) {
+    console.error("All Booking List Error:", error);
+    all_bookings.value = [];
+    throw error;
+  }
+};
 
 
-    const columns = [
-        // Checkbox
-        {
-          id: 'select',
-          header: () =>
-            h(
-              'div',
-              { class: 'text-center' },
-              h('input', {
-                  type: 'checkbox',
-                  class: 'all_check_box',
-                  checked: selectAll.value,
-                  onChange: (e) => {
-                    selectAll.value = e.target.checked
-                  }
-              })
-            ),
+  /**************** All Booking list api json - End ********************/
 
-            enableSorting: false,
-            enableGlobalFilter: false,
-            size: 43,
 
-            meta: {
-              sticky: 'left'
+  const columns = [
+      // Checkbox
+      // {
+      //   id: 'select',
+      //   header: () =>
+      //     h('input', {
+      //         type: 'checkbox',
+      //         class: 'all_check_box',
+      //         checked: selectAll.value,
+      //         onChange: (e) => {
+      //           selectAll.value = e.target.checked
+      //         }
+      //     }),
+
+      //     enableSorting: false,
+      //     enableGlobalFilter: false,
+      //     size: 43,
+      //     meta: { sticky: 'left' },
+      //     cell: ({ row }) =>
+      //       h('input', {
+      //         type: 'checkbox',
+      //         class: 'ens_dt_check_box',
+      //         value: row.original.id,
+      //         checked: selectedIds.value.includes(row.original.id),
+      //         onChange: (e) => {
+      //           if (e.target.checked) {
+      //             selectedIds.value.push(row.original.id)
+      //           } else {
+      //             selectedIds.value = selectedIds.value.filter(
+      //               id => id !== row.original.id
+      //             )
+      //           }
+      //         }
+      //       }
+      //     ),
+      // },
+
+      // SN
+      {
+        id: 'sn',
+        header: 'SN',
+        enableSorting: false,
+        size: 30,
+        meta: { sticky: 'left' },
+        cell: ({ row, table }) => {
+          const pageIndex = table.getState().pagination.pageIndex
+          const pageSize = table.getState().pagination.pageSize
+          const index = table.getRowModel().rows.findIndex(r => r.id === row.id)
+
+          return h(
+            'div',
+            {
+              class: 'text-center'
             },
+            pageIndex * pageSize + index + 1
+          )
+        }
+      },
 
-            cell: ({ row }) =>
-              h(
-                'div',
-                { class: 'text-center' },
-                h('input', {
-                  type: 'checkbox',
-                  class: 'ens_dt_check_box',
-                  value: row.original.id,
-                  checked: selectedIds.value.includes(row.original.id),
-                  onChange: (e) => {
-                    if (e.target.checked) {
-                      selectedIds.value.push(row.original.id)
-                    } else {
-                      selectedIds.value = selectedIds.value.filter(
-                        id => id !== row.original.id
-                      )
-                    }
-                  }
-                }
-              )
-            ),
-        },
+      // SEA/AIR
+      {
+        id:'sea_air',
+        accessorKey: 'sea_air',
+        header: 'S/A',
+        size: 50,
+        meta: { sticky: 'left' },
+        enableSorting: false,
+        cell: ({ getValue }) =>
+          h('img', { src: getValue(), class: '' }),
+      },
+      // Imp/Exp
+      {
+        id:'imp_exp',
+        accessorKey: 'imp_exp',
+        header: 'I/E',
+        size: 50,
+        meta: { sticky: 'left' },
+        enableSorting: false,
+        cell: ({ getValue }) =>
+          h('img', { src: getValue(), class: '' }),
+      },
 
-        // SN
-        {
-          id: 'sn',
-          header: 'SN',
-          enableSorting: false,
-          size: 43,
-          meta: {
-            sticky: 'left'
-          },
-          cell: ({ row, table }) => {
-            const pageIndex = table.getState().pagination.pageIndex
-            const pageSize = table.getState().pagination.pageSize
-            const index = table.getRowModel().rows.findIndex(r => r.id === row.id)
+      // MBL
+      {
+        id:'bkg_no',
+        size: 115,
+        meta: { sticky: 'left' },
+        accessorKey: 'bkg_no',
+        header: 'BKG NO',
+      },
 
-            return h(
-              'div',
-              {
-                class: 'text-center'
-              },
-              pageIndex * pageSize + index + 1
-            )
-          }
-        },
+      // HBL
+      {
+        id:'hbl',
+        size: 115,
+        meta: { sticky: 'left' },
+        accessorKey: 'hbl',
+        header: 'HBL NO',
+      },
+      // LIVE BKG NO
+      {
+        id:'live_bkg_no',
+        size: 115,
+        // meta: { sticky: 'left' },
+        accessorKey: 'live_bkg_no',
+        header: 'LIVE BKG NO',
+      },
+      // PO NO.s
+      {
+        id:'po_no',
+        size: 120,
+        accessorKey: 'po_no',
+        header: 'PO NO.s',
+      },
+      // -
+      {
+        id:'po_no',
+        size: 120,
+        accessorKey: 'po_no',
+        header: '-',
+      },
+      // INC
+      {
+        id:'inc',
+        size: 120,
+        accessorKey: 'inc',
+        header: 'INC',
+      },
+      // POL
+      {
+        id:'pol',
+        size: 120,
+        accessorKey: 'pol',
+        header: 'POL',
+      },
+      // POD
+      {
+        id:'pod',
+        size: 120,
+        accessorKey: 'pod',
+        header: 'POD',
+      },
+      // SHIPPER
+      {
+        id:'shipper_name',
+        size: 120,
+        accessorKey: 'shipper_name',
+        header: 'SHIPPER',
+      },
+      // CONSIGNEE
+      {
+        id:'consignee_name',
+        size: 120,
+        accessorKey: 'consignee_name',
+        header: 'CONSIGNEE',
+      },
+      // STATUS
+      {
+        id:'status',
+        size: 120,
+        accessorKey: 'status',
+        header: 'STATUS',
+      },
+      // BKG BY
+      {
+        id:'entry_by',
+        size: 120,
+        accessorKey: 'entry_by',
+        header: 'BKG BY',
+      },
+      // BKG DATE
+      {
+        id:'entry_date',
+        size: 120,
+        accessorKey: 'entry_date',
+        header: 'BKG DATE',
+      },
+      // Invoice
+      {
+        id:'entry_date',
+        size: 120,
+        accessorKey: 'entry_date',
+        header: 'Invoice',
+      },
+      // paperclip
+      {
+        id: 'paperclip',
+        size: 50,
+        enableSorting: false,
+        accessorKey: '',
+        header: () =>
+          h('i', {
+            class: 'fa-solid fa-paperclip'
+          }),
+      },
 
-        // FLAGS
-        {
-          id:'flag',
-          accessorKey: 'flag',
-          header: 'FLAGS',
-          size: 80,
-          meta: {
-            sticky: 'left'
-          },
-          enableSorting: false,
-          cell: ({ getValue }) =>
-            h('img', {
-              src: getValue(),
-              class: 'filing_flags_icon'
-            }),
-        },
+      // SO
+      {
+        id:'so',
+        size: 120,
+        accessorKey: '',
+        header: 'SO',
+      },
 
-        // MBL
-        {
-          id:'mbl',
-          size: 120,
-          meta: {
-            sticky: 'left'
-          },
-          accessorKey: 'mbl',
-          header: 'MBL',
-        },
+      // PSA
+      {
+        id:'pas',
+        size: 120,
+        accessorKey: '',
+        header: 'PSA',
+      },
+      // -
+      {
+        id:'date',
+        size: 120,
+        meta: { sticky: 'right' },
+        accessorKey: 'entry_date',
+        header: 'BKG DATE',
+      },
 
-        // HBL
-        {
-          id:'hbl',
-          size: 120,
-          // meta: {
-          //   sticky: 'left'
-          // },
-          accessorKey: 'hbl',
-          header: 'HBL/ENS BL',
-        },
-
-        // Edit
-        {
-          id: 'edit',
-          header: '-',
-          enableSorting: false,
-          size: 43,
-          cell: ({ row }) =>
-            h(
-              'button',
-              {
-                class: 'btn btn-sm btn-outline-info data_table_btn editBtn',
-                'data-id': row.original.id,
-              },
-              [h('i', { class: 'fas fa-pen' })]
-            ),
-        },
-
-        // Copy
-        {
-          id: 'copy',
-          header: '-',
-          enableSorting: false,
-          size: 43,
-          cell: ({ row }) =>
-            h(
-              'button',
-              {
-                class: 'btn btn-sm btn-outline-secondary bg-gradient data_table_btn copyBtn',
-                'data-id': row.original.id,
-              },
-              [h('i', { class: 'fas fa-copy' })]
-            ),
-        },
-
-        // MRN
-        {
-          accessorKey: 'mrn',
-          header: 'MRN / REF NO.',
-        },
-
-        // Status
-        {
-          accessorKey: 'status',
-          header: 'Status',
-        },
-
-        // Dispose
-        {
-          accessorKey: 'dispose',
-          header: 'DISPOSE',
-        },
-
-        // EQ
-        {
-          accessorKey: 'eq',
-          header: 'EQ',
-        },
-
-        // TYPE
-        {
-          accessorKey: 'type',
-          header: 'TYPE',
-        },
-
-        // KG
-        {
-          accessorKey: 'kg',
-          header: 'KG',
-        },
-
-        // CBM
-        {
-          accessorKey: 'cbm',
-          header: 'CBM',
-        },
-
-        // TO
-        {
-          accessorKey: 'to',
-          header: 'To',
-        },
-
-        // SHIPPER
-        {
-          accessorKey: 'shipper',
-          header: 'SHIPPER',
-          size: 200,
-          cell: ({ getValue }) =>
-            h('span', { class: 'text-start d-block' }, getValue()),
-        },
-
-        // CONSIGNEE
-        {
-          accessorKey: 'consignee',
-          header: 'CONSIGNEE',
-          size: 200,
-          cell: ({ getValue }) =>
-            h('span', { class: 'text-start d-block' }, getValue()),
-        },
-
-        // Action
-        {
-          id: 'action',
-          header: '-',
-          enableSorting: false,
-          size: 43,
-          meta: {
-            sticky: 'right'
-          },
-          cell: ({ row }) =>
-            h(
-              'button',
-              {
-                class: 'btn btn-sm btn-outline-primary bg-gradient data_table_btn actionBtn',
-                'data-id': row.original.id,
-              },
-              [h('i', { class: 'fas fa-bolt' })]
-            ),
-        },
-
-        // Delete
-        {
-          id: 'delete',
-          header: '-',
-          enableSorting: false,
-          size: 43,
-          meta: {
-            sticky: 'right'
-          },
-          cell: ({ row }) =>
-            h(
-              'button',
-              {
-                class: 'btn btn-sm btn-outline-danger bg-gradient data_table_btn deleteBtn',
-                'data-id': row.original.id,
-              },
-              [h('i', { class: 'fas fa-trash' })]
-            ),
-        },
-    ]
+      // Delete
+      {
+        id: 'delete',
+        header: '-',
+        enableSorting: false,
+        size: 43,
+        meta: { sticky: 'right' },
+        cell: ({ row }) =>
+          h(
+            'button',
+            {
+              class: 'btn btn-sm btn-outline-danger bg-gradient data_table_btn deleteBtn',
+              'data-id': row.original.id,
+            },
+            [h('i', { class: 'fas fa-trash' })]
+          ),
+      },
+  ]
 
 
-    
-    const filingLoadData = () => {
+  const all_booking_load_data = async () => {
+    try {
       isTableVisible.value = false;
       is_loading.value = true;
 
       showCircleLoader('cargoaim_custom_form_wrapper');
-      setTimeout(() => {
-        hideCircleLoader('cargoaim_custom_form_wrapper');
-        isTableVisible.value = true
-        is_loading.value = false;
-      
-        all_bookings.value = [
-          {
-            id: "40371",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40372",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40373",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          },
-          {
-            id: "40374",
-            flag: "/backend/assets/images/flags/european-union.png",
-            mbl: "FFFFFFFFFFFFF",
-            hbl: "HAHAHAHAHAAA",
-            mrn: "",
-            status: "",
-            dispose: "",
-            eq: 1,
-            type: "6156",
-            kg: 1710,
-            cbm: 8037,
-            to: "AUHUB",
-            shipper: "KRK GARMENTS LTD",
-            consignee: "KRK GARMENTS LTD"
-          }
-        ]
 
-        hideCircleLoader('cargoaim_custom_form_wrapper')
+      await get_all_bookings();
 
-        is_loading.value = false
+      isTableVisible.value = true;
 
-        // Data load হওয়ার পর table show হবে
-        isTableVisible.value = true
-
-      }, 2000);
+    } catch (error) {
+      console.error("Load Booking Error:", error);
+    } finally {
+      hideCircleLoader('cargoaim_custom_form_wrapper');
+      is_loading.value = false;
     }
+  };
 
 </script>
 
@@ -791,90 +434,87 @@
         
       </div>
       <div class="filing-content-body">
-        <form id="loadform" name="form" class="form-horizontal" method="POST" action="#" enctype="multipart/form-data" >
-          <input type="hidden" name="_token" value="cSBX5Uj4lrE3emrO7loWLSSziypI4veDRBkRQ2Ou" autocomplete="off" />
-          <div class="table-responsive filing_search_responsive_table_wrapper filing_search_bg_color bg-gradient" >
-            <table class="table table-borderless filing_search_table">
-              <tr class="filing_search_table_row text-center">
-                <th class="" style="width: 100px">Type</th>
-                <th class="" style="width: 115px">From</th>
-                <th class="" style="width: 115px">To</th>
-                <th class="" style="width: 100px">Booked by</th>
-                <th class="" style="width: 250px">Keyword</th>
-                <th class="" style="width: 100px">Company</th>
-                <th class="" style="width: 100px">Status</th>
-                <th class="" style="width: auto"></th>
-                <th class="" style="width: 40px"></th>
-                <th class="" style="width: 40px"></th>
-                <th class="" style="width: 100px"></th>
-              </tr>
-              <tr class="filing_search_table_row">
-                <td>
-                  <select name="date_type" id="date_type" class="form-select">
-                    <option value="entry_date" selected>Entry Date</option>
-                  </select>
-                </td>
-                <td>
-                  <input type="date" name="date_from" id="date_from" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
-                </td>
-                <td>
-                  <input type="date" name="date_to" id="date_to" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
-                </td>
-                <td class="text-center">
-                  <select class="form-select" name="stock_filter_carrier_name" id="stock_filter_carrier_name" autocomplete="off" >
-                    <option value=""></option>
-                  </select>
-                </td>
-                <td>
-                  <input type="text" name="hbl_mbl" id="hbl_mbl" class="form-control uppercase-only" placeholder="🔍 HBL/MBL/PORT/VSL/VOY" autocomplete="off" />
-                </td>
-                <td>
-                  <select class="form-select" name="stock_filter_b_unit" id="stock_filter_b_unit" >
-                    <option value=""></option>
-                  </select>
-                </td>
-                <td>
-                  <select class="form-select" name="stock_status" id="stock_status" >
-                    <option value="A">Active</option>
-                    <option value="D">Deleted</option>
-                    <option value="N">Canceled</option>
-                    <option value="ALL" selected="selected">ALL</option>
-                  </select>
-                </td>
-                
-                <td></td>
-                <td class="text-center">
-                  <button type="button" id="cm_vol_report_exl_btn" class="btn btn-sm border p-0" >
-                    <i class="fa-solid fa-file-excel" style="font-size: 20px; color: #1d6f42"></i>
-                  </button>
-                </td>
-                <td class="text-center">
-                  <button type="button" id="cm_vol_report_pdf_btn" class="btn btn-sm border p-0">
-                    <i class="fa-solid fa-file-pdf" style="font-size: 20px; color: red"></i>
-                  </button>
-                </td>
-                <!-- Load Button -->
-                <td class="text-center">
-                  <button type="" class="btn btn-primary bg-gradient btn-cargoaim w-100 px-1 flex-fill" id="filing_load_data_btn" @click.prevent="filingLoadData" :disabled="is_loading">
-                    <span v-if="!is_loading">
-                      <i class="fa-solid fa-arrows-rotate" style="font-size: 14px;"></i>
-                      LOAD
-                    </span>
-                    <span v-else>
-                      <span class="spinner-border spinner-border-sm" role="status"></span> LOAD
-                    </span>
-                  </button>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </form>
+        <div class="table-responsive filing_search_responsive_table_wrapper filing_search_bg_color bg-gradient" >
+          <table class="table table-borderless filing_search_table">
+            <tr class="filing_search_table_row text-center">
+              <th class="" style="width: 100px">Type</th>
+              <th class="" style="width: 115px">From</th>
+              <th class="" style="width: 115px">To</th>
+              <th class="" style="width: 100px">Booked by</th>
+              <th class="" style="width: 250px">Keyword</th>
+              <th class="" style="width: 100px">Company</th>
+              <th class="" style="width: 100px">Status</th>
+              <th class="" style="width: auto"></th>
+              <th class="" style="width: 40px"></th>
+              <th class="" style="width: 40px"></th>
+              <th class="" style="width: 100px"></th>
+            </tr>
+            <tr class="filing_search_table_row">
+              <td>
+                <select v-model="date_type" class="form-select">
+                  <option value="bkg_create_date" selected>Entry Date</option>
+                </select>
+              </td>
+              <td>
+                <input type="date" v-model="date_from" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
+              </td>
+              <td>
+                <input type="date" v-model="date_to" class="form-control" autocomplete="off" data-date-format="d-M-Y"/>
+              </td>
+              <td class="text-center">
+                <select class="form-select" name="stock_filter_carrier_name" id="stock_filter_carrier_name" autocomplete="off" >
+                  <option value=""></option>
+                </select>
+              </td>
+              <td>
+                <input type="text" name="hbl_mbl" id="hbl_mbl" class="form-control uppercase-only" placeholder="🔍 HBL/MBL/PORT/VSL/VOY" autocomplete="off" />
+              </td>
+              <td>
+                <select class="form-select" name="stock_filter_b_unit" id="stock_filter_b_unit" >
+                  <option value=""></option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select" name="stock_status" id="stock_status" >
+                  <option value="A">Active</option>
+                  <option value="D">Deleted</option>
+                  <option value="N">Canceled</option>
+                  <option value="ALL" selected="selected">ALL</option>
+                </select>
+              </td>
+              
+              <td></td>
+              <td class="text-center">
+                <button type="button" id="cm_vol_report_exl_btn" class="btn btn-sm border p-0" >
+                  <i class="fa-solid fa-file-excel" style="font-size: 20px; color: #1d6f42"></i>
+                </button>
+              </td>
+              <td class="text-center">
+                <button type="button" id="cm_vol_report_pdf_btn" class="btn btn-sm border p-0">
+                  <i class="fa-solid fa-file-pdf" style="font-size: 20px; color: red"></i>
+                </button>
+              </td>
+              <!-- Load Button -->
+              <td class="text-center">
+                <button type="" class="btn btn-primary bg-gradient btn-cargoaim w-100 px-1 flex-fill" id="filing_load_data_btn" @click.prevent="all_booking_load_data" :disabled="is_loading">
+                  <span v-if="!is_loading">
+                    <i class="fa-solid fa-arrows-rotate" style="font-size: 14px;"></i>
+                    LOAD
+                  </span>
+                  <span v-else>
+                    <span class="spinner-border spinner-border-sm" role="status"></span> LOAD
+                  </span>
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
 
         <!-- Initial Data Table -->
         <div class="cargoaim_custom_form_wrapper mt-2 position-relative" id="filing_dataLoad_customize">
           <CircleDivisionLoader loader-key="cargoaim_custom_form_wrapper" />
 
-          <DataTable v-if="all_bookings.length > 0" :columns="columns" :rows="all_bookings" :loading="is_loading"/>
+          <DataTable v-if="all_bookings.length > 0" :columns="columns" :rows="all_bookings" :loading="is_loading" :user-page-size="userData.page_size"/>
 
           <!-- Initial message outside tbody -->
           <div v-if="!isTableVisible" id="filing_cargoaim_table_message" class="text-start text-muted p-4">
@@ -929,9 +569,9 @@
 
 
 
-  .filing_content {
-    height: 90vh !important;
-  }
+  /* .filing_content {
+    height: 70vh !important;
+  } */
 
   .bg-gradient {
     background-image: linear-gradient(

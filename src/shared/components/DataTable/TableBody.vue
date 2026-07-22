@@ -35,17 +35,28 @@
 
         <!-- DATA ROWS -->
         <tr v-else v-for="row in table.getRowModel().rows" :key="row.id">
-            <td v-for="cell in row.getVisibleCells()" :key="cell.id" :style="{ width: cell.column.getSize() + 'px',
-                position: cell.column.columnDef.meta?.sticky
-                    ? 'sticky'
-                    : undefined,
-                left: cell.column.columnDef.meta?.sticky === 'left'
-                    ? cell.column.getStart('left') + 'px'
-                    : undefined,
-                right: cell.column.columnDef.meta?.sticky === 'right'
-                    ? cell.column.getAfter('right') + 'px'
-                    : undefined,
-                zIndex: cell.column.columnDef.meta?.sticky ? 40 : 1,}"
+            <td
+                v-for="cell in row.getVisibleCells()"
+                :key="cell.id"
+                :style="{
+                    width: cell.column.getSize() + 'px',
+                    minWidth: cell.column.getSize() + 'px',
+                    maxWidth: cell.column.getSize() + 'px',
+
+                    position: cell.column.columnDef.meta?.sticky
+                        ? 'sticky'
+                        : undefined,
+
+                    left: cell.column.columnDef.meta?.sticky === 'left'
+                        ? cell.column.getStart('left') + 'px'
+                        : undefined,
+
+                    right: cell.column.columnDef.meta?.sticky === 'right'
+                        ? cell.column.getAfter('right') + 'px'
+                        : undefined,
+
+                    zIndex: cell.column.columnDef.meta?.sticky ? 40 : 1,
+                }" class="text-center"
             >
 
                 <component :is="flexRender({ render: cell.column.columnDef.cell, props: cell.getContext() })"/>
@@ -53,3 +64,10 @@
         </tr>
     </tbody>
 </template>
+
+<style scoped>
+    tbody td{
+        font-size: 12px;
+        padding: 2px 4px;
+    }
+</style>
