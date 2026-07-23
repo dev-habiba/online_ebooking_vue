@@ -25,7 +25,7 @@
             type: Boolean,
             default: false,
         },
-            userPageSize: {
+        userPageSize: {
             type: [Number, String],
             default: 100,
         },
@@ -61,6 +61,12 @@
 
         get columns() {
             return props.columns ?? []
+        },
+
+        defaultColumn: {
+            size: undefined,
+            minSize: 0,
+            maxSize: Number.MAX_SAFE_INTEGER,
         },
 
         state: {
@@ -119,7 +125,7 @@
 
     <!-- TABLE -->
     <div class="table-container">
-        <table class="" style="min-width:2200px;">
+        <table class="">
             <!-- HEADER -->
             <TableHeader :table="table" :flex-render="flexRender"/>
 
@@ -202,7 +208,7 @@
 <style scoped>
 
     .table-container {
-        max-height: 435px;
+        max-height: 465px;
         overflow: auto;
         position: relative;
         border: 1px solid #ddd !important;
@@ -213,7 +219,16 @@
     .table-container table {
         border-collapse: separate;
         border-spacing: 0;
-        table-layout: fixed;
+
+        table-layout: auto;
+
+        width: max-content;
+        min-width: 100%;
+    }
+
+    .table-container :deep(table th),
+    .table-container :deep(table td) {
+        white-space: nowrap !important;
     }
 
 
@@ -231,10 +246,6 @@
         box-shadow: inset 0 -1px 0 #acafb3;
     }
 
-    /* .table-container :deep(table) {
-        border-collapse: collapse !important;
-    } */
-
     .table-container :deep(table th),
     .table-container :deep(table td) {
         border: 1px dotted #cfd8e3 !important;
@@ -242,13 +253,13 @@
 
     :deep(.table tbody td) {
         padding: 1px 2px !important;
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
 
 
     thead th:first-child,
     tbody td:first-child{
-        border-left:1px solid #dee2e6;
+        border-left: 1px solid #dee2e6;
     }
 
     /***************************************
@@ -299,7 +310,8 @@
         color: #2c3e50 !important;
     }
 
-    /*************************************** * Sticky Column Hover Effect ****************************************/ .table-container :deep( tbody tr:hover td[style*="position: sticky"] ) { 
+    /*************************************** * Sticky Column Hover Effect ****************************************/ 
+    .table-container :deep( tbody tr:hover td[style*="position: sticky"] ) { 
         background-color: #dcfecb !important; 
         color: #2c3e50 !important; 
         box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04) !important; 
@@ -321,7 +333,7 @@
 
     @media screen and (max-width: 1366px) {
         .table-container {
-            max-height: 340px !important;
+            max-height: 388px !important;
         }
     }
 </style>

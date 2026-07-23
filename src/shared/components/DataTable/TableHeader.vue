@@ -1,48 +1,69 @@
 <script setup>
-    const props = defineProps({
-        table: Object,
-        flexRender: Function,
-    })
+const props = defineProps({
+    table: Object,
+    flexRender: Function,
+})
 </script>
 
 <template>
     <thead>
-        <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+        <tr
+            v-for="headerGroup in table.getHeaderGroups()"
+            :key="headerGroup.id"
+        >
             <th
                 v-for="header in headerGroup.headers"
                 :key="header.id"
                 :style="{
-                    width: header.column.getSize() + 'px',
-                    minWidth: header.column.getSize() + 'px',
-                    maxWidth: header.column.getSize() + 'px',
+                    ...(header.column.columnDef.size != null
+                        ? {
+                            width: `${header.column.columnDef.size}px`,
+                            minWidth: `${header.column.columnDef.size}px`,
+                            maxWidth: `${header.column.columnDef.size}px`,
+                        }
+                        : {}),
 
                     position: header.column.columnDef.meta?.sticky
                         ? 'sticky'
                         : undefined,
 
                     left: header.column.columnDef.meta?.sticky === 'left'
-                        ? header.column.getStart('left') + 'px'
+                        ? `${header.column.getStart('left')}px`
                         : undefined,
 
                     right: header.column.columnDef.meta?.sticky === 'right'
-                        ? header.column.getAfter('right') + 'px'
+                        ? `${header.column.getAfter('right')}px`
                         : undefined,
 
                     zIndex: header.column.columnDef.meta?.sticky ? 50 : 10,
                 }"
                 class="text-center"
             >
-                <component v-if="!header.isPlaceholder" :is="flexRender({ render: header.column.columnDef.header, props: header.getContext() })"/>
+                <component
+                    v-if="!header.isPlaceholder"
+                    :is="flexRender({
+                        render: header.column.columnDef.header,
+                        props: header.getContext()
+                    })"
+                />
             </th>
         </tr>
     </thead>
 </template>
 
 <style scoped>
-    thead th{
-        background: #026e99 !important;
-        color: #ffffff!important;
-        font-size: 12px;
-        padding: 4px 2px;
+thead th {
+    background: #026e99 !important;
+    color: #ffffff !important;
+    font-size: 12px;
+    padding: 4px 2px;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 1366px) {
+    thead th {
+        font-size: 11px;
+        padding: 2px;
     }
+}
 </style>

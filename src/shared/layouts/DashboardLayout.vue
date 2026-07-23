@@ -22,4 +22,10 @@
     margin-top: 53px;
     padding: 8px;
 }
+
+@media screen and (max-width: 1366px) {
+    .page-content {
+        padding: 4px;
+    }
+}
 </style>

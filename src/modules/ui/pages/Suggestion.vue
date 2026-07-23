@@ -28,26 +28,15 @@ const dataList = ref([
   },
 ]);
 
-// টেবিলের হেডারলিস্ট
-const tableHeaders = [
-  "SL",
-  "Code",
-  "Sub Ledger",
-  "General Ledger",
-  "Child Ledger",
-];
+// Suggestion Table Header 
+const tableHeaders = [ "SL", "Code", "Sub Ledger", "General Ledger", "Child Ledger",];
 
-// অবজেক্টের প্রোপার্টি বা কি (Keys) যেগুলোর ডেটা টেবিলে দেখাবে
-const dataColumns = [
-  "data_code",
-  "subsidiary_ledger_full",
-  "general_ledger_full",
-  "coa_child_full",
-];
+// Suggestion Table Body 
+const dataColumns = [ "data_code", "subsidiary_ledger_full", "general_ledger_full", "coa_child_full", ];
 
 
 
-// আইটেম সিলেক্ট হলে এই ফাংশনটি কল হবে
+// Hidden code select data valu pol
 const handleSelect = (item) => {
   selectedItemData.value = item;
   selectedCode.value = item.data_code; // সিলেক্টেড অবজেক্ট থেকে data_code নিয়ে হিডেন ইনপুটে বসালাম
@@ -86,10 +75,6 @@ const handleSelect = (item) => {
             @select="handleSelect"
         />
     </div>
-
-    <!-- টেস্ট করার জন্য নিচে কোড দুটি প্রিন্ট করে দেখতে পারেন (প্রয়োজন না হলে বাদ দিতে পারেন) -->
-    <!-- <p class="mt-3">Selected Text: {{ mySearchValue }}</p>
-        <p class="text-muted">Hidden Input Value (Code): {{ selectedCode }}</p> -->
   </div>
 </template>
 

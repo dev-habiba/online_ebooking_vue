@@ -3,5 +3,5 @@ export const userData = {
     partition_id : "1004",
     language_id: "EN",
     user_id: "admin.demo",
-    page_size: 25,
+    page_size: 100,
 }

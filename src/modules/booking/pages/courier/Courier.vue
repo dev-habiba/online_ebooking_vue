@@ -1930,9 +1930,10 @@
         pointer-events: none;
         font-size: 13px;
         position: absolute;
-        top: 50%;
+        top: 55%;
         left: 14px;
         transform: translateY(-50%);
+        vertical-align: middle;
     }
 
     .suggestion-search-input {
@@ -1941,11 +1942,15 @@
         border-radius: 6px;
         outline: none;
         width: 100%;
-        padding: 5px 5px 4px 40px;
+        padding: 2px 5px 4px 40px;
         font-size: 13px;
         transition: border-color .2s, box-shadow .2s;
+        vertical-align: middle;
     }
 
+    :deep(.child-circle-loader) {  
+        right: 25px; 
+    } 
 
     .booking_card {
         margin: 0px 155px;
